@@ -1,0 +1,74 @@
+@font-face {
+  font-family: 'Lato';
+  src: url('../fonts/Lato-Regular-v2.woff2') format('woff2'),
+  url('../fonts/Lato-Regular-v2.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lato-Bold";
+  src: url("../fonts/Lato-Bold-v2.woff2") format("woff2"),
+  url("../fonts/Lato-Bold-v2.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+h1, h2, h3, h4, h5, h6, .title-h1, .title-h2, .title-h3, .title-h4, .title-h5, .title-h6 {
+  font-family: Lato-Bold, Arial, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  color: #0B1F33;
+}
+
+h1, .title-h1 {
+  font-size: 36px;
+  line-height: 40px;
+}
+
+h2, .title-h2 {
+  font-size: 32px;
+  line-height: 40px;
+}
+
+h3, .title-h3 {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+h4, .title-h4 {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+h5, .title-h5 {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+h6, .title-h6 {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+div, p, span, .plain-text {
+  font-family: Lato, Arial, sans-serif, -apple-system;
+  color: #0B1F33;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+a, .plain-link {
+  font-family: Lato, Arial, sans-serif, -apple-system;
+  color: #0D4CD3;
+  font-size: 16px;
+  line-height: 24px;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: #1D5DEB;
+  }
+}

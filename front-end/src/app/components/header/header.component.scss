@@ -1,0 +1,23 @@
+header {
+  padding: 12px 0;
+  background-color: #fff;
+  box-shadow: 0 2px 2px #9daccf14;
+  // z-index: 4;
+  position: relative;
+
+  .header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .logo {
+      .blue {
+        color: #0065B1;
+      }
+
+      .red {
+        color: #EE3F58;
+      }
+    }
+  }
+}

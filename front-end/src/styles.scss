@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'assets/styles/reset';
+@import 'assets/styles/fonts';
+
+body, .app-root {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: #FAFCFF;
+}
+
+.container {
+  box-sizing: border-box;
+  padding: 0 16px;
+  margin: 0 auto;
+}
+
+@media all and (min-width: 1216px) {
+  .container {
+    max-width: 1216px;
+    padding: 0;
+  }
+}
