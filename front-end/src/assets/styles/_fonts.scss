@@ -1,3 +1,5 @@
+@use 'palette' as palette;
+
 @font-face {
   font-family: 'Lato';
   src: url('../fonts/Lato-Regular-v2.woff2') format('woff2'),
@@ -20,7 +22,7 @@ h1, h2, h3, h4, h5, h6, .title-h1, .title-h2, .title-h3, .title-h4, .title-h5, .
   font-family: Lato-Bold, Arial, sans-serif;
   font-weight: 700;
   font-style: normal;
-  color: #0B1F33;
+  color: palette.$color-summer-night;
 }
 
 h1, .title-h1 {
@@ -53,22 +55,22 @@ h6, .title-h6 {
   line-height: 24px;
 }
 
-div, p, span, .plain-text {
+div, p, span, .plain-text, input {
   font-family: Lato, Arial, sans-serif, -apple-system;
-  color: #0B1F33;
+  color: palette.$color-summer-night;
   font-size: 16px;
   line-height: 24px;
 }
 
 a, .plain-link {
   font-family: Lato, Arial, sans-serif, -apple-system;
-  color: #0D4CD3;
+  color: palette.$color-gosblue;
   font-size: 16px;
   line-height: 24px;
   text-decoration: none;
   cursor: pointer;
 
   &:hover {
-    color: #1D5DEB;
+    color: palette.$color-active-item;
   }
 }

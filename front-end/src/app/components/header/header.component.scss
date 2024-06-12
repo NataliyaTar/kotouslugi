@@ -1,3 +1,5 @@
+@use '../../../assets/styles/palette' as palette;
+
 header {
   padding: 12px 0;
   background-color: #fff;
@@ -16,7 +18,7 @@ header {
       }
 
       .red {
-        color: #EE3F58;
+        color: palette.$color-gosred;
       }
     }
   }

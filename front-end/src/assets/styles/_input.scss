@@ -1,0 +1,29 @@
+@use 'palette' as palette;
+
+input {
+  width: 100%;
+  height: 52px;
+  text-overflow: ellipsis;
+  border: none;
+  border-radius: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  outline: none;
+  background: palette.$color-input;
+
+  &:focus {
+    padding-left: 14px;
+    border: 2px solid palette.$color-divider;
+  }
+
+  &:disabled {
+    background: palette.$color-bg-disabled;
+    color: palette.$color-telegrey-scuro;
+    -webkit-text-fill-color: palette.$color-telegrey-scuro;
+    opacity: 1;
+  }
+
+  &::placeholder {
+    color: palette.$color-blu-selvaggio;
+  }
+}

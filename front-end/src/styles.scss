@@ -1,11 +1,14 @@
+@use 'assets/styles/palette' as palette;
+
 @import 'assets/styles/reset';
 @import 'assets/styles/fonts';
+@import 'assets/styles/input';
 
 body, .app-root {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background: #FAFCFF;
+  background: palette.$color-background;
 }
 
 .container {
