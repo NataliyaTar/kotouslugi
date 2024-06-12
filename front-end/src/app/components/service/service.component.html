@@ -1,0 +1,10 @@
+<a class="service">
+  <div class="flex-container align-items-center" [routerLink]="'/service/' + service.id">
+    <img class="icon" [src]="'../../assets/png/cats/' + service.icon">
+    <div>
+      <h5>{{service.title}}</h5>
+      <p class="tag">{{service.tag}}</p>
+    </div>
+  </div>
+  <p class="description">{{service.description}}</p>
+</a>

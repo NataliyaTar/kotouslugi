@@ -1,23 +1,19 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { MainComponent } from './main.component';
+import { OrdersComponent } from './orders.component';
 
 const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    component: MainComponent
+    component: OrdersComponent
   }
 ];
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule,
     RouterModule.forChild(routes),
-    FormsModule,
   ]
 })
-export class MainModule { }
+export class OrdersModule { }

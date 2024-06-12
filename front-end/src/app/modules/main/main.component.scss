@@ -1,4 +1,48 @@
 .search-wrapper {
   background: linear-gradient(182.54deg, #1F50E8 20.95%, #7996F0 134.42%);
   padding: 48px 0;
+
+  .image {
+    display: none;
+  }
+
+  @media all and (min-width: 1216px) {
+    .image {
+      display: inline-block;
+      width: 100px;
+      margin-right: 32px;
+    }
+
+    .search {
+      width: calc(100% - 100px - 32px);
+    }
+  }
+}
+
+.carousel-wrapper {
+  max-width: 800px;
+  margin-top: 48px;
+}
+
+.services-wrapper {
+  margin-top: 48px;
+
+  .services {
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .not-found {
+    margin-top: 32px;
+    text-align: center;
+
+    .image {
+      max-width: 300px;
+      margin-bottom: 24px;
+    }
+
+    .text {
+      margin-top: 12px;
+    }
+  }
 }

@@ -1,0 +1,38 @@
+$col-count: 2;
+$col-lg-count: 12;
+
+@mixin grid($prefix, $col-count) {
+  @for $i from 1 through $col-count {
+    .col#{$prefix}-#{$i} {
+      grid-column-end: span $i;
+      min-width: 0;
+    }
+  }
+
+  @for $i from 1 through $col-count - 1 {
+    .push#{$prefix}-#{$i} {
+      grid-column-start: $i + 1;
+    }
+  }
+}
+
+.grid-row {
+  display: grid;
+  grid-template-columns: repeat($col-count, 1fr);
+  grid-template-rows: auto;
+  grid-gap: 32px;
+
+  @include grid('', $col-count);
+}
+
+@media all and (min-width: 1216px) {
+  .grid-row,
+  .grid-row-lg {
+    display: grid;
+    grid-template-columns: repeat($col-lg-count, 1fr);
+    grid-template-rows: auto;
+    grid-gap: 32px;
+
+    @include grid('-lg', $col-lg-count);
+  }
+}

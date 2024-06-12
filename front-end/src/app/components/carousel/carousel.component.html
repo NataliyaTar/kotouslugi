@@ -1,0 +1,17 @@
+<ngx-tcarousel
+  [itemCount]="banners.length"
+  [interval]="5000"
+  [gap]="16"
+  mainColor="#0D4CD3"
+  secondColor="#0D4CD3"
+>
+  @for (banner of banners; track $index) {
+    <div class="banner-wrapper flex-container align-items-center" [style.background]="banner.bg">
+      <img class="image" [src]="'../../../assets/png/cats/' + banner.imgUrl">
+      <div>
+        <h2>{{banner.title}}</h2>
+        <p class="text">{{banner.text}}</p>
+      </div>
+    </div>
+  }
+</ngx-tcarousel>

@@ -1,5 +1,31 @@
-<div class="search-wrapper">
-  <div class="container">
-    <input type="text" placeholder="Поиск..." [(ngModel)]="search">
+<section class="search-wrapper">
+  <div class="container flex-container-lg align-items-center-lg">
+    <img src="../../../assets/png/cats/search2.png" class="image">
+    <input class="search" type="text" placeholder="Поиск по услугам" [(ngModel)]="search">
   </div>
-</div>
+</section>
+
+@if (banners?.length) {
+  <section class="carousel-wrapper container">
+    <app-carousel [banners]="banners"></app-carousel>
+  </section>
+}
+
+@if (services?.length) {
+  <section class="services-wrapper container">
+    <h2>Котоуслуги</h2>
+    <div class="services grid-row">
+      @if (filteredService?.length) {
+        @for (service of filteredService; track $index) {
+          <app-service [service]="service" class="col-2 col-lg-4"></app-service>
+        }
+      } @else {
+        <div class="not-found col-2 col-lg-12">
+          <img src="../../../assets/png/cats/sad.png" class="image">
+          <h3>Упс...</h3>
+          <p class="text">Ничего не нашли</p>
+        </div>
+      }
+    </div>
+  </section>
+}

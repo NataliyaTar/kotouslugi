@@ -1,0 +1,23 @@
+@mixin flex-classes($prefix) {
+  .flex-container#{$prefix} {
+    display: flex;
+  }
+
+  .justify-center#{$prefix} {
+    justify-content: center;
+  }
+
+  .justify-between#{$prefix} {
+    justify-content: space-between;
+  }
+
+  .align-items-center#{$prefix} {
+    align-items: center;
+  }
+}
+
+@include flex-classes('');
+
+@media all and (min-width: 1216px) {
+  @include flex-classes('-lg');
+}
