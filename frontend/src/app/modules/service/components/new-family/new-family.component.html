@@ -1,0 +1,64 @@
+<div class="fields-wrapper" [formGroup]="form">
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <div class="field">
+      <div>
+        <p class="label">Выберите жениха</p>
+        @if (getControl('cat1').errors?.['required'] && getControl('cat1').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="cat1" (invalid)="getControl('cat1').invalid">
+        @for (option of optionsCat; track $index) {
+          <option [value]='option.id'>{{option.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Серия и номер паспорта</p>
+        @if (getControl('passport').errors && getControl('passport').touched) {
+          @if (getControl('passport').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl('passport').errors?.['pattern']) {
+            <p class="error">Введите значение в виде «0000 000000»</p>
+          }
+        }
+      </div>
+      <input formControlName="passport">
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+    <div class="field">
+      <div>
+        <p class="label">Выберите невесту</p>
+        @if (getControl('cat2').errors?.['required'] && getControl('cat2').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="cat2" (invalid)="getControl('cat2').invalid">
+        @for (option of optionsCat; track $index) {
+          <option [value]='option.id'>{{option.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Серия и номер паспорта</p>
+        @if (getControl('passport').errors && getControl('passport').touched) {
+          @if (getControl('passport').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl('passport').errors?.['pattern']) {
+            <p class="error">Введите значение в виде «0000 000000»</p>
+          }
+        }
+      </div>
+      <input formControlName="passport">
+    </div>
+  </div>
+
+  <div class="" [hidden]="active !== 1">
+    <app-check-info></app-check-info>
+  </div>
+</div>

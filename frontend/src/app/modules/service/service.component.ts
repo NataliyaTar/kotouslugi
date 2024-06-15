@@ -4,7 +4,7 @@ import { IStep } from '@models/step.model';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { AsyncPipe } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 
 @Component({
   selector: 'app-service',
@@ -36,7 +36,9 @@ export class ServiceComponent implements OnInit, OnDestroy {
       this.route.children[0].data.subscribe(res => {
         this.idService = res['idService'];
 
-        this.serviceInfo.getSteps(this.idService).subscribe(res => {
+        this.serviceInfo.getSteps(this.idService).pipe(
+          take(1)
+        ).subscribe(res => {
           this.steps = res;
         });
 
@@ -58,7 +60,7 @@ export class ServiceComponent implements OnInit, OnDestroy {
   }
 
   public isValidStep(): boolean {
-    return this.serviceInfo.servicesForms$?.value?.[this.idService]?.get(this.active.toString())?.valid;
+    return this.serviceInfo.servicesForms$?.value?.[this.idService]?.get(this.active.toString())?.valid || false;
   }
 
   public next(): void {
@@ -69,6 +71,10 @@ export class ServiceComponent implements OnInit, OnDestroy {
   public prev(): void {
     this.active--;
     this.serviceInfo.setActiveStep(this.idService, this.active);
+  }
+
+  public save(): void {
+
   }
 
 }

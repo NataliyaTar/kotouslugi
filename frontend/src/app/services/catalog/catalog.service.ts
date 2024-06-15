@@ -16,11 +16,11 @@ export class CatalogService {
     // return this.http.get<IService[]>(``);
     return of([
       {
-        id: 'born',
-        icon: 'two-cats.png',
-        title: 'Регистрация рождения котят',
+        id: 'new_family',
+        icon: 'cupid.png',
+        title: 'Регистрация брака',
         tag: 'Семья и дети',
-        description: 'При рождении трех и более котят, вы можете получить субсидии в виде пачки корма'
+        description: 'Вступайте в брак легко и быстро с котоуслугами'
       },
       {
         id: 'vet',

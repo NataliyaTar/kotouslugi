@@ -1,31 +1,32 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
-  AbstractControl,
   FormBuilder, FormControl,
-  FormGroup,
   ReactiveFormsModule,
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
+import { CatService } from '@services/cat/cat.service';
+import { IValue } from '@models/cat.model';
 
 @Component({
   selector: 'app-born',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    CheckInfoComponent
+    CheckInfoComponent,
   ],
-  templateUrl: './born.component.html',
-  styleUrl: './born.component.scss'
+  templateUrl: './new-family.component.html',
+  styleUrl: './new-family.component.scss'
 })
-export class BornComponent implements OnInit, OnDestroy {
+export class NewFamilyComponent implements OnInit, OnDestroy {
 
   public form: UntypedFormGroup;
   public active: number;
+  public optionsCat: IValue[] = [];
 
   private idService: string;
   private subscriptions: Subscription[] = [];
@@ -38,6 +39,7 @@ export class BornComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
+    private catService: CatService,
   ) {
   }
 
@@ -53,6 +55,17 @@ export class BornComponent implements OnInit, OnDestroy {
         );
 
         this.initForm();
+
+        this.catService.getCatList().pipe(
+          take(1)
+        ).subscribe(res => {
+          this.optionsCat = res.map((item) => {
+            return {
+              id: item.id,
+              text: item.name
+            }
+          });
+        });
       })
     );
   }
@@ -66,6 +79,14 @@ export class BornComponent implements OnInit, OnDestroy {
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
+        cat1: ['', [Validators.required]],
+        passport: ['', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]]
+      }),
+      1: this.fb.group({
+        cat2: ['', [Validators.required]],
+        passport: ['', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
+      }),
+      2: this.fb.group({
         name: ['а', [Validators.required, Validators.pattern(/^[А-яЁё]+$/)]],
         age: ['1', [Validators.required, Validators.pattern(/^[\d]+$/)]]
       })
@@ -76,4 +97,5 @@ export class BornComponent implements OnInit, OnDestroy {
     });
   }
 
+  public c() {}
 }

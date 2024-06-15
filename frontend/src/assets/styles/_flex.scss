@@ -14,6 +14,14 @@
   .align-items-center#{$prefix} {
     align-items: center;
   }
+
+  .flex-1#{$prefix} {
+    flex: 1;
+  }
+
+  .flex-0#{$prefix} {
+    flex: 0 0 auto;
+  }
 }
 
 @include flex-classes('');

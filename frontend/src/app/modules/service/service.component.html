@@ -9,6 +9,10 @@
 
   <section class="buttons-wrapper">
     <button [disabled]="active === 0" (click)="prev()">Назад</button>
-    <button [disabled]="active === steps?.length - 1 || !isValidStep()" (click)="next()">Далее</button>
+    @if (active < steps?.length - 1) {
+      <button [disabled]="!isValidStep()" (click)="next()">Далее</button>
+    } @else if (active === steps?.length - 1) {
+      <button (click)="save()">Сохранить</button>
+    }
   </section>
 </div>

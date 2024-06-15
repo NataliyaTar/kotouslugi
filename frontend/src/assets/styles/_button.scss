@@ -3,31 +3,39 @@ button {
   font-family: Lato, Arial, sans-serif;
   outline: none;
   border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 12px 38px;
-  text-align: center;
   font-size: 16px;
   line-height: 24px;
-  color: #ffffff;
-  background-color: #0D4CD3;
   cursor: pointer;
   white-space: nowrap;
 
-  &:hover,
-  &:focus {
+  &:not(.custom) {
+    border-radius: 8px;
+    padding: 12px 38px;
+    text-align: center;
     color: #ffffff;
-    background-color: #1D5DEB;
+    background-color: #0D4CD3;
+
+    &:hover, &:focus {
+      color: #ffffff;
+      background-color: #1D5DEB;
+    }
+
+    &:active {
+      color: #ffffff;
+      background-color: #0B40B3;
+    }
+
+    &:disabled {
+      color: #86909C;
+      background-color: #E5EAF5;
+      cursor: default;
+    }
   }
 
-  &:active {
-    color: #ffffff;
-    background-color: #0B40B3;
-  }
-
-  &:disabled {
-    color: #86909C;
-    background-color: #E5EAF5;
-    cursor: default;
+  &.custom {
+    background-color: transparent;
+    border: none;
+    padding: 0;
   }
 
   & + button {

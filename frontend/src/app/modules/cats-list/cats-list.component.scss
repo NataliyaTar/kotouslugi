@@ -1,0 +1,50 @@
+@use '../../../assets/styles/palette' as palette;
+
+.cats-list {
+  max-width: 800px;
+  margin-top: 48px;
+
+  .cat {
+    position: relative;
+
+    .image {
+      width: 48px;
+      margin-right: 12px;
+
+      &.female {
+        width: 64px;
+        margin-right: 0;
+      }
+    }
+
+    .sex, .breed {
+      color: palette.$color-telegrey-scuro;
+    }
+
+    button.custom {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .not-have-cat {
+    text-align: center;
+
+    .image {
+      max-width: 150px;
+      margin-bottom: 24px;
+    }
+
+    .text {
+      margin-top: 12px;
+    }
+  }
+
+  .button-wrapper {
+    margin-top: 32px;
+    text-align: right;
+  }
+}

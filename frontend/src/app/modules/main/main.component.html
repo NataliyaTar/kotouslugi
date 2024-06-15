@@ -1,13 +1,20 @@
 <section class="search-wrapper">
-  <div class="container flex-container-lg align-items-center-lg">
-    <img src="../../../assets/png/cats/search2.png" class="image">
-    <div class="search">
-      <div class="tags">
-        <div class="tag">Быстро</div>
-        <div class="tag">Удобно</div>
-        <div class="tag">Качественно</div>
+  <div class="container flex-container-lg">
+    <div class="search-part flex-container-lg align-items-center-lg flex-1-lg">
+      <img src="../../../assets/png/cats/search2.png" class="image">
+      <div class="search">
+        <div class="tags">
+          <div class="tag">Быстро</div>
+          <div class="tag">Удобно</div>
+          <div class="tag">Качественно</div>
+        </div>
+        <input type="text" placeholder="Поиск по услугам" [(ngModel)]="search">
       </div>
-      <input type="text" placeholder="Поиск по услугам" [(ngModel)]="search">
+    </div>
+
+    <div class="create-cat flex-0-lg">
+      <h4>Первый раз на котоуслугах или родились котята?</h4>
+      <p class="mt-24"><a [routerLink]="'/cats'">Зарегистрируй</a> нового котопользователя</p>
     </div>
   </div>
 </section>
@@ -22,20 +29,26 @@
   <section class="services-wrapper container">
     <div class="help flex-container-lg align-items-center-lg justify-between-lg">
       <h2>Котоуслуги</h2>
-      <p>Чтобы пользоваться услугами в полной мере, необходимо <a [routerLink]="'/service/born'">зарегистрировать</a> котят</p>
+      <p>Чтобы пользоваться услугами в полной мере, необходимо <a [routerLink]="'/cats'">зарегистрировать</a> котят</p>
     </div>
-    <div class="services grid-row">
-      @if (filteredService?.length) {
+    @if (!showServices) {
+      <div class="not-allowed">
+        <img src="../../../assets/png/cats/sad.png" class="image">
+        <h3>Упс...</h3>
+        <p class="text">У вас нет ни одного котика, зарегистрируйте его на портале</p>
+      </div>
+    } @else {
+      <div class="services grid-row">
         @for (service of filteredService; track $index) {
           <app-service [service]="service" class="col-2 col-lg-4"></app-service>
+        } @empty {
+          <div class="not-found col-2 col-lg-12">
+            <img src="../../../assets/png/cats/sad.png" class="image">
+            <h3>Упс...</h3>
+            <p class="text">Ничего не нашли</p>
+          </div>
         }
-      } @else {
-        <div class="not-found col-2 col-lg-12">
-          <img src="../../../assets/png/cats/sad.png" class="image">
-          <h3>Упс...</h3>
-          <p class="text">Ничего не нашли</p>
-        </div>
-      }
-    </div>
+      </div>
+    }
   </section>
 }
