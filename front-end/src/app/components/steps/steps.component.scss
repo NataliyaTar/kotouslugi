@@ -1,0 +1,63 @@
+@use '../../../assets/styles/_palette' as palette;
+
+.progress-wrapper {
+  .step {
+    padding: 8px 16px;
+    border: 1px solid palette.$color-divider;
+    border-bottom: none;
+    flex: auto;
+    background-color: #FFFFFF;
+
+    &:first-child {
+      border-radius: 12px 12px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 12px 12px;
+      border: 1px solid palette.$color-divider;
+    }
+
+    .icon {
+      width: 48px;
+      margin-right: 16px;
+    }
+
+    p {
+      color: palette.$color-telegrey-scuro;
+    }
+
+    &.active {
+      background-color: palette.$color-azzurro-alice;
+    }
+
+    &.done {
+      background-color: palette.$color-bg-disabled;
+
+      .icon {
+        filter: grayscale(1);
+      }
+
+      h6, p {
+        color: palette.$color-text-helper;
+      }
+    }
+  }
+
+  @media all and (min-width: 1216px) {
+    display: flex;
+
+    .step {
+      border: 1px solid palette.$color-divider;
+      border-left: none !important;
+
+      &:first-child {
+        border-radius: 12px 0 0 12px;
+        border: 1px solid palette.$color-divider !important;
+      }
+
+      &:last-child {
+        border-radius: 0 12px 12px 0;
+      }
+    }
+  }
+}

@@ -1,7 +1,14 @@
 <section class="search-wrapper">
   <div class="container flex-container-lg align-items-center-lg">
     <img src="../../../assets/png/cats/search2.png" class="image">
-    <input class="search" type="text" placeholder="Поиск по услугам" [(ngModel)]="search">
+    <div class="search">
+      <div class="tags">
+        <div class="tag">Быстро</div>
+        <div class="tag">Удобно</div>
+        <div class="tag">Качественно</div>
+      </div>
+      <input type="text" placeholder="Поиск по услугам" [(ngModel)]="search">
+    </div>
   </div>
 </section>
 
@@ -13,7 +20,10 @@
 
 @if (services?.length) {
   <section class="services-wrapper container">
-    <h2>Котоуслуги</h2>
+    <div class="help flex-container-lg align-items-center-lg justify-between-lg">
+      <h2>Котоуслуги</h2>
+      <p>Чтобы пользоваться услугами в полной мере, необходимо <a [routerLink]="'/service/born'">зарегистрировать</a> котят</p>
+    </div>
     <div class="services grid-row">
       @if (filteredService?.length) {
         @for (service of filteredService; track $index) {

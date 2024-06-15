@@ -23,6 +23,10 @@ input {
     opacity: 1;
   }
 
+  &:invalid {
+    background: rgba(238, 63, 88, 0.16);
+  }
+
   &::placeholder {
     color: palette.$color-blu-selvaggio;
   }

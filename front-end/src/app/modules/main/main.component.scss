@@ -2,6 +2,24 @@
   background: linear-gradient(182.54deg, #1F50E8 20.95%, #7996F0 134.42%);
   padding: 48px 0;
 
+  .container {
+    //max-width: 800px;
+  }
+
+  .tags {
+    margin-bottom: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .tag {
+      padding: 8px 12px;
+      background: #ffffff2b;
+      border-radius: 8px 8px 8px 4px;
+      color: #FFFFFF;
+    }
+  }
+
   .image {
     display: none;
   }
@@ -27,6 +45,10 @@
 .services-wrapper {
   margin-top: 48px;
 
+  .help {
+    margin-top: 16px;
+  }
+
   .services {
     margin-top: 32px;
     flex-wrap: wrap;
@@ -43,6 +65,12 @@
 
     .text {
       margin-top: 12px;
+    }
+  }
+
+  @media all and (min-width: 1216px) {
+    .help {
+      margin-top: 0;
     }
   }
 }

@@ -7,6 +7,7 @@ import { IBanner } from '@models/banner.model';
 import { ServiceComponent } from '@components/service/service.component';
 import { CatalogService } from '@services/catalog/catalog.service';
 import { IService } from '@models/service.model';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -16,6 +17,7 @@ import { IService } from '@models/service.model';
     FormsModule,
     CarouselComponent,
     ServiceComponent,
+    RouterModule,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
@@ -24,29 +26,7 @@ export class MainComponent implements OnInit {
 
   public search = '';
   public banners: IBanner[];
-  public services: IService[] = [
-    {
-      id: 'born',
-      icon: 'two-cats.png',
-      title: 'Регистрация рождения котят',
-      tag: 'Семья и дети',
-      description: 'При рождении трех и более котят, вы можете получить субсидии в виде пачки корма'
-    },
-    {
-      id: 'vet',
-      icon: 'sick.webp',
-      title: 'Запись на прием к ветеринару',
-      tag: 'Медицина',
-      description: 'Подходи ответственно к своему здоровью. Здоровый ты - здоровая страна'
-    },
-    {
-      id: 'spa',
-      icon: 'relax.png',
-      title: 'SPA-процедуры',
-      tag: 'Отдых и развлечение',
-      description: 'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры'
-    }
-  ];
+  public services: IService[];
 
   public get filteredService(): IService[] {
     return this.services.filter((item) => item.title.match(new RegExp(this.search, 'i')));
@@ -64,7 +44,7 @@ export class MainComponent implements OnInit {
     });
 
     this.catalogService.getServices().subscribe((res) => {
-      // this.services = res;
+      this.services = res;
     })
   }
 

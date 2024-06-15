@@ -1,0 +1,15 @@
+<div class="progress-wrapper">
+  @for (step of steps; track i; let i = $index) {
+    <div
+      class="step flex-container align-items-center"
+      [class.active]="activeStep === i"
+      [class.done]="activeStep > i"
+    >
+      <img [src]="'../../assets/svg/icons/' + step.icon" class="icon">
+      <div>
+        <h6>{{step.title}}</h6>
+        <p>{{step.text}}</p>
+      </div>
+    </div>
+  }
+</div>

@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class BannerService {
 
   constructor(
-    public http: HttpClient,
+    private http: HttpClient,
   ) { }
 
   public getBanners(prefix: string): Observable<IBanner[]> {

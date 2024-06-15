@@ -1,0 +1,36 @@
+<div class="fields-wrapper" [formGroup]="form">
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <div class="field">
+      <div>
+        <p class="label">Кличка</p>
+        @if (getControl('name').errors && getControl('name').touched) {
+          @if (getControl('name').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl('name').errors?.['pattern']) {
+            <p class="error">Допустимые символы: буквы русского алфавита</p>
+          }
+        }
+      </div>
+      <input formControlName="name" (invalid)="getControl('name').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Возраст</p>
+        @if (getControl('age').errors && getControl('age').touched) {
+          @if (getControl('age').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl('age').errors?.['pattern']) {
+            <p class="error">Допустимые символы: цифры</p>
+          }
+        }
+      </div>
+      <input formControlName="age">
+    </div>
+  </div>
+
+  <div class="" [hidden]="active !== 1">
+    <app-check-info></app-check-info>
+  </div>
+</div>

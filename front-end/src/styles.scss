@@ -3,8 +3,10 @@
 @import 'assets/styles/reset';
 @import 'assets/styles/fonts';
 @import 'assets/styles/input';
+@import 'assets/styles/button';
 @import 'assets/styles/flex';
 @import 'assets/styles/grid';
+@import 'assets/styles/field_for_steps';
 
 body, .app-root {
   display: flex;

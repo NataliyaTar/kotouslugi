@@ -1,1 +1,14 @@
-<p>service works!</p>
+<div class="container service-wrapper">
+  <section>
+    <app-steps [steps]="steps" [activeStep]="active"></app-steps>
+  </section>
+
+  <section class="form-wrapper">
+    <router-outlet></router-outlet>
+  </section>
+
+  <section class="buttons-wrapper">
+    <button [disabled]="active === 0" (click)="prev()">Назад</button>
+    <button [disabled]="active === steps?.length - 1 || !isValidStep()" (click)="next()">Далее</button>
+  </section>
+</div>

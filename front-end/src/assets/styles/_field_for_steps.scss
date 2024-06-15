@@ -1,0 +1,43 @@
+@use 'palette' as palette;
+
+.fields-wrapper {
+  padding: 24px;
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 4px #E3EBFC, 0 24px 48px rgba(230, 235, 245, 0.4);
+  border-radius: 12px;
+
+  .field-wrapper {
+    flex-direction: column;
+    gap: 32px;
+
+    &:not([hidden]) {
+      display: flex;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 100%;
+
+      .label {
+        margin-bottom: 4px;
+      }
+
+      .error {
+        margin-bottom: 4px;
+        color: palette.$color-gosred;
+      }
+    }
+  }
+
+  @media all and (min-width: 1216px) {
+    .field-wrapper {
+      flex-direction: row;
+
+      .field {
+        width: calc(100% / 2);
+      }
+    }
+  }
+}
