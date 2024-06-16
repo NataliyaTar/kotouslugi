@@ -1,6 +1,6 @@
 @use 'palette' as palette;
 
-input, select {
+input, select, textarea {
   width: 100%;
   height: 52px;
   text-overflow: ellipsis;
@@ -48,4 +48,9 @@ select {
     padding-right: 16px;
     background: palette.$color-input;
   }*/
+}
+
+textarea {
+  height: 120px;
+  resize: none;
 }

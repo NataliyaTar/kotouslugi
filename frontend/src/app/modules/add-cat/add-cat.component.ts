@@ -47,15 +47,13 @@ export class AddCatComponent implements OnInit {
 
   private initForm(): void {
     this.form = this.fb.group({
-      0: this.fb.group({
-        name: ['а', [Validators.required, Validators.pattern(/^[А-яЁё]+$/)]],
-        age: ['1', [Validators.required, Validators.pattern(/^[\d]+$/)]]
-      })
+      name: ['а', [Validators.required, Validators.pattern(/^[А-яЁё]+$/)]],
+      age: ['1', [Validators.required, Validators.pattern(/^[\d]+$/)]]
     });
   }
 
   public getControl(id: string): FormControl {
-    return this.form.get(`${this.active}.${id}`) as FormControl;
+    return this.form.get(id) as FormControl;
   }
 
   public isValidStep(): boolean {

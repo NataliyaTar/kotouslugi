@@ -1,1 +1,92 @@
-<p>vet works!</p>
+<div class="fields-wrapper" [formGroup]="form">
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <div class="field">
+      <div>
+        <p class="label">Выберите кота</p>
+        @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+        @for (option of optionsCat; track $index) {
+          <option [value]='option.id'>{{option.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Телефон для связи</p>
+        @if (getControl(0, 'telephone').errors && getControl(0, 'telephone').touched) {
+          @if (getControl(0, 'telephone').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl(0, 'telephone').errors?.['pattern']) {
+            <p class="error">Введите 11 цифр</p>
+          }
+        }
+      </div>
+      <input formControlName="telephone" placeholder="12345678901">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Email для связи</p>
+        @if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
+          <p class="error">Введите 11 цифр</p>
+        }
+      </div>
+      <input formControlName="email" type="email" placeholder="abc@dfg.ru">
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+    <div class="field">
+      <div>
+        <p class="label">Жалобы</p>
+        @if (getControl(1, 'anamnesis').errors && getControl(1, 'anamnesis').touched) {
+          @if (getControl(1, 'anamnesis').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl(1, 'anamnesis').errors?.['max'] && getControl(1, 'anamnesis').touched) {
+            <p class="error">Недопустимое количество символов</p>
+          }
+        }
+      </div>
+      <textarea formControlName="anamnesis"></textarea>
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+    <div class="field">
+      <div>
+        <p class="label">Специалист</p>
+        @if (getControl(2, 'doctor')?.errors?.['required'] && getControl(2, 'doctor')?.touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="doctor" (invalid)="getControl(2, 'doctor').invalid">
+        @for (doc of doctors; track $index) {
+          <option [value]='doc.id'>{{doc.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Дата</p>
+        @if (getControl(2, 'date').errors?.['required'] && getControl(2, 'date').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <input formControlName="date" type="date">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Время</p>
+        @if (getControl(2, 'time').errors?.['required'] && getControl(2, 'time').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <input formControlName="time" type="time">
+    </div>
+  </div>
+  <div class="" [hidden]="active !== 3">
+    <app-check-info></app-check-info>
+  </div>
+</div>

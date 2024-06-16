@@ -31,8 +31,8 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
   private idService: string;
   private subscriptions: Subscription[] = [];
 
-  public getControl(id: string): FormControl {
-    return this.form.get(`${this.active}.${id}`) as FormControl;
+  public getControl(step: number, id: string): FormControl {
+    return this.form.get(`${step}.${id}`) as FormControl;
   }
 
   constructor(
@@ -87,8 +87,9 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
         passport: ['', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
       }),
       2: this.fb.group({
-        name: ['а', [Validators.required, Validators.pattern(/^[А-яЁё]+$/)]],
-        age: ['1', [Validators.required, Validators.pattern(/^[\d]+$/)]]
+        place: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s]+$/)]],
+        date: ['', [Validators.required]],
+        time: ['', [Validators.required]]
       })
     });
 
@@ -97,5 +98,4 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     });
   }
 
-  public c() {}
 }
