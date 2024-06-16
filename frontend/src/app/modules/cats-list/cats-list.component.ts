@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Component, OnInit } from '@angular/core';
 import { CatService } from '@services/cat/cat.service';
 import { take } from 'rxjs';

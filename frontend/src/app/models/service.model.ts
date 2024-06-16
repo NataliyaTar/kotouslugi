@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 export interface IService {
   id: string;
   icon: string;

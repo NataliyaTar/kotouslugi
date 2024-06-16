@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CatsListComponent } from './cats-list.component';

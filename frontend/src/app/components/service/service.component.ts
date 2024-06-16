@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Component, Input } from '@angular/core';
 import { IService } from '@models/service.model';
 import { RouterModule } from '@angular/router';

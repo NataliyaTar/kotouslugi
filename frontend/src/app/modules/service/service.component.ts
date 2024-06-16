@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StepsComponent } from '@components/steps/steps.component';
 import { IStep } from '@models/step.model';

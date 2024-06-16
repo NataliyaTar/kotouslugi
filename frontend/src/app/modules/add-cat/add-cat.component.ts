@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Component, OnInit } from '@angular/core';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { IStep } from '@models/step.model';

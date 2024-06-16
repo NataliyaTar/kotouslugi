@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 export interface ICat {
   id: number;
   name: string;

@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Component, Input } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { IStep } from '@models/step.model';

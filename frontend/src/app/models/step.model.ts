@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { UntypedFormGroup } from '@angular/forms';
 
 export interface IStep {

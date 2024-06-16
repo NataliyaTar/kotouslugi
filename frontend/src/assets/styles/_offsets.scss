@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 @mixin offsets($prefix) {
   @for $i from 0 through 24 {
     .mt#{$prefix}-#{$i * 4} {

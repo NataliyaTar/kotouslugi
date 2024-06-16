@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 export interface IBanner {
   bg: string;
   title: string;

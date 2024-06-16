@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Component, Input } from '@angular/core';
 import { NgxTCarouselComponent } from 'ngx-tcarousel';
 import { IBanner } from '@models/banner.model';

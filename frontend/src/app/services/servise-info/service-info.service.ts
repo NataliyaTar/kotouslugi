@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { IActiveStep, IServiceForms, IStep } from '@models/step.model';

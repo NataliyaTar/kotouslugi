@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Injectable } from '@angular/core';
 import { IBanner } from '@models/banner.model';
 import { Observable } from 'rxjs';
