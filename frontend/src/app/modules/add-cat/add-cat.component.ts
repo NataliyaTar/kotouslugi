@@ -7,6 +7,16 @@ import { take } from 'rxjs';
 import { StepsComponent } from '@components/steps/steps.component';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
+import { IPreview } from '@models/common.model';
+import { ConstantsService } from '@services/constants/constants.service';
+
+export type TForm = 'name' | 'age' | 'sex' | 'breed';
+export enum FormMap {
+  name = 'Кличка',
+  age = 'Возраст',
+  sex = 'Пол',
+  breed = 'Порода'
+}
 
 @Component({
   selector: 'app-add-cat',
@@ -24,16 +34,19 @@ export class AddCatComponent implements OnInit {
   public steps: IStep[];
   public active = 0;
   public form: UntypedFormGroup;
+  public sexOptions = this.constantsService.sexOptions;
+  public breedOptions = this.constantsService.breedOptions;
 
   private idService = 'add_cat';
 
-  public get getResult() {
-    return this.form.getRawValue();
+  public get getResult(): Array<IPreview[]> {
+    return this.serviceInfo.prepareData({0: this.form.getRawValue()}, this.steps, FormMap);
   }
 
   constructor(
     private serviceInfo: ServiceInfoService,
     private fb: FormBuilder,
+    private constantsService: ConstantsService,
   ) {
   }
 
@@ -49,8 +62,10 @@ export class AddCatComponent implements OnInit {
 
   private initForm(): void {
     this.form = this.fb.group({
-      name: ['а', [Validators.required, Validators.pattern(/^[А-яЁё]+$/)]],
-      age: ['1', [Validators.required, Validators.pattern(/^[\d]+$/)]]
+      name: ['', [Validators.required, Validators.pattern(/^[А-яЁё]+$/)]],
+      age: ['', [Validators.required, Validators.pattern(/^[\d]+$/)]],
+      sex: [this.sexOptions[0], [Validators.required]],
+      breed: [this.breedOptions[0], [Validators.required]]
     });
   }
 
@@ -71,7 +86,7 @@ export class AddCatComponent implements OnInit {
   }
 
   public save(): void {
-
+    console.log('save');
   }
 
 }

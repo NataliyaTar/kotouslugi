@@ -9,9 +9,17 @@ import { ServiceInfoService } from '@services/servise-info/service-info.service'
 import { Subscription, take } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
-import { CatService } from '@services/cat/cat.service';
-import { IValue } from '@models/cat.model';
+import { ConstantsService } from '@services/constants/constants.service';
+import { IValueCat } from '@models/cat.model';
 import { IStep } from '@models/step.model';
+
+export enum FormMap {
+  cat  = 'Кличка',
+  passport = 'Паспорт',
+  place = 'Адрес места бракосочетания',
+  date = 'Дата',
+  time = 'Время'
+}
 
 @Component({
   selector: 'app-born',
@@ -27,28 +35,40 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
 
   public form: UntypedFormGroup;
   public active: number;
-  public optionsCat: IValue[] = [];
-  public steps: IStep[];
+  public optionsCat: IValueCat[];
 
   private idService: string;
+  private steps: IStep[];
   private subscriptions: Subscription[] = [];
 
   public get getResult() {
-    return this.form.getRawValue();
+    return this.serviceInfo.prepareData(this.form.getRawValue(), this.steps, FormMap);
   }
 
   constructor(
     private fb: FormBuilder,
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
-    private catService: CatService,
+    private constantService: ConstantsService,
   ) {
   }
 
   public ngOnInit(): void {
+    this.constantService.getCatOptions().pipe(
+      take(1)
+    ).subscribe(res => {
+      this.optionsCat = res;
+    });
+
     this.subscriptions.push(
       this.route.data.subscribe(res => {
         this.idService = res['idService'];
+
+        this.serviceInfo.getSteps(this.idService).pipe(
+          take(1)
+        ).subscribe(res => {
+          this.steps = res;
+        });
 
         this.subscriptions.push(
           this.serviceInfo.activeStep.subscribe(res => {
@@ -57,23 +77,6 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
         );
 
         this.initForm();
-
-        this.catService.getCatList().pipe(
-          take(1)
-        ).subscribe(res => {
-          this.optionsCat = res.map((item) => {
-            return {
-              id: item.id,
-              text: item.name
-            }
-          });
-        });
-
-        this.serviceInfo.getSteps(this.idService).pipe(
-          take(1)
-        ).subscribe(res => {
-          this.steps = res;
-        });
       })
     );
   }
@@ -87,17 +90,17 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat1: ['', [Validators.required]],
-        passport: ['1111 111111', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]]
+        cat: [this.optionsCat[0], [Validators.required]],
+        passport: ['', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]]
       }),
       1: this.fb.group({
-        cat2: ['', [Validators.required]],
-        passport: ['1111 111111', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
+        cat: [this.optionsCat[0], [Validators.required]],
+        passport: ['', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
       }),
       2: this.fb.group({
-        place: ['фф', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s]+$/)]],
-        date: ['2024-11-03', [Validators.required]],
-        time: ['12:30', [Validators.required]]
+        place: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]+$/)]],
+        date: ['', [Validators.required]],
+        time: ['', [Validators.required]]
       })
     });
 

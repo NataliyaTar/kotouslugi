@@ -1,1 +1,31 @@
 // Файл не трогаем
+
+@use '../../../assets/styles/palette' as palette;
+
+.group {
+  border-radius: 12px;
+  border: 1px dashed palette.$color-divider;
+  padding: 24px;
+
+  .title {
+    margin-bottom: 16px;
+  }
+
+  .field {
+    display: flex;
+
+    .name {
+      min-width: 100px;
+      color: palette.$color-telegrey-scuro;
+      margin-right: 16px;
+    }
+
+    + .field {
+      margin-top: 16px
+    }
+  }
+
+  + .group {
+    margin-top: 24px
+  }
+}

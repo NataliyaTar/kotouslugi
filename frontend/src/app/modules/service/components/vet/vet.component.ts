@@ -1,19 +1,33 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
-import { IValue } from '@models/cat.model';
+import { IValueCat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
 import { CatService } from '@services/cat/cat.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
+import { IValue } from '@models/common.model';
+import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
+import { JsonPipe } from '@angular/common';
+
+export enum FormMap {
+  cat  = 'Кличка',
+  telephone = 'Телефон для связи',
+  email = 'Email для связи',
+  anamnesis = 'Жалобы',
+  doctor = 'Специалист',
+  date = 'Дата',
+  time = 'Время'
+}
 
 @Component({
   selector: 'app-vet',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    CheckInfoComponent
+    CheckInfoComponent,
+    JsonPipe
   ],
   templateUrl: './vet.component.html',
   styleUrl: './vet.component.scss'
@@ -22,36 +36,15 @@ export class VetComponent implements OnInit, OnDestroy {
 
   public form: UntypedFormGroup;
   public active: number;
-  public optionsCat: IValue[] = [];
-  public doctors: IValue[] = [
-    {
-      id: 0,
-      text: 'Терапевт'
-    },
-    {
-      id: 1,
-      text: 'Ортопед'
-    },
-    {
-      id: 2,
-      text: 'Офтальмолог'
-    },
-    {
-      id: 3,
-      text: 'Хирург'
-    },
-    {
-      id: 4,
-      text: 'Дерматолог'
-    }
-  ];
-  public steps: IStep[];
+  public optionsCat: IValueCat[] = [];
+  public doctorOptions = this.constantService.doctorOptions;
 
   private idService: string;
+  private steps: IStep[];
   private subscriptions: Subscription[] = [];
 
   public get getResult() {
-    return this.form.getRawValue();
+    return this.serviceInfo.prepareData(this.form.getRawValue(), this.steps, FormMap);
   }
 
   constructor(
@@ -59,13 +52,26 @@ export class VetComponent implements OnInit, OnDestroy {
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private catService: CatService,
+    private constantService: ConstantsService,
   ) {
   }
 
   public ngOnInit(): void {
+    this.constantService.getCatOptions().pipe(
+      take(1)
+    ).subscribe((res) => {
+      this.optionsCat = res;
+    });
+
     this.subscriptions.push(
       this.route.data.subscribe(res => {
         this.idService = res['idService'];
+
+        this.serviceInfo.getSteps(this.idService).pipe(
+          take(1)
+        ).subscribe(res => {
+          this.steps = res;
+        });
 
         this.subscriptions.push(
           this.serviceInfo.activeStep.subscribe(res => {
@@ -74,23 +80,6 @@ export class VetComponent implements OnInit, OnDestroy {
         );
 
         this.initForm();
-
-        this.catService.getCatList().pipe(
-          take(1)
-        ).subscribe(res => {
-          this.optionsCat = res.map((item) => {
-            return {
-              id: item.id,
-              text: item.name
-            }
-          });
-        });
-
-        this.serviceInfo.getSteps(this.idService).pipe(
-          take(1)
-        ).subscribe(res => {
-          this.steps = res;
-        });
       })
     );
   }
@@ -104,15 +93,15 @@ export class VetComponent implements OnInit, OnDestroy {
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: ['а', [Validators.required]],
-        telephone: ['11111111111', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['dd@ff.ff', [Validators.email]]
+        cat: [this.optionsCat[0], [Validators.required]],
+        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        email: ['', [Validators.email]]
       }),
       1: this.fb.group({
         anamnesis: ['', [Validators.required, Validators.max(256)]]
       }),
       2: this.fb.group({
-        doctor: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s]+$/)]],
+        doctor: [this.doctorOptions[0], [Validators.required]],
         date: ['', [Validators.required]],
         time: ['', [Validators.required]]
       })
@@ -121,10 +110,6 @@ export class VetComponent implements OnInit, OnDestroy {
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
     });
-
-    this.form.get('2.date').valueChanges.subscribe(res => {
-      console.log(res);
-    })
   }
 
   public getControl(step: number, id: string): FormControl {

@@ -3,11 +3,11 @@
     <div class="field">
       <div>
         <p class="label">Выберите жениха</p>
-        @if (getControl(0, 'cat1').errors?.['required'] && getControl(0, 'cat1').touched) {
+        @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="cat1" (invalid)="getControl(0, 'cat1').invalid">
+      <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
         @for (option of optionsCat; track $index) {
           <option [value]='option.id'>{{option.text}}</option>
         }
@@ -25,18 +25,19 @@
           }
         }
       </div>
-      <input formControlName="passport" placeholder="0000 000000">
+      <input formControlName="passport" placeholder="0000 000000"
+             (invalid)="getControl(0, 'passport').invalid">
     </div>
   </div>
   <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
     <div class="field">
       <div>
         <p class="label">Выберите невесту</p>
-        @if (getControl(1, 'cat2').errors?.['required'] && getControl(1, 'cat2').touched) {
+        @if (getControl(1, 'cat').errors?.['required'] && getControl(1, 'cat').touched) {
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="cat2" (invalid)="getControl(1, 'cat2').invalid">
+      <select formControlName="cat" (invalid)="getControl(1, 'cat').invalid">
         @for (option of optionsCat; track $index) {
           <option [value]='option.id'>{{option.text}}</option>
         }
@@ -54,7 +55,8 @@
           }
         }
       </div>
-      <input formControlName="passport" placeholder="0000 000000">
+      <input formControlName="passport" placeholder="0000 000000"
+             (invalid)="getControl(1, 'passport').invalid">
     </div>
   </div>
   <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
@@ -70,7 +72,7 @@
           }
         }
       </div>
-      <input formControlName="place">
+      <input formControlName="place" (invalid)="getControl(2, 'place').invalid">
     </div>
     <div class="field">
       <div>
@@ -79,7 +81,7 @@
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="date" type="date">
+      <input formControlName="date" type="date" (invalid)="getControl(2, 'date').invalid">
     </div>
     <div class="field">
       <div>
@@ -88,11 +90,11 @@
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="time" type="time">
+      <input formControlName="time" type="time" (invalid)="getControl(2, 'time').invalid">
     </div>
   </div>
 
   @if (active === 3) {
-    <app-check-info [data]="getResult" [steps]="steps"></app-check-info>
+    <app-check-info [data]="getResult"></app-check-info>
   }
 </div>

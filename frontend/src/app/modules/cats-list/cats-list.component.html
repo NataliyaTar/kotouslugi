@@ -8,13 +8,13 @@
     @for (cat of catsList; track $index) {
     <div class="cat shadow-block col-2 col-lg-6">
       <div class="flex-container align-items-center">
-        <img [src]="'../../../assets/png/cats/' + cat.sex + '.png'" class="image {{cat.sex}}">
+        <img [src]="'../../../assets/png/cats/' + cat.sex.id + '.png'" class="image {{cat.sex.id}}">
         <div>
           <h5>{{cat.name}}</h5>
-          <p class="mt-4 sex">{{cat.sex === 'male' ? 'кот' : 'кошка'}}</p>
+          <p class="mt-4 sex">{{getSex(cat.sex.id)}}</p>
         </div>
       </div>
-      <p class="mt-16"><span class="breed">Порода:</span> {{getBreed(cat.breed)}}</p>
+      <p class="mt-16"><span class="breed">Порода:</span> {{getBreed(cat.breed.id)}}</p>
       <button class="custom" (click)="deleteCat(cat.id)">
         <img src="../../../assets/svg/icons/delete.svg">
       </button>

@@ -3,7 +3,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CatService } from '@services/cat/cat.service';
 import { take } from 'rxjs';
-import { EBreedMap, ICat, TBreed } from '@models/cat.model';
+import { EBreedMap, ICat, TBreed, ESexMap, TSex } from '@models/cat.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 export class CatsListComponent implements OnInit {
 
   public catsList: ICat[];
+  public ESexMap = ESexMap;
 
   constructor(
     private catService: CatService,
@@ -33,6 +34,10 @@ export class CatsListComponent implements OnInit {
 
   public getBreed(breedId: TBreed): EBreedMap {
     return this.catService.getBreedMap(breedId);
+  }
+
+  public getSex(sexId: TSex): ESexMap {
+    return this.catService.getSexMap(sexId);
   }
 
   public addCat(): void {

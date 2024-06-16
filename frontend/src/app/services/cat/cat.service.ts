@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { EBreedMap, ICat, TBreed } from '@models/cat.model';
+import { EBreedMap, ESexMap, ICat, TBreed, TSex } from '@models/cat.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,31 +22,33 @@ export class CatService {
         id: 0,
         name: 'Феликс',
         age: '1',
-        sex: 'male',
-        breed: 'british_shorthair'
+        sex: {
+          id: 'male',
+          text: 'Кот'
+        },
+        breed: {
+          id: 'siamese',
+          text: 'Сиамская'
+        }
       },
       {
         id: 1,
         name: 'Снежка',
         age: '2',
-        sex: 'female',
-        breed: 'munchkin'
-      },
-      {
-        id: 3,
-        name: 'Феликс',
-        age: '1',
-        sex: 'male',
-        breed: 'british_shorthair'
-      },
-      {
-        id: 4,
-        name: 'Снежка',
-        age: '2',
-        sex: 'female',
-        breed: 'munchkin'
+        sex: {
+          id: 'female',
+          text: 'Кошка'
+        },
+        breed: {
+          id: 'british_shorthair',
+          text: 'Британская короткошерстая'
+        }
       }
-    ]);
+    ] as ICat[]);
+  }
+
+  public getSexMap(sexId: TSex): ESexMap {
+    return ESexMap[sexId];
   }
 
   public getBreedMap(breedId: TBreed): EBreedMap {
@@ -60,4 +62,5 @@ export class CatService {
   public deleteCat(id: number) {
 
   }
+
 }

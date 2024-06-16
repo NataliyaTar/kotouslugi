@@ -1,14 +1,16 @@
 <!--Файл не трогаем-->
 
-@for (step of steps; let i = $index; track i) {
-  @if (i !== $count - 1) {
+@for (step of data; let i = $index; track i) {
   <div class="group">
-    <h5>{{step.title}}</h5>
-    @for (item of getStepInfo(i); track $index) {
-      <div>{{item}}</div>
+    @for (item of step; track $index) {
+      @if (item['title']) {
+        <h5 class="title">{{item['title']}}</h5>
+      } @else {
+        <div class="field">
+          <p class="name">{{item['name']}}:</p>
+          <p>{{item['value']}}</p>
+        </div>
+      }
     }
   </div>
-  }
 }
-
-<p>{{data | json}}</p>

@@ -4,13 +4,25 @@ export interface ICat {
   id: number;
   name: string;
   age: string;
-  sex: 'male' | 'female';
-  breed: TBreed;
+  sex: IValueSex;
+  breed: IValueBreed;
 }
 
-export interface IValue {
-  id: number;
-  text: string;
+export interface IValueSex {
+  id: TSex;
+  text: ESexMap;
+}
+
+export type TSex = 'male' | 'female';
+
+export enum ESexMap {
+  male = 'Кот',
+  female = 'Кошка'
+}
+
+export interface IValueBreed {
+  id: TBreed;
+  text: EBreedMap;
 }
 
 export type TBreed = 'siamese' | 'british_shorthair' | 'maine_coon' | 'persian' | 'sphinx' | 'scottish_fold'
@@ -25,4 +37,9 @@ export enum EBreedMap {
   scottish_fold = 'Британская вислоухая',
   russian_blue = 'Русская голубая',
   munchkin = 'Манчкин',
+}
+
+export interface IValueCat {
+  id: number;
+  text: string;
 }

@@ -6,8 +6,8 @@
   },
   {
     "icon": "healing.svg",
-    "title": "Жалобы",
-    "text": "Опишите что беспокоит"
+    "title": "Анамнез",
+    "text": "Опишите свое состояние и что беспокоит"
   },
   {
     "icon": "medical_services.svg",

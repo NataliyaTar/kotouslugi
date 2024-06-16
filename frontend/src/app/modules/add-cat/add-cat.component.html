@@ -34,12 +34,38 @@
               }
             }
           </div>
-          <input formControlName="age">
+          <input formControlName="age" (invalid)="getControl('age').invalid">
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">Пол</p>
+            @if (getControl('sex')?.errors?.['required'] && getControl('sex')?.touched) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+          </div>
+          <select formControlName="sex" (invalid)="getControl('sex').invalid">
+            @for (item of sexOptions; track $index) {
+              <option [value]="item">{{item.text}}</option>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">Порода</p>
+            @if (getControl('breed')?.errors?.['required'] && getControl('breed')?.touched) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+          </div>
+          <select formControlName="breed" (invalid)="getControl('breed').invalid">
+            @for (item of breedOptions; track $index) {
+              <option [value]="item">{{item.text}}</option>
+            }
+          </select>
         </div>
       </div>
 
       @if (active === 1) {
-        <app-check-info [data]="getResult" [steps]="steps"></app-check-info>
+        <app-check-info [data]="getResult"></app-check-info>
       }
     </div>
   </section>
