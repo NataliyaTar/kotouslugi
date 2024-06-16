@@ -27,7 +27,7 @@ export class AddCatComponent implements OnInit {
 
   private idService = 'add_cat';
 
-  public getResult() {
+  public get getResult() {
     return this.form.getRawValue();
   }
 

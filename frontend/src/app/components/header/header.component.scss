@@ -6,7 +6,6 @@ header {
   padding: 12px 0;
   background-color: #fff;
   box-shadow: 0 2px 2px #9daccf14;
-  // z-index: 4;
   position: relative;
 
   .header-wrapper {
@@ -22,6 +21,10 @@ header {
       .red {
         color: palette.$color-gosred;
       }
+    }
+
+    .cats {
+      margin-right: 24px;
     }
   }
 }

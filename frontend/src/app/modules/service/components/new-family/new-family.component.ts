@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { CatService } from '@services/cat/cat.service';
 import { IValue } from '@models/cat.model';
+import { IStep } from '@models/step.model';
 
 @Component({
   selector: 'app-born',
@@ -27,12 +28,13 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup;
   public active: number;
   public optionsCat: IValue[] = [];
+  public steps: IStep[];
 
   private idService: string;
   private subscriptions: Subscription[] = [];
 
-  public getControl(step: number, id: string): FormControl {
-    return this.form.get(`${step}.${id}`) as FormControl;
+  public get getResult() {
+    return this.form.getRawValue();
   }
 
   constructor(
@@ -66,6 +68,12 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
             }
           });
         });
+
+        this.serviceInfo.getSteps(this.idService).pipe(
+          take(1)
+        ).subscribe(res => {
+          this.steps = res;
+        });
       })
     );
   }
@@ -80,22 +88,26 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       0: this.fb.group({
         cat1: ['', [Validators.required]],
-        passport: ['', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]]
+        passport: ['1111 111111', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]]
       }),
       1: this.fb.group({
         cat2: ['', [Validators.required]],
-        passport: ['', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
+        passport: ['1111 111111', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
       }),
       2: this.fb.group({
-        place: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s]+$/)]],
-        date: ['', [Validators.required]],
-        time: ['', [Validators.required]]
+        place: ['фф', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s]+$/)]],
+        date: ['2024-11-03', [Validators.required]],
+        time: ['12:30', [Validators.required]]
       })
     });
 
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
     });
+  }
+
+  public getControl(step: number, id: string): FormControl {
+    return this.form.get(`${step}.${id}`) as FormControl;
   }
 
 }

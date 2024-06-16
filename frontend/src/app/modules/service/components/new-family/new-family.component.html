@@ -91,7 +91,8 @@
       <input formControlName="time" type="time">
     </div>
   </div>
-  <div class="" [hidden]="active !== 3">
-    <app-check-info></app-check-info>
-  </div>
+
+  @if (active === 3) {
+    <app-check-info [data]="getResult" [steps]="steps"></app-check-info>
+  }
 </div>

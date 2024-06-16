@@ -6,6 +6,7 @@ import { ServiceInfoService } from '@services/servise-info/service-info.service'
 import { ActivatedRoute } from '@angular/router';
 import { CatService } from '@services/cat/cat.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
+import { IStep } from '@models/step.model';
 
 @Component({
   selector: 'app-vet',
@@ -44,12 +45,13 @@ export class VetComponent implements OnInit, OnDestroy {
       text: 'Дерматолог'
     }
   ];
+  public steps: IStep[];
 
   private idService: string;
   private subscriptions: Subscription[] = [];
 
-  public getControl(step: number, id: string): FormControl {
-    return this.form.get(`${step}.${id}`) as FormControl;
+  public get getResult() {
+    return this.form.getRawValue();
   }
 
   constructor(
@@ -82,6 +84,12 @@ export class VetComponent implements OnInit, OnDestroy {
               text: item.name
             }
           });
+        });
+
+        this.serviceInfo.getSteps(this.idService).pipe(
+          take(1)
+        ).subscribe(res => {
+          this.steps = res;
         });
       })
     );
@@ -117,6 +125,10 @@ export class VetComponent implements OnInit, OnDestroy {
     this.form.get('2.date').valueChanges.subscribe(res => {
       console.log(res);
     })
+  }
+
+  public getControl(step: number, id: string): FormControl {
+    return this.form.get(`${step}.${id}`) as FormControl;
   }
 
 }
