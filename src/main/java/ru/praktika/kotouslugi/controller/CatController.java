@@ -15,7 +15,7 @@ public class CatController {
     @Autowired
     private CatService catService;
 
-    @RequestMapping(value = "listCat", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "listCat", method = RequestMethod.GET, produces = "application/json")
     public List<Cat> listCat() {
         List<Cat> cats = catService.listCat();
         return cats;

@@ -1,3 +1,11 @@
+-- cat
+INSERT INTO cat
+  values (0,
+          'Феликс',
+          '1',
+          'male',
+          'british_shorthair');
+
 -- service
 INSERT INTO service
 values (0,

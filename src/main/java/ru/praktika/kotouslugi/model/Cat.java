@@ -13,6 +13,8 @@ public class Cat {
     private Long id;
     private String name;
     private String age;
+    private String sex;
+    private String breed;
 
     public Long getId() {
         return id;
@@ -34,7 +36,13 @@ public class Cat {
         return age;
     }
 
-    public void setAge(String age) {
-        this.age = age;
-    }
+    public void setAge(String age) {this.age = age;}
+
+    public String getSex() {return this.sex;}
+
+    public void setSex(String sex) {this.sex = sex;}
+
+    public String getBreed() {return this.breed;}
+
+    public void setBreed(String breed) {this.sex = breed;}
 }

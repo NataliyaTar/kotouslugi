@@ -10,12 +10,14 @@ import { EBreedMap, ESexMap, ICat, TBreed, TSex } from '@models/cat.model';
 })
 export class CatService {
 
+  private catApi = '/catService/';
+
   constructor(
     public http: HttpClient,
   ) { }
 
   public getCatList(): Observable<ICat[]> {
-    // return this.http.get<ICat[]>(``);
+    //  return this.http.get<ICat[]>(`${this.catApi}listCat`);
     // return of([]);
     return of([
       {
@@ -44,7 +46,7 @@ export class CatService {
           text: 'Британская короткошерстая'
         }
       }
-    ] as ICat[]);
+    ] as ICat[]);*/
   }
 
   public getSexMap(sexId: TSex): ESexMap {
