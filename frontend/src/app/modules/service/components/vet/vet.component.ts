@@ -6,7 +6,6 @@ import { ServiceInfoService } from '@services/servise-info/service-info.service'
 import { ActivatedRoute } from '@angular/router';
 import { CatService } from '@services/cat/cat.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
-import { IValue } from '@models/common.model';
 import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';

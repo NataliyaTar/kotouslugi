@@ -1,0 +1,29 @@
+// Файл не трогаем
+
+@use '../../../assets/styles/palette' as palette;
+
+.footer-wrapper {
+  background: #eff5f9;
+  padding: 48px;
+
+  .footer-link {
+    display: inline-block;
+    font-size: 18px;
+    color: palette.$color-telegrey-scuro;
+    margin-top: 24px;
+
+    &:hover {
+      color: palette.$color-summer-night;
+    }
+
+    @media all and (min-width: 1216px) {
+      margin-top: 0;
+    }
+  }
+
+  @media all and (min-width: 1216px) {
+    .link-wrapper {
+      gap: 24px;
+    }
+  }
+}

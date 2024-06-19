@@ -12,10 +12,9 @@
 @import 'assets/styles/field_for_steps';
 @import 'assets/styles/main';
 
-body, .app-root {
-  display: flex;
+body, app-root {
+  display: block;
   min-height: 100vh;
-  flex-direction: column;
   background: palette.$color-background;
 }
 

@@ -1,1 +1,14 @@
 // Файл не трогаем
+
+.page-wrapper {
+  margin-top: 48px;
+  max-width: 800px;
+
+  .order-wrapper {
+    margin-top: 32px;
+
+    .order + .order {
+      margin-top: 24px;
+    }
+  }
+}

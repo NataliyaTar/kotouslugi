@@ -1,5 +1,17 @@
 // Файл не трогаем
 
-.content {
-  margin-bottom: 64px;
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  app-header, app-footer {
+    flex: 0 0 auto;
+  }
+
+  .content {
+    margin-bottom: 64px;
+    flex: 1 0 auto;
+  }
 }
+

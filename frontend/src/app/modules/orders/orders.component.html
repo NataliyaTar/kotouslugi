@@ -1,3 +1,10 @@
 <!--Файл не трогаем-->
+<div class="container page-wrapper">
+  <h2>Список заявок</h2>
 
-<p>orders works!</p>
+  <div class="order-wrapper">
+    @for (i of [1, 2, 3]; track $index) {
+      <div class="order shadow-block">{{i}}</div>
+    }
+  </div>
+</div>
