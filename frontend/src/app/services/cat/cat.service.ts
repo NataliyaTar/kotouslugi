@@ -30,11 +30,17 @@ export class CatService {
   }
 
   public addCat() {
+    return this.http.post<ICat>(`${this.catApi}addCat`, {
 
+    });
   }
 
   public deleteCat(id: number) {
-
+    return this.http.delete<ICat>(`${this.catApi}deleteCat`, {
+      params: {
+        id
+      }
+    });
   }
 
 }

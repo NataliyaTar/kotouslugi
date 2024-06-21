@@ -9,6 +9,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Valida
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { IPreview } from '@models/common.model';
 import { ConstantsService } from '@services/constants/constants.service';
+import { CatService } from '@services/cat/cat.service';
 
 export type TForm = 'name' | 'age' | 'sex' | 'breed';
 export enum FormMap {
@@ -47,6 +48,7 @@ export class AddCatComponent implements OnInit {
     private serviceInfo: ServiceInfoService,
     private fb: FormBuilder,
     private constantsService: ConstantsService,
+    private catService: CatService,
   ) {
   }
 
@@ -86,7 +88,7 @@ export class AddCatComponent implements OnInit {
   }
 
   public save(): void {
-    console.log('save');
+    this.catService.addCat();
   }
 
 }

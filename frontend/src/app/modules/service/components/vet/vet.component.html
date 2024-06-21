@@ -1,44 +1,49 @@
-<div class="fields-wrapper" [formGroup]="form">
-  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
-    <div class="field">
-      <div>
-        <p class="label">Выберите кота</p>
-        @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
-          <p class="error">Поле обязательно для заполнения</p>
-        }
-      </div>
-      <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
-        @for (option of optionsCat; track $index) {
-          <option [value]="option">{{option.text}}</option>
-        }
-      </select>
-    </div>
-    <div class="field">
-      <div>
-        <p class="label">Телефон для связи</p>
-        @if (getControl(0, 'telephone').errors && getControl(0, 'telephone').touched) {
-          @if (getControl(0, 'telephone').errors?.['required']) {
+<!--Файл не трогаем-->
+
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
             <p class="error">Поле обязательно для заполнения</p>
           }
-          @if (getControl(0, 'telephone').errors?.['pattern']) {
+        </div>
+        <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+          @for (option of optionsCat; track $index) {
+            <option [value]="option">{{option.text}}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Телефон для связи</p>
+          @if (getControl(0, 'telephone').errors && getControl(0, 'telephone').touched) {
+            @if (getControl(0, 'telephone').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(0, 'telephone').errors?.['pattern']) {
+              <p class="error">Введите 11 цифр</p>
+            }
+          }
+        </div>
+        <input formControlName="telephone" placeholder="12345678901"
+              (invalid)="getControl(0, 'telephone').invalid">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Email для связи</p>
+          @if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
             <p class="error">Введите 11 цифр</p>
           }
-        }
+        </div>
+        <input formControlName="email" type="email" placeholder="abc@dfg.ru"
+              (invalid)="getControl(0, 'email').invalid">
       </div>
-      <input formControlName="telephone" placeholder="12345678901"
-             (invalid)="getControl(0, 'telephone').invalid">
     </div>
-    <div class="field">
-      <div>
-        <p class="label">Email для связи</p>
-        @if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
-          <p class="error">Введите 11 цифр</p>
-        }
-      </div>
-      <input formControlName="email" type="email" placeholder="abc@dfg.ru"
-             (invalid)="getControl(0, 'email').invalid">
-    </div>
-  </div>
   <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
     <div class="field">
       <div>
@@ -59,7 +64,6 @@
     <div class="field">
       <div>
         <p class="label">Специалист</p>
-        {{getControl(2, 'doctor')?.errors | json}}
         @if (getControl(2, 'doctor')?.errors?.['required'] && getControl(2, 'doctor')?.touched) {
           <p class="error">Поле обязательно для заполнения</p>
         }
@@ -73,7 +77,6 @@
     <div class="field">
       <div>
         <p class="label">Дата</p>
-        {{getControl(2, 'date').errors}}
         @if (getControl(2, 'date').errors?.['required'] && getControl(2, 'date').touched) {
           <p class="error">Поле обязательно для заполнения</p>
         }
@@ -83,7 +86,6 @@
     <div class="field">
       <div>
         <p class="label">Время</p>
-        {{getControl(2, 'time').errors}}
         @if (getControl(2, 'time').errors?.['required'] && getControl(2, 'time').touched) {
           <p class="error">Поле обязательно для заполнения</p>
         }
@@ -96,3 +98,4 @@
     <app-check-info [data]="getResult"></app-check-info>
   }
 </div>
+}

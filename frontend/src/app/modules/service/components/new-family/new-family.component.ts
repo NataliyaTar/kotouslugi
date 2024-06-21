@@ -1,3 +1,5 @@
+// Файл не трогаем
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder, FormControl,
@@ -12,6 +14,7 @@ import { CheckInfoComponent } from '@components/check-info/check-info.component'
 import { ConstantsService } from '@services/constants/constants.service';
 import { IValueCat } from '@models/cat.model';
 import { IStep } from '@models/step.model';
+import { ThrobberComponent } from '@components/throbber/throbber.component';
 
 export enum FormMap {
   cat  = 'Кличка',
@@ -27,12 +30,14 @@ export enum FormMap {
   imports: [
     ReactiveFormsModule,
     CheckInfoComponent,
+    ThrobberComponent,
   ],
   templateUrl: './new-family.component.html',
   styleUrl: './new-family.component.scss'
 })
 export class NewFamilyComponent implements OnInit, OnDestroy {
 
+  public loading = true;
   public form: UntypedFormGroup;
   public active: number;
   public optionsCat: IValueCat[];
@@ -58,10 +63,10 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(res => {
       this.optionsCat = res;
-    });
 
-    this.subscriptions.push(
-      this.route.data.subscribe(res => {
+      this.route.data.pipe(
+        take(1)
+      ).subscribe(res => {
         this.idService = res['idService'];
 
         this.serviceInfo.getSteps(this.idService).pipe(
@@ -77,8 +82,8 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
         );
 
         this.initForm();
-      })
-    );
+      });
+    });
   }
 
   public ngOnDestroy() {
@@ -107,6 +112,8 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
     });
+
+    this.loading = false;
   }
 
   public getControl(step: number, id: string): FormControl {

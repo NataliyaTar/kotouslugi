@@ -1,7 +1,7 @@
 <!--Файл не трогаем-->
 
-<a class="service shadow-block">
-  <div class="flex-container align-items-center" [routerLink]="'/service/' + service.id">
+<a class="service shadow-block" [routerLink]="'/service/' + service.id">
+  <div class="flex-container align-items-center">
     <img class="icon" [src]="'../../assets/png/cats/' + service.icon">
     <div>
       <h5>{{service.title}}</h5>
