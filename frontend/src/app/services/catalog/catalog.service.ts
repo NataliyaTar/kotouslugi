@@ -10,12 +10,14 @@ import { IService } from '@models/service.model';
 })
 export class CatalogService {
 
+  private serviceApi = '/api/';
+
   constructor(
     public http: HttpClient,
   ) { }
 
   public getServices(): Observable<IService[]> {
-    // return this.http.get<IService[]>(``);
+    // return this.http.get<IService[]>(`${this.serviceApi}listService`);
     return of([
       {
         id: 'new_family',

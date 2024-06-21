@@ -10,7 +10,9 @@ public class KotoServiceEntity {
     @Id
     @GeneratedValue
     private int id;
-    private String name;
+    private String mnemonic;
+    private String icon;
+    private String title;
     private String description;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "service_category",
@@ -33,12 +35,28 @@ public class KotoServiceEntity {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getMnemonic() {
+        return mnemonic;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setMnemonic(String mnemonic) {
+        this.mnemonic = mnemonic;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {

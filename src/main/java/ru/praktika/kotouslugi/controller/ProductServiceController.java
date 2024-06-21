@@ -59,7 +59,7 @@ public class ProductServiceController extends BaseController {
         });
     }
 
-    @RequestMapping(value = "listService", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "listService", method = RequestMethod.GET, produces = "application/json")
     @ApiOperation(value = "Список сервисов котоуслуг",
             notes = "Получение данных о сервисах",
             response = BaseResponse.class,

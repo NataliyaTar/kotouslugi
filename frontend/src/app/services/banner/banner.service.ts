@@ -10,11 +10,14 @@ import { HttpClient } from '@angular/common/http';
 })
 export class BannerService {
 
+  private bannerApi = '/api/banner/';
+
   constructor(
     private http: HttpClient,
   ) { }
 
-  public getBanners(prefix: string): Observable<IBanner[]> {
-    return this.http.get<IBanner[]>(`/assets/jsons/${prefix}-banners.json`);
+  public getBanners(): Observable<IBanner[]> {
+    return this.http.get<IBanner[]>(`/assets/jsons/main-banners.json`);
+    // return this.http.get<IBanner[]>(`${this.bannerApi}listBanner`);
   }
 }

@@ -4,8 +4,8 @@ export interface ICat {
   id: number;
   name: string;
   age: string;
-  sex: IValueSex;
-  breed: IValueBreed;
+  sex: TSex;
+  breed: TBreed;
 }
 
 export interface IValueSex {

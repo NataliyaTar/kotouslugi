@@ -5,16 +5,20 @@ import { CatService } from '@services/cat/cat.service';
 import { take } from 'rxjs';
 import { EBreedMap, ICat, TBreed, ESexMap, TSex } from '@models/cat.model';
 import { Router } from '@angular/router';
+import { ThrobberComponent } from '@components/throbber/throbber.component';
 
 @Component({
-  selector: 'app-new-family',
+  selector: 'app-cats-list',
   standalone: true,
-  imports: [],
+  imports: [
+    ThrobberComponent
+  ],
   templateUrl: './cats-list.component.html',
   styleUrl: './cats-list.component.scss'
 })
 export class CatsListComponent implements OnInit {
 
+  public loading = true;
   public catsList: ICat[];
   public ESexMap = ESexMap;
 
@@ -28,7 +32,9 @@ export class CatsListComponent implements OnInit {
     this.catService.getCatList().pipe(
       take(1)
     ).subscribe(res => {
+      console.log(res);
       this.catsList = res;
+      this.loading = false;
     });
   }
 

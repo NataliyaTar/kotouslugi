@@ -44,5 +44,5 @@ public class Cat {
 
     public String getBreed() {return this.breed;}
 
-    public void setBreed(String breed) {this.sex = breed;}
+    public void setBreed(String breed) {this.breed = breed;}
 }

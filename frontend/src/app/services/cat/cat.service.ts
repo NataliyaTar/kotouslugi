@@ -17,36 +17,8 @@ export class CatService {
   ) { }
 
   public getCatList(): Observable<ICat[]> {
-    //  return this.http.get<ICat[]>(`${this.catApi}listCat`);
+    return this.http.get<ICat[]>(`${this.catApi}listCat`);
     // return of([]);
-    return of([
-      {
-        id: 0,
-        name: 'Феликс',
-        age: '1',
-        sex: {
-          id: 'male',
-          text: 'Кот'
-        },
-        breed: {
-          id: 'siamese',
-          text: 'Сиамская'
-        }
-      },
-      {
-        id: 1,
-        name: 'Снежка',
-        age: '2',
-        sex: {
-          id: 'female',
-          text: 'Кошка'
-        },
-        breed: {
-          id: 'british_shorthair',
-          text: 'Британская короткошерстая'
-        }
-      }
-    ] as ICat[]);*/
   }
 
   public getSexMap(sexId: TSex): ESexMap {

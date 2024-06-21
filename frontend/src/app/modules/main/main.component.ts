@@ -45,9 +45,10 @@ export class MainComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.bannerService.getBanners('main').pipe(
+    this.bannerService.getBanners().pipe(
       take(1)
     ).subscribe((res) => {
+      console.log(res);
       this.banners = res;
     });
 
@@ -60,6 +61,7 @@ export class MainComponent implements OnInit {
     this.catalogService.getServices().pipe(
       take(1)
     ).subscribe((res) => {
+      console.log(res);
       this.services = res;
     })
   }

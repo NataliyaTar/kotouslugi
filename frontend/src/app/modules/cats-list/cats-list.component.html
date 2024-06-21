@@ -1,34 +1,38 @@
 <!--Файл не трогаем-->
 
 <section class="container cats-list">
-  @if (catsList.length) {
-    <h3>Зарегистрированные котики:</h3>
-  }
-  <div class="grid-row mt-32">
-    @for (cat of catsList; track $index) {
-    <div class="cat shadow-block col-2 col-lg-6">
-      <div class="flex-container align-items-center">
-        <img [src]="'../../../assets/png/cats/' + cat.sex.id + '.png'" class="image {{cat.sex.id}}">
-        <div>
-          <h5>{{cat.name}}</h5>
-          <p class="mt-4 sex">{{getSex(cat.sex.id)}}</p>
-        </div>
-      </div>
-      <p class="mt-16"><span class="breed">Порода:</span> {{getBreed(cat.breed.id)}}</p>
-      <button class="custom" (click)="deleteCat(cat.id)">
-        <img src="../../../assets/svg/icons/delete.svg">
-      </button>
-    </div>
-    } @empty {
-      <div class="not-have-cat col-2 col-lg-12">
-        <img src="../../../assets/png/cats/sad.png" class="image">
-        <h3>Упс...</h3>
-        <p class="text">У вас нет ни одного котика, нажмите кнопку "Добавить"</p>
-      </div>
+  @if (loading) {
+    <app-throbber></app-throbber>
+  } @else {
+    @if (catsList?.length) {
+      <h3>Зарегистрированные котики:</h3>
     }
-  </div>
+    <div class="grid-row mt-32">
+      @for (cat of catsList; track $index) {
+        <div class="cat shadow-block col-2 col-lg-6">
+          <div class="flex-container align-items-center">
+            <img [src]="'../../../assets/png/cats/' + cat.sex + '.png'" class="image {{cat.sex}}">
+            <div>
+              <h5>{{cat.name}}</h5>
+              <p class="mt-4 sex">{{getSex(cat.sex)}}</p>
+            </div>
+          </div>
+          <p class="mt-16"><span class="breed">Порода:</span> {{getBreed(cat.breed)}}</p>
+          <button class="custom" (click)="deleteCat(cat.id)">
+            <img src="../../../assets/svg/icons/delete.svg">
+          </button>
+        </div>
+      } @empty {
+        <div class="not-have-cat col-2 col-lg-12">
+          <img src="../../../assets/png/cats/sad.png" class="image">
+          <h3>Упс...</h3>
+          <p class="text">У вас нет ни одного котика, нажмите кнопку "Добавить"</p>
+        </div>
+      }
+    </div>
 
-  <div class="button-wrapper">
-    <button (click)="addCat()">Добавить</button>
-  </div>
+    <div class="button-wrapper">
+      <button (click)="addCat()">Добавить</button>
+    </div>
+  }
 </section>
