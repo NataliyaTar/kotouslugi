@@ -1,7 +1,8 @@
 // Файл не трогаем
 
 export interface IService {
-  id: string;
+  id: number;
+  mnemonic: string;
   icon: string;
   title: string;
   tag: string;

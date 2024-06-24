@@ -21,14 +21,14 @@ INSERT INTO banner (id, bg, title, text, imgurl) values (
   'hugs.png'
 );
 
--- cat
+/*-- cat
 INSERT INTO cat (id, name, age, sex, breed) values (
   0,
   'Феликс',
   '1',
   'male',
   'british_shorthair'
-);
+);*/
 
 -- service
 INSERT INTO service values (

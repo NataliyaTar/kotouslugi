@@ -1,15 +1,31 @@
 <!--Файл не трогаем-->
 
 <div class="container page-wrapper">
-  <h2>Список заявок</h2>
   @if (loading) {
     <app-throbber></app-throbber>
   } @else {
+    @if (orders?.length) {
+      <h3>Список заявок:</h3>
+    }
     <div class="order-wrapper">
-      @for (i of [1, 2, 3]; track $index) {
-        <div class="order shadow-block">{{i}}</div>
+      @for (order of orders; track $index) {
+        <div class="order shadow-block">
+          <div class="flex-container align-items-center">
+            <div class="flex-0">
+              <img [src]="getIconPath(order.status)" class="icon">
+            </div>
+            <div class="flex-0">
+              <p>Ваша заявка по услуге <b>«{{order.title}}»</b></p>
+              <p class="mt-16">В статусе: {{getStatus(order.status)}}</p>
+            </div>
+          </div>
+        </div>
       } @empty {
-        fff
+        <div class="not-have-cat col-2 col-lg-12">
+          <img src="../../../assets/png/cats/scary.png" class="image">
+          <h3>Упс...</h3>
+          <p class="text">У вас нет ни одного заявления. Воспользуйтесь услугами портала котоуслуг</p>
+        </div>
       }
     </div>
   }

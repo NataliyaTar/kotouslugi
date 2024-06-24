@@ -37,18 +37,21 @@ export enum FormMap {
 })
 export class VetComponent implements OnInit, OnDestroy {
 
-  public loading = true;
-  public form: UntypedFormGroup;
-  public active: number;
-  public optionsCat: IValueCat[] = [];
-  public doctorOptions = this.constantService.doctorOptions;
+  public loading = true; // загружена ли информация для страницы
+  public form: UntypedFormGroup; // форма
+  public active: number; // активный шаг формы
+  public optionsCat: IValueCat[]; // список котов
+  public doctorOptions = this.constantService.doctorOptions; // список специальностей докторов
 
-  private idService: string;
-  private steps: IStep[];
+  private idService: string; // мнемоника услуги
+  private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
 
+  /**
+   * Возвращает преобразованное значение формы для отображения заполненных данных
+   */
   public get getResult() {
-    return this.serviceInfo.prepareData(this.form.getRawValue(), this.steps, FormMap);
+    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
   }
 
   constructor(
@@ -61,16 +64,19 @@ export class VetComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    // получаем список котов
     this.constantService.getCatOptions().pipe(
       take(1)
     ).subscribe((res) => {
       this.optionsCat = res;
 
+      // получаем мнемонику формы
       this.route.data.pipe(
         take(1)
       ).subscribe(res => {
         this.idService = res['idService'];
 
+        // запрашиваем шаги формы
         this.serviceInfo.getSteps(this.idService).pipe(
           take(1)
         ).subscribe(res => {
@@ -94,20 +100,24 @@ export class VetComponent implements OnInit, OnDestroy {
     })
   }
 
+  /**
+   * Инициализация формы
+   * @private
+   */
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: [this.optionsCat[0], [Validators.required]],
-        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['', [Validators.email]]
+        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
+        telephone: ['12345678901', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        email: ['d@d.dd', [Validators.email]]
       }),
       1: this.fb.group({
-        anamnesis: ['', [Validators.required, Validators.max(256)]]
+        anamnesis: ['афывожадшо жфшыоа ', [Validators.required, Validators.max(256)]]
       }),
       2: this.fb.group({
-        doctor: [this.doctorOptions[0], [Validators.required]],
-        date: ['', [Validators.required]],
-        time: ['', [Validators.required]]
+        doctor: [JSON.stringify(this.doctorOptions[0]), [Validators.required]],
+        date: ['2024-04-03', [Validators.required]],
+        time: ['14:22', [Validators.required]]
       })
     });
 
@@ -118,6 +128,24 @@ export class VetComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  /**
+   * Возвращает json в виде строки
+   * @param type
+   * @param index
+   */
+  public getItem(type: 'cat' | 'doc', index: number): string {
+    if (type === 'cat') {
+      return JSON.stringify(this.optionsCat[index]);
+    }
+
+    return JSON.stringify(this.doctorOptions[index]);
+  }
+
+  /**
+   * Возвращает контрол формы
+   * @param step
+   * @param id
+   */
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
   }

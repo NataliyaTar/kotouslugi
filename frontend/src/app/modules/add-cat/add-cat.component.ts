@@ -32,16 +32,19 @@ export enum FormMap {
 })
 export class AddCatComponent implements OnInit {
 
-  public steps: IStep[];
-  public active = 0;
-  public form: UntypedFormGroup;
-  public sexOptions = this.constantsService.sexOptions;
-  public breedOptions = this.constantsService.breedOptions;
+  public steps: IStep[]; // шаги формы
+  public active = 0; // активный шаг
+  public form: UntypedFormGroup; // форма
+  public sexOptions = this.constantsService.sexOptions; // список полов
+  public breedOptions = this.constantsService.breedOptions; // список пород
 
   private idService = 'add_cat';
 
+  /**
+   * Возвращает преобразованное значение формы для отображения заполненных данных
+   */
   public get getResult(): Array<IPreview[]> {
-    return this.serviceInfo.prepareData({0: this.form.getRawValue()}, this.steps, FormMap);
+    return this.serviceInfo.prepareDataForPreview({0: this.form.getRawValue()}, this.steps, FormMap);
   }
 
   constructor(
@@ -53,6 +56,9 @@ export class AddCatComponent implements OnInit {
   }
 
   public ngOnInit() {
+    /**
+     * Получение списка шагов
+     */
     this.serviceInfo.getSteps(this.idService).pipe(
       take(1)
     ).subscribe(res => {
@@ -62,33 +68,66 @@ export class AddCatComponent implements OnInit {
     this.initForm();
   }
 
+  /**
+   * Инициализация формы
+   * @private
+   */
   private initForm(): void {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.pattern(/^[А-яЁё]+$/)]],
       age: ['', [Validators.required, Validators.pattern(/^[\d]+$/)]],
-      sex: [this.sexOptions[0], [Validators.required]],
-      breed: [this.breedOptions[0], [Validators.required]]
+      sex: [JSON.stringify(this.sexOptions[0]), [Validators.required]],
+      breed: [JSON.stringify(this.breedOptions[0]), [Validators.required]]
     });
   }
 
+  /**
+   * Возвращает контрол формы
+   * @param id
+   */
   public getControl(id: string): FormControl {
     return this.form.get(id) as FormControl;
   }
 
+  /**
+   * Возвращает json в виде строки
+   * @param type
+   * @param index
+   */
+  public getItem(type: 'sex' | 'breed', index: number): string {
+    if (type === 'sex') {
+      return JSON.stringify(this.sexOptions[index]);
+    }
+
+    return JSON.stringify(this.breedOptions[index]);
+  }
+
+  /**
+   * Валидна ли форма
+   */
   public isValidStep(): boolean {
     return this.form?.valid;
   }
 
+  /**
+   * Переход на следующий шаг формы
+   */
   public next(): void {
     this.active++;
   }
 
+  /**
+   * Переход на предыдущий шаг формы
+   */
   public prev(): void {
     this.active--;
   }
 
+  /**
+   * Сохранение кота в БД
+   */
   public save(): void {
-    this.catService.addCat();
+    this.catService.addCat(this.form.getRawValue());
   }
 
 }

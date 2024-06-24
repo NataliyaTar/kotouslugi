@@ -18,9 +18,9 @@ import { ThrobberComponent } from '@components/throbber/throbber.component';
 })
 export class CatsListComponent implements OnInit {
 
-  public loading = true;
-  public catsList: ICat[];
-  public ESexMap = ESexMap;
+  public loading = true; // загружена ли информация для страницы
+  public catsList: ICat[]; // список котов
+  public ESexMap = ESexMap; // маппинг пола
 
   constructor(
     private catService: CatService,
@@ -32,24 +32,38 @@ export class CatsListComponent implements OnInit {
     this.catService.getCatList().pipe(
       take(1)
     ).subscribe(res => {
-      console.log(res);
       this.catsList = res;
       this.loading = false;
     });
   }
 
+  /**
+   * Возвращает породу человеческим значением
+   * @param breedId
+   */
   public getBreed(breedId: TBreed): EBreedMap {
     return this.catService.getBreedMap(breedId);
   }
 
+  /**
+   * Возвращает пол человеческим значением
+   * @param sexId
+   */
   public getSex(sexId: TSex): ESexMap {
     return this.catService.getSexMap(sexId);
   }
 
+  /**
+   * Редирект на страницу добавления кота
+   */
   public addCat(): void {
     this.router.navigate(['add-cat']);
   }
 
+  /**
+   * Удалить кота
+   * @param id
+   */
   public deleteCat(id: number): void {
     this.catService.deleteCat(id);
   }

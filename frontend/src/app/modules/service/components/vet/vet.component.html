@@ -14,7 +14,7 @@
         </div>
         <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
           @for (option of optionsCat; track $index) {
-            <option [value]="option">{{option.text}}</option>
+            <option [value]="getItem('cat', $index)">{{option.text}}</option>
           }
         </select>
       </div>
@@ -70,7 +70,7 @@
       </div>
       <select formControlName="doctor" (invalid)="getControl(2, 'doctor').invalid">
         @for (doc of doctorOptions; track $index) {
-          <option [value]="doc">{{doc.text}}</option>
+          <option [value]="getItem('doc', $index)">{{doc.text}}</option>
         }
       </select>
     </div>

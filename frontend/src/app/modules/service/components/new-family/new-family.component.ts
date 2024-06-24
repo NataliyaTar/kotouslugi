@@ -37,17 +37,20 @@ export enum FormMap {
 })
 export class NewFamilyComponent implements OnInit, OnDestroy {
 
-  public loading = true;
-  public form: UntypedFormGroup;
-  public active: number;
-  public optionsCat: IValueCat[];
+  public loading = true; // загружена ли информация для страницы
+  public form: UntypedFormGroup; // форма
+  public active: number; // активный шаг формы
+  public optionsCat: IValueCat[]; // список котов
 
-  private idService: string;
-  private steps: IStep[];
+  private idService: string; // мнемоника услуги
+  private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
 
+  /**
+   * Возвращает преобразованное значение формы для отображения заполненных данных
+   */
   public get getResult() {
-    return this.serviceInfo.prepareData(this.form.getRawValue(), this.steps, FormMap);
+    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
   }
 
   constructor(
@@ -59,16 +62,19 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    // получаем список котов
     this.constantService.getCatOptions().pipe(
       take(1)
     ).subscribe(res => {
       this.optionsCat = res;
 
+      // получаем мнемонику формы
       this.route.data.pipe(
         take(1)
       ).subscribe(res => {
         this.idService = res['idService'];
 
+        // запрашиваем шаги формы
         this.serviceInfo.getSteps(this.idService).pipe(
           take(1)
         ).subscribe(res => {
@@ -92,14 +98,18 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     })
   }
 
+  /**
+   * Инициализация формы
+   * @private
+   */
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: [this.optionsCat[0], [Validators.required]],
+        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
         passport: ['', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]]
       }),
       1: this.fb.group({
-        cat: [this.optionsCat[0], [Validators.required]],
+        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
         passport: ['', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
       }),
       2: this.fb.group({
@@ -116,6 +126,19 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  /**
+   * Возвращает json в виде строки
+   * @param index
+   */
+  public getItem(index: number): string {
+    return JSON.stringify(this.optionsCat[index]);
+  }
+
+  /**
+   * Возвращает контрол формы
+   * @param step
+   * @param id
+   */
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
   }

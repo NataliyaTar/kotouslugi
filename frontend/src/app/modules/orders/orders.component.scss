@@ -7,8 +7,30 @@
   .order-wrapper {
     margin-top: 32px;
 
-    .order + .order {
-      margin-top: 24px;
+    .order {
+
+      .icon {
+        width: 48px;
+        height: 48px;
+        margin-right: 24px;
+      }
+
+      + .order {
+        margin-top: 24px;
+      }
+    }
+
+    .not-have-cat {
+      text-align: center;
+
+      .image {
+        max-width: 150px;
+        margin-bottom: 24px;
+      }
+
+      .text {
+        margin-top: 12px;
+      }
     }
   }
 }

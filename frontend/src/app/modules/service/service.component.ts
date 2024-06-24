@@ -21,10 +21,10 @@ import { Subscription, take } from 'rxjs';
 })
 export class ServiceComponent implements OnInit, OnDestroy {
 
-  public steps: IStep[];
-  public active: number;
+  public steps: IStep[]; // список шагов формы
+  public active: number; // активный шаг
 
-  private idService: string;
+  private idService: string; // мнемоника услуги
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -35,9 +35,11 @@ export class ServiceComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this.subscriptions.push(
+      // получаем мнемонику услуги
       this.route.children[0].data.subscribe(res => {
         this.idService = res['idService'];
 
+        // по известной мнемонике запрашиваем список шагов
         this.serviceInfo.getSteps(this.idService).pipe(
           take(1)
         ).subscribe(res => {
@@ -61,22 +63,34 @@ export class ServiceComponent implements OnInit, OnDestroy {
     })
   }
 
+  /**
+   * Валиден ли шаг формы
+   */
   public isValidStep(): boolean {
     return this.serviceInfo.servicesForms$?.value?.[this.idService]?.get(this.active.toString())?.valid || false;
   }
 
+  /**
+   * Переход к следующему шагу формы
+   */
   public next(): void {
     this.active++;
     this.serviceInfo.setActiveStep(this.idService, this.active);
   }
 
+  /**
+   * Переход к предыдущему шагу формы
+   */
   public prev(): void {
     this.active--;
     this.serviceInfo.setActiveStep(this.idService, this.active);
   }
 
+  /**
+   * Сохранение результатов заполнения формы
+   */
   public save(): void {
-
+    this.serviceInfo.saveOrder(this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue());
   }
 
 }
