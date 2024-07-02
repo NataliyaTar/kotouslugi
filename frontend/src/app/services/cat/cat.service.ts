@@ -28,6 +28,13 @@ export class CatService {
         age: '1',
         sex: 'male',
         breed: 'british_shorthair'
+      },
+      {
+        id: 1,
+        name: 'Феликс2',
+        age: '1',
+        sex: 'male',
+        breed: 'british_shorthair'
       }
     ]);
   }

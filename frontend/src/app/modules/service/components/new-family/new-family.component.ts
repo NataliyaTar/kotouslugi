@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { Subscription, take } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
 import { IValueCat } from '@models/cat.model';
@@ -31,6 +31,7 @@ export enum FormMap { // маппинг названия поля - значен
     ReactiveFormsModule,
     CheckInfoComponent,
     ThrobberComponent,
+    RouterModule,
   ],
   templateUrl: './new-family.component.html',
   styleUrl: './new-family.component.scss'
@@ -38,9 +39,11 @@ export enum FormMap { // маппинг названия поля - значен
 export class NewFamilyComponent implements OnInit, OnDestroy {
 
   public loading = true; // загружена ли информация для страницы
+  public notEnoughCats = false;
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
+  public optionsCatExceptChosen: IValueCat[]; // список котов без уже выбранного
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
@@ -66,29 +69,34 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     this.constantService.getCatOptions().pipe(
       take(1)
     ).subscribe(res => {
-      this.optionsCat = res;
+      if (res.length < 2) {
+        this.notEnoughCats = true;
+        this.loading = false;
+      } else {
+        this.optionsCat = res;
 
-      // получаем мнемонику формы
-      this.route.data.pipe(
-        take(1)
-      ).subscribe(res => {
-        this.idService = res['idService'];
-
-        // запрашиваем шаги формы
-        this.serviceInfo.getSteps(this.idService).pipe(
+        // получаем мнемонику формы
+        this.route.data.pipe(
           take(1)
         ).subscribe(res => {
-          this.steps = res;
+          this.idService = res['idService'];
+
+          // запрашиваем шаги формы
+          this.serviceInfo.getSteps(this.idService).pipe(
+            take(1)
+          ).subscribe(res => {
+            this.steps = res;
+          });
+
+          this.subscriptions.push(
+            this.serviceInfo.activeStep.subscribe(res => {
+              this.active = res?.[this.idService] || 0;
+            })
+          );
+
+          this.initForm();
         });
-
-        this.subscriptions.push(
-          this.serviceInfo.activeStep.subscribe(res => {
-            this.active = res?.[this.idService] || 0;
-          })
-        );
-
-        this.initForm();
-      });
+      }
     });
   }
 
@@ -124,7 +132,22 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
       [this.idService]: this.form
     });
 
+    this.deleteChosenCat(this.optionsCat[0].id);
+    this.checkCatsOptionsForSecondStep();
+
     this.loading = false;
+  }
+
+  private checkCatsOptionsForSecondStep(): void {
+    this.form.get('0.cat').valueChanges.subscribe(res => {
+      this.deleteChosenCat(JSON.parse(res)?.id);
+    });
+  }
+
+  private deleteChosenCat(id: number): void {
+    this.optionsCatExceptChosen = this.optionsCat.filter(cat => cat.id !== id);
+    console.log(this.optionsCat)
+    console.log(this.optionsCatExceptChosen)
   }
 
   /**

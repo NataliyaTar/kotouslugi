@@ -2,6 +2,16 @@
 
 @if (loading) {
   <app-throbber></app-throbber>
+} @else if (notEnoughCats) {
+  <div class="not-have-cat col-2 col-lg-12">
+    <img src="../../../assets/png/cats/sad.png" class="image">
+    <h3>Упс...<br>У вас недостаточно зарегистрированных котиков для использования услуги</h3>
+    <p class="text">
+      Перейдите к <a
+      [routerLink]="'/add-cat'">добавлению котика</a> или выберите <a
+      [routerLink]="'/'">другую услугу</a>
+    </p>
+  </div>
 } @else {
   <div class="fields-wrapper" [formGroup]="form">
     <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
@@ -43,7 +53,7 @@
           }
         </div>
         <select formControlName="cat" (invalid)="getControl(1, 'cat').invalid">
-          @for (option of optionsCat; track $index) {
+          @for (option of optionsCatExceptChosen; track $index) {
             <option [value]="getItem($index)">{{option.text}}</option>
           }
         </select>

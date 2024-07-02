@@ -95,9 +95,18 @@ export class ServiceInfoService {
 
         Object.keys(rawValue[step]).forEach((key) => {
           let value = rawValue[step][key];
-          try {
-            value = JSON.parse(value)?.text ?? value;
-          } catch (error) {}
+
+          if (key === 'date') {
+            value = new Date(rawValue[step][key]).toLocaleDateString('ru-RU', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            });
+          } else {
+            try {
+              value = JSON.parse(value)?.text;
+            } catch (error) {}
+          }
 
           stepArr.push({
             name: FormMap[key],

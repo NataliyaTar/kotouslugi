@@ -108,16 +108,16 @@ export class VetComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       0: this.fb.group({
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
-        telephone: ['12345678901', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['d@d.dd', [Validators.email]]
+        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        email: ['', [Validators.email]]
       }),
       1: this.fb.group({
-        anamnesis: ['афывожадшо жфшыоа ', [Validators.required, Validators.max(256)]]
+        anamnesis: ['', [Validators.required, Validators.max(256)]]
       }),
       2: this.fb.group({
         doctor: [JSON.stringify(this.doctorOptions[0]), [Validators.required]],
-        date: ['2024-04-03', [Validators.required]],
-        time: ['14:22', [Validators.required]]
+        date: ['', [Validators.required]],
+        time: ['', [Validators.required]]
       })
     });
 
