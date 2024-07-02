@@ -4,6 +4,9 @@ import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
 
+/**
+ * Роутинг для услуг
+ */
 const routes: Routes = [
   {
     path: '',

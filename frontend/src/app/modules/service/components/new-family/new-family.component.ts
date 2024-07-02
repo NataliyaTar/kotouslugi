@@ -16,7 +16,7 @@ import { IValueCat } from '@models/cat.model';
 import { IStep } from '@models/step.model';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
-export enum FormMap {
+export enum FormMap { // маппинг названия поля - значение
   cat  = 'Кличка',
   passport = 'Паспорт',
   place = 'Адрес места бракосочетания',
@@ -119,6 +119,7 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
       })
     });
 
+    // сеттим значение формы в сервис
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
     });

@@ -46,11 +46,13 @@ export class ServiceComponent implements OnInit, OnDestroy {
           this.steps = res;
         });
 
+        // сеттим значение активного шага
         this.serviceInfo.setActiveStep(this.idService, 0);
       })
     );
 
     this.subscriptions.push(
+      // следим за активным шагом для данной услуги
       this.serviceInfo.activeStep.subscribe(res => {
         this.active = res?.[this.idService] || 0;
       })
@@ -90,7 +92,7 @@ export class ServiceComponent implements OnInit, OnDestroy {
    * Сохранение результатов заполнения формы
    */
   public save(): void {
-    this.serviceInfo.saveOrder(this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue());
+    this.serviceInfo.saveOrder(this.idService, this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue());
   }
 
 }

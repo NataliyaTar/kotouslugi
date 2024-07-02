@@ -1,5 +1,10 @@
 // Файл не трогаем
 
+/**
+ * Роутинг для проекта
+ * Говорит по какому url какой компонент использовать
+ */
+
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [

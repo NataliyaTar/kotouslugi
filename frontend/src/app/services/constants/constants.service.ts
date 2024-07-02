@@ -9,6 +9,7 @@ import { IValue } from '@models/common.model';
 })
 export class ConstantsService {
 
+  // варианты пола
   public sexOptions: IValueSex[] = [
     {
       id: 'male',
@@ -20,6 +21,7 @@ export class ConstantsService {
     }
   ];
 
+  // варианты пород
   public breedOptions: IValueBreed[] = [
     {
       id: 'siamese',
@@ -55,6 +57,7 @@ export class ConstantsService {
     }
   ];
 
+  // варианты специалистов
   public doctorOptions: IValue[] = [
     {
       id: 0,
@@ -82,6 +85,9 @@ export class ConstantsService {
     private catService: CatService,
   ) { }
 
+  /**
+   * Возвращает список котов, преобразовывая ответ для использования в dropdown
+   */
   public getCatOptions(): Observable<IValueCat[]> {
     return this.catService.getCatList().pipe(
       take(1)

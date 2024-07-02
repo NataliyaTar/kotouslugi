@@ -4,7 +4,6 @@ import { Component, OnInit } from '@angular/core';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 import { EStatus, IOrder, TStatus } from '@models/order.model';
 import { OrderService } from '@services/order/order.service';
-import { EBreedMap, TBreed } from '@models/cat.model';
 
 @Component({
   selector: 'app-orders',

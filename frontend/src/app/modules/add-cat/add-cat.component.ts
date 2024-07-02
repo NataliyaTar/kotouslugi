@@ -11,8 +11,8 @@ import { IPreview } from '@models/common.model';
 import { ConstantsService } from '@services/constants/constants.service';
 import { CatService } from '@services/cat/cat.service';
 
-export type TForm = 'name' | 'age' | 'sex' | 'breed';
-export enum FormMap {
+export type TForm = 'name' | 'age' | 'sex' | 'breed'; // поля в форме
+export enum FormMap { // маппинг поля с наименованием по-русски
   name = 'Кличка',
   age = 'Возраст',
   sex = 'Пол',
@@ -56,9 +56,7 @@ export class AddCatComponent implements OnInit {
   }
 
   public ngOnInit() {
-    /**
-     * Получение списка шагов
-     */
+    // Получение списка шагов
     this.serviceInfo.getSteps(this.idService).pipe(
       take(1)
     ).subscribe(res => {
@@ -83,7 +81,7 @@ export class AddCatComponent implements OnInit {
 
   /**
    * Возвращает контрол формы
-   * @param id
+   * @param id - идентификатор контролла
    */
   public getControl(id: string): FormControl {
     return this.form.get(id) as FormControl;
@@ -91,8 +89,8 @@ export class AddCatComponent implements OnInit {
 
   /**
    * Возвращает json в виде строки
-   * @param type
-   * @param index
+   * @param type - по какому массиву ищем
+   * @param index - индекс в массиве
    */
   public getItem(type: 'sex' | 'breed', index: number): string {
     if (type === 'sex') {

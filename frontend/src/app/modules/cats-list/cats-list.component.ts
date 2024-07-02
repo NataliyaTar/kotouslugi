@@ -29,6 +29,7 @@ export class CatsListComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    // получаем список котов
     this.catService.getCatList().pipe(
       take(1)
     ).subscribe(res => {
@@ -39,7 +40,7 @@ export class CatsListComponent implements OnInit {
 
   /**
    * Возвращает породу человеческим значением
-   * @param breedId
+   * @param breedId - идентификатор породы
    */
   public getBreed(breedId: TBreed): EBreedMap {
     return this.catService.getBreedMap(breedId);
@@ -62,7 +63,7 @@ export class CatsListComponent implements OnInit {
 
   /**
    * Удалить кота
-   * @param id
+   * @param id - индентификатор кота
    */
   public deleteCat(id: number): void {
     this.catService.deleteCat(id);

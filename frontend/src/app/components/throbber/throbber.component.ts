@@ -1,3 +1,5 @@
+//Файл не трогаем
+
 import { Component } from '@angular/core';
 
 @Component({

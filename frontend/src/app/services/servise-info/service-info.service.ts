@@ -14,9 +14,11 @@ import { UntypedFormGroup } from '@angular/forms';
 })
 export class ServiceInfoService {
 
+  // хранение значения активного шага для использования из разных компонентов
   private activeStep$ = new BehaviorSubject<IActiveStep>(null);
   public activeStep = this.activeStep$.asObservable();
 
+  // хранение формы для использования из разных компонентов
   public servicesForms$ = new BehaviorSubject<IServiceForms>(null);
 
   private serviceApi = '/api/';
@@ -112,10 +114,13 @@ export class ServiceInfoService {
 
   /**
    * Сохраняет запись на услугу
+   * @param mnemonicService - мнемоника услуги
    * @param rawValue - значение из формы
    */
-  public saveOrder(rawValue: any): any {
-    let res: {[key: string]: any} = {};
+  public saveOrder(mnemonicService: string, rawValue: any): any {
+    let res: {[key: string]: any} = {
+      mnemonic: mnemonicService
+    };
 
     Object.keys(rawValue).forEach((step, index) => {
       let stepValue: {[key: string]: string | number} = {};
