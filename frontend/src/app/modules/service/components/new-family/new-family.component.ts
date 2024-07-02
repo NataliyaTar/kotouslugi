@@ -122,7 +122,7 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
       }),
       2: this.fb.group({
         place: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]+$/)]],
-        date: ['', [Validators.required]],
+        date: ['', [Validators.required, this.dateValidator]],
         time: ['', [Validators.required]]
       })
     });
@@ -138,6 +138,19 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  /**
+   * Кастомная валидация для даты
+   * @param control
+   * @private
+   */
+  private dateValidator(control: FormControl) {
+    if (new Date(control.value) < new Date()) {
+      return {minDate: true};
+    }
+
+    return false;
+  }
+
   private checkCatsOptionsForSecondStep(): void {
     this.form.get('0.cat').valueChanges.subscribe(res => {
       this.deleteChosenCat(JSON.parse(res)?.id);
@@ -146,8 +159,6 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
 
   private deleteChosenCat(id: number): void {
     this.optionsCatExceptChosen = this.optionsCat.filter(cat => cat.id !== id);
-    console.log(this.optionsCat)
-    console.log(this.optionsCatExceptChosen)
   }
 
   /**

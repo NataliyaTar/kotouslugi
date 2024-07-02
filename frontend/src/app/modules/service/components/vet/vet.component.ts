@@ -116,7 +116,7 @@ export class VetComponent implements OnInit, OnDestroy {
       }),
       2: this.fb.group({
         doctor: [JSON.stringify(this.doctorOptions[0]), [Validators.required]],
-        date: ['', [Validators.required]],
+        date: ['', [Validators.required, this.dateValidator]],
         time: ['', [Validators.required]]
       })
     });
@@ -126,6 +126,19 @@ export class VetComponent implements OnInit, OnDestroy {
     });
 
     this.loading = false;
+  }
+
+  /**
+   * Кастомная валидация для даты
+   * @param control
+   * @private
+   */
+  private dateValidator(control: FormControl) {
+    if (new Date(control.value) < new Date()) {
+      return {minDate: true};
+    }
+
+    return false;
   }
 
   /**
