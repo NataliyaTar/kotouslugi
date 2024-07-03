@@ -27,30 +27,29 @@
   </section>
 }
 
-@if (services?.length) {
-  <section class="services-wrapper container">
-    <div class="help flex-container-lg align-items-center-lg justify-between-lg">
-      <h2>Котоуслуги</h2>
-      <p>Чтобы пользоваться услугами в полной мере, необходимо <a [routerLink]="'/cats'">зарегистрировать</a> котят</p>
+<section class="services-wrapper container">
+  <h2>Котоуслуги</h2>
+  @if (loading) {
+    <app-throbber></app-throbber>
+  } @else if (error) {
+    <app-error></app-error>
+  } @else if (!showServices) {
+    <div class="not-allowed">
+      <img src="../../../assets/png/cats/sad.png" class="image">
+      <h3>Упс...</h3>
+      <p class="text">У вас нет ни одного котика, <a [routerLink]="'/add-cat'">зарегистрируйте</a> его на портале</p>
     </div>
-    @if (!showServices) {
-      <div class="not-allowed">
-        <img src="../../../assets/png/cats/sad.png" class="image">
-        <h3>Упс...</h3>
-        <p class="text">У вас нет ни одного котика, зарегистрируйте его на портале</p>
-      </div>
-    } @else {
-      <div class="services grid-row">
-        @for (service of filteredService; track $index) {
-          <app-service [service]="service" class="col-2 col-lg-4"></app-service>
-        } @empty {
-          <div class="not-found col-2 col-lg-12">
-            <img src="../../../assets/png/cats/sad.png" class="image">
-            <h3>Упс...</h3>
-            <p class="text">Ничего не нашли</p>
-          </div>
-        }
-      </div>
-    }
-  </section>
-}
+  } @else {
+    <div class="services grid-row">
+      @for (service of filteredService; track $index) {
+        <app-service [service]="service" class="col-2 col-lg-4"></app-service>
+      } @empty {
+        <div class="not-found col-2 col-lg-12">
+          <img src="../../../assets/png/cats/sad.png" class="image">
+          <h3>Упс...</h3>
+          <p class="text">Ничего не нашли</p>
+        </div>
+      }
+    </div>
+  }
+</section>

@@ -23,8 +23,8 @@
           }
         </div>
         <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
-          @for (option of optionsCat; track $index) {
-            <option [value]="getItem($index)">{{option.text}}</option>
+          @for (option of optionsCatM; track $index) {
+            <option [value]="getItem('male', $index)">{{option.text}}</option>
           }
         </select>
       </div>
@@ -53,8 +53,8 @@
           }
         </div>
         <select formControlName="cat" (invalid)="getControl(1, 'cat').invalid">
-          @for (option of optionsCatExceptChosen; track $index) {
-            <option [value]="getItem($index)">{{option.text}}</option>
+          @for (option of optionsCatF; track $index) {
+            <option [value]="getItem('female', $index)">{{option.text}}</option>
           }
         </select>
       </div>

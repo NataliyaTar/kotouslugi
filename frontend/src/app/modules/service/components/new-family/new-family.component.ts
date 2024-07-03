@@ -12,7 +12,7 @@ import { Subscription, take } from 'rxjs';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
-import { IValueCat } from '@models/cat.model';
+import { IValueCat, TSex } from '@models/cat.model';
 import { IStep } from '@models/step.model';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
@@ -42,8 +42,8 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
   public notEnoughCats = false;
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
-  public optionsCat: IValueCat[]; // список котов
-  public optionsCatExceptChosen: IValueCat[]; // список котов без уже выбранного
+  public optionsCatM: IValueCat[]; // список котов
+  public optionsCatF: IValueCat[]; // список кошек
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
@@ -65,39 +65,7 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    // получаем список котов
-    this.constantService.getCatOptions().pipe(
-      take(1)
-    ).subscribe(res => {
-      if (res.length < 2) {
-        this.notEnoughCats = true;
-        this.loading = false;
-      } else {
-        this.optionsCat = res;
-
-        // получаем мнемонику формы
-        this.route.data.pipe(
-          take(1)
-        ).subscribe(res => {
-          this.idService = res['idService'];
-
-          // запрашиваем шаги формы
-          this.serviceInfo.getSteps(this.idService).pipe(
-            take(1)
-          ).subscribe(res => {
-            this.steps = res;
-          });
-
-          this.subscriptions.push(
-            this.serviceInfo.activeStep.subscribe(res => {
-              this.active = res?.[this.idService] || 0;
-            })
-          );
-
-          this.initForm();
-        });
-      }
-    });
+    this.getCatsOptions();
   }
 
   public ngOnDestroy() {
@@ -107,17 +75,62 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Проверяем есть ли возможность использовать форму.
+   * Запрашиваем отсортированных котов по полу
+   */
+  public getCatsOptions(): void {
+    this.constantService.getCatOptionsBySex().pipe(
+     take(1)
+    ).subscribe(res => {
+      if (!(res.male.length && res.female.length)) {
+        this.notEnoughCats = true;
+        this.loading = false;
+      } else {
+        this.optionsCatM = res.male;
+        this.optionsCatF = res.female;
+        this.prepareService();
+      }
+    });
+  }
+
+  /**
+   * Получаем мнемонику формы, запрашиваем шаги формы
+   * @private
+   */
+  private prepareService(): void {
+    this.route.data.pipe(
+      take(1)
+    ).subscribe(res => {
+      this.idService = res['idService'];
+
+      this.serviceInfo.getSteps(this.idService).pipe(
+        take(1)
+      ).subscribe(res => {
+        this.steps = res;
+      });
+
+      this.subscriptions.push(
+        this.serviceInfo.activeStep.subscribe(res => {
+          this.active = res?.[this.idService] || 0;
+        })
+      );
+
+      this.initForm();
+    });
+  }
+
+  /**
    * Инициализация формы
    * @private
    */
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
+        cat: [JSON.stringify(this.optionsCatM[0]), [Validators.required]],
         passport: ['', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]]
       }),
       1: this.fb.group({
-        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
+        cat: [JSON.stringify(this.optionsCatF[0]), [Validators.required]],
         passport: ['', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
       }),
       2: this.fb.group({
@@ -131,9 +144,6 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
     });
-
-    this.deleteChosenCat(this.optionsCat[0].id);
-    this.checkCatsOptionsForSecondStep();
 
     this.loading = false;
   }
@@ -151,22 +161,16 @@ export class NewFamilyComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  private checkCatsOptionsForSecondStep(): void {
-    this.form.get('0.cat').valueChanges.subscribe(res => {
-      this.deleteChosenCat(JSON.parse(res)?.id);
-    });
-  }
-
-  private deleteChosenCat(id: number): void {
-    this.optionsCatExceptChosen = this.optionsCat.filter(cat => cat.id !== id);
-  }
-
   /**
    * Возвращает json в виде строки
    * @param index
    */
-  public getItem(index: number): string {
-    return JSON.stringify(this.optionsCat[index]);
+  public getItem(sex: TSex, index: number): string {
+    if (sex === 'male') {
+      return JSON.stringify(this.optionsCatM[index]);
+    } else {
+      return JSON.stringify(this.optionsCatF[index]);
+    }
   }
 
   /**

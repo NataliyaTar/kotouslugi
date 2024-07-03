@@ -39,6 +39,11 @@ export enum EBreedMap {
   munchkin = 'Манчкин',
 }
 
+export interface ICatGroupedBySex {
+  male: IValueCat[];
+  female: IValueCat[];
+}
+
 export interface IValueCat {
   id: number;
   text: string;

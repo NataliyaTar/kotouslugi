@@ -66,7 +66,13 @@ export class CatsListComponent implements OnInit {
    * @param id - индентификатор кота
    */
   public deleteCat(id: number): void {
-    this.catService.deleteCat(id);
+    this.catService.deleteCat(id).subscribe(res => {
+      alert('Кот удален\nНажмите «OK» для продолжения работы с порталом');
+      const indexCat = this.catsList.findIndex(cat => cat.id === id);
+      this.catsList.splice(indexCat, 1);
+    }, error => {
+      alert('Произошла ошибка, повторите попытку позже\nНажмите «OK» для продолжения работы с порталом');
+    });
   }
 
 }

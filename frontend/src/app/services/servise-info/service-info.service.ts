@@ -32,32 +32,6 @@ export class ServiceInfoService {
    */
   public getServices(): Observable<IService[]> {
     return this.http.get<IService[]>(`${this.serviceApi}listService`);
-   /* return of([
-      {
-        id: 0,
-        mnemonic: 'new_family',
-        icon: 'cupid.png',
-        title: 'Регистрация брака',
-        tag: 'Семья и дети',
-        description: 'Вступайте в брак легко и быстро с котоуслугами'
-      },
-      {
-        id: 1,
-        mnemonic: 'vet',
-        icon: 'sick.webp',
-        title: 'Запись на прием к ветеринару',
-        tag: 'Медицина',
-        description: 'Подходи ответственно к своему здоровью. Здоровый ты - здоровая страна'
-      },
-      {
-        id: 2,
-        mnemonic: 'spa',
-        icon: 'relax.png',
-        title: 'SPA-процедуры',
-        tag: 'Отдых и развлечение',
-        description: 'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры'
-      }
-    ]);*/
   }
 
   /**
@@ -121,30 +95,4 @@ export class ServiceInfoService {
     return arr;
   }
 
-  /**
-   * Сохраняет запись на услугу
-   * @param mnemonicService - мнемоника услуги
-   * @param rawValue - значение из формы
-   */
-  public saveOrder(mnemonicService: string, rawValue: any): any {
-    let res: {[key: string]: any} = {
-      mnemonic: mnemonicService
-    };
-
-    Object.keys(rawValue).forEach((step, index) => {
-      let stepValue: {[key: string]: string | number} = {};
-
-      Object.keys(rawValue[step]).forEach(key => {
-        let value = rawValue[step][key];
-        try {
-          value = JSON.parse(value)?.id ?? value;
-        } catch (error) {}
-        Object.assign(stepValue, {[key]: value});
-      });
-
-      Object.assign(res, {[step]: stepValue});
-    });
-
-    return this.http.post(`${this.serviceApi}addOrder`, res);
-  }
 }

@@ -10,7 +10,7 @@ import { EStatus, IOrder, TStatus } from '@models/order.model';
 })
 export class OrderService {
 
-  private orderApi = '/api';
+  private orderApi = '/api/requisition/';
 
   constructor(
     public http: HttpClient,
@@ -20,34 +20,7 @@ export class OrderService {
    * Возвращает список заявок
    */
   public getOrdersList(): Observable<IOrder[]> {
-    // return this.http.get<IOrder[]>(`${this.orderApi}`);
-    return of([
-      {
-        id: '0',
-        title: 'Регистрация брака',
-        status: 'FILED'
-      },
-      {
-        id: '2',
-        title: 'Запись на прием к ветеринару',
-        status: 'UNDER_CONSIDERATION'
-      },
-      {
-        id: '3',
-        title: 'Регистрация брака',
-        status: 'REJECTED'
-      },
-      {
-        id: '4',
-        title: 'Запись на прием к ветеринару',
-        status: 'ACCEPTED'
-      },
-      {
-        id: '5',
-        title: 'Регистрация брака',
-        status: 'DONE'
-      },
-    ]);
+    return this.http.get<IOrder[]>(`${this.orderApi}listRequisition`);
   }
 
   /**
@@ -57,4 +30,32 @@ export class OrderService {
   public getStatusMap(statusId: TStatus): EStatus {
     return EStatus[statusId];
   }
+
+  /**
+   * Сохраняет запись на услугу
+   * @param mnemonicService - мнемоника услуги
+   * @param rawValue - значение из формы
+   */
+  public saveOrder(mnemonicService: string, rawValue: any): Observable<any> {
+    let res: {[key: string]: any} = {
+      mnemonic: mnemonicService
+    };
+
+    Object.keys(rawValue).forEach((step, index) => {
+      let stepValue: {[key: string]: string | number} = {};
+
+      Object.keys(rawValue[step]).forEach(key => {
+        let value = rawValue[step][key];
+        try {
+          value = JSON.parse(value)?.id ?? value;
+        } catch (error) {}
+        Object.assign(stepValue, {[key]: value});
+      });
+
+      Object.assign(res, {[step]: stepValue});
+    });
+
+    return this.http.post(`${this.orderApi}createRequisition`, res);
+  }
+
 }

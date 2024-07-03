@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat } from '@models/cat.model';
+import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex } from '@models/cat.model';
 import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
 import { IValue } from '@models/common.model';
@@ -86,9 +86,34 @@ export class ConstantsService {
   ) { }
 
   /**
+   * Возвращает список котов сгруппированных по полу, преобразовывая ответ для использования в dropdown
+   */
+  public getCatOptionsBySex(): Observable<ICatGroupedBySex> {
+    return this.catService.getCatList().pipe(
+      take(1)
+    ).pipe(
+      mergeMap((res) => {
+        const male: IValueCat[] = [];
+        const female: IValueCat[] = [];
+        res.forEach(item => {
+          if (item.sex === 'male') {
+            male.push({id: item.id, text: item.name});
+          } else {
+            female.push({id: item.id, text: item.name});
+          }
+        });
+        return of({
+          male,
+          female
+        });
+      })
+    );
+  }
+
+  /**
    * Возвращает список котов, преобразовывая ответ для использования в dropdown
    */
-  public getCatOptions(): Observable<IValueCat[]> {
+  public getCatOptionsAll():  Observable<IValueCat[]> {
     return this.catService.getCatList().pipe(
       take(1)
     ).pipe(
@@ -98,8 +123,8 @@ export class ConstantsService {
             id: item.id,
             text: item.name
           }
-        }))
+        }));
       })
-    );
+    )
   }
 }

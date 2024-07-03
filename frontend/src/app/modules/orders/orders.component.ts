@@ -4,12 +4,14 @@ import { Component, OnInit } from '@angular/core';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 import { EStatus, IOrder, TStatus } from '@models/order.model';
 import { OrderService } from '@services/order/order.service';
+import { ErrorComponent } from '@components/error/error.component';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
   imports: [
     ThrobberComponent,
+    ErrorComponent,
   ],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.scss'
@@ -17,6 +19,7 @@ import { OrderService } from '@services/order/order.service';
 export class OrdersComponent implements OnInit {
 
   public loading = true; // Загружены ли данные для страницы
+  public error = false; // Произошла ли ошибка реста
   public orders: IOrder[]; // Список заявок
 
   constructor(
@@ -29,6 +32,9 @@ export class OrdersComponent implements OnInit {
     this.orderService.getOrdersList().subscribe(res => {
       this.orders = res;
       this.loading = false;
+    }, error => {
+      this.loading = false;
+      this.error = true;
     })
   }
 

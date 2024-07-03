@@ -3,6 +3,8 @@
 <div class="container page-wrapper">
   @if (loading) {
     <app-throbber></app-throbber>
+  } @else if (error) {
+    <app-error></app-error>
   } @else {
     @if (orders?.length) {
       <h3>Список заявок:</h3>

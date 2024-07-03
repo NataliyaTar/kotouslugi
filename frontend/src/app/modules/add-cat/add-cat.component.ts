@@ -125,7 +125,13 @@ export class AddCatComponent implements OnInit {
    * Сохранение кота в БД
    */
   public save(): void {
-    this.catService.addCat(this.form.getRawValue());
+    this.catService.addCat(this.form.getRawValue()).subscribe(res => {
+      alert('Кот зарегистрирован\nНажмите «OK» для перехода на предыдущую страницу портала');
+      window.history.back();
+    }, error => {
+      alert('Произошла ошибка, повторите попытку позже\nНажмите «OK» для перехода на предыдущую страницу портала');
+      window.history.back();
+    });
   }
 
 }

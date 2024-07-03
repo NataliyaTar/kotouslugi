@@ -12,6 +12,8 @@ import { IService } from '@models/service.model';
 import { RouterModule } from '@angular/router';
 import { CatService } from '@services/cat/cat.service';
 import { take } from 'rxjs';
+import { ThrobberComponent } from '@components/throbber/throbber.component';
+import { ErrorComponent } from '@components/error/error.component';
 
 @Component({
   selector: 'app-main',
@@ -22,12 +24,16 @@ import { take } from 'rxjs';
     CarouselComponent,
     ServiceComponent,
     RouterModule,
+    ThrobberComponent,
+    ErrorComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
 export class MainComponent implements OnInit {
 
+  public loading = true;
+  public error = false;
   public search = ''; // строка поиска
   public banners: IBanner[]; // список баннеров
   public services: IService[]; // список услуг
@@ -37,7 +43,7 @@ export class MainComponent implements OnInit {
    * Возвращает отфильтрованный список услуг по строке поиска
    */
   public get filteredService(): IService[] {
-    return this.services.filter((item) => item.title.match(new RegExp(this.search, 'i')));
+    return this.services?.filter((item) => item.title.match(new RegExp(this.search, 'i')));
   }
 
   constructor(
@@ -73,11 +79,15 @@ export class MainComponent implements OnInit {
     this.catService.getCatList().pipe(
       take(1)
     ).subscribe(res => {
-      // this.showServices = res.length >= 1;
-      // if (this.showServices) {
-      this.showServices = true;
+      this.showServices = res.length >= 1;
+      if (this.showServices) {
         this.getServices();
-      // }
+      } else {
+        this.loading = false;
+      }
+    }, error => {
+      this.loading = false;
+      this.error = true;
     });
   }
 
@@ -90,6 +100,10 @@ export class MainComponent implements OnInit {
       take(1)
     ).subscribe((res) => {
       this.services = res;
+      this.loading = false;
+    }, error => {
+      this.loading = false;
+      this.error = true;
     })
   }
 

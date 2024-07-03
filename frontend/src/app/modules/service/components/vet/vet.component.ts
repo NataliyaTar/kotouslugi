@@ -64,40 +64,53 @@ export class VetComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    // получаем список котов
-    this.constantService.getCatOptions().pipe(
-      take(1)
-    ).subscribe((res) => {
-      this.optionsCat = res;
-
-      // получаем мнемонику формы
-      this.route.data.pipe(
-        take(1)
-      ).subscribe(res => {
-        this.idService = res['idService'];
-
-        // запрашиваем шаги формы
-        this.serviceInfo.getSteps(this.idService).pipe(
-          take(1)
-        ).subscribe(res => {
-          this.steps = res;
-        });
-
-        this.subscriptions.push(
-          this.serviceInfo.activeStep.subscribe(res => {
-            this.active = res?.[this.idService] || 0;
-          })
-        );
-
-        this.initForm();
-      });
-    });
+    this.getCatOption();
   }
 
   public ngOnDestroy() {
     this.subscriptions.forEach(item => {
       item.unsubscribe();
     })
+  }
+
+  /**
+   * Запрашиваем отформатированный список котов
+   */
+  private getCatOption(): void {
+    this.constantService.getCatOptionsAll().pipe(
+      take(1)
+    ).subscribe((res: IValueCat[]) => {
+      this.optionsCat = res;
+
+      this.prepareService();
+    });
+  }
+
+  /**
+   * Получаем мнемонику формы, запрашиваем шаги формы
+   * @private
+   */
+  private prepareService(): void {
+    this.route.data.pipe(
+      take(1)
+    ).subscribe(res => {
+      this.idService = res['idService'];
+
+      // запрашиваем шаги формы
+      this.serviceInfo.getSteps(this.idService).pipe(
+        take(1)
+      ).subscribe(res => {
+        this.steps = res;
+      });
+
+      this.subscriptions.push(
+        this.serviceInfo.activeStep.subscribe(res => {
+          this.active = res?.[this.idService] || 0;
+        })
+      );
+
+      this.initForm();
+    });
   }
 
   /**

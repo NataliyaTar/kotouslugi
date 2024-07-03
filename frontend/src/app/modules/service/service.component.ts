@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { AsyncPipe } from '@angular/common';
 import { Subscription, take } from 'rxjs';
+import { OrderService } from '@services/order/order.service';
 
 @Component({
   selector: 'app-service',
@@ -30,6 +31,7 @@ export class ServiceComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private serviceInfo: ServiceInfoService,
+    private orderService: OrderService,
   ) {
   }
 
@@ -92,7 +94,16 @@ export class ServiceComponent implements OnInit, OnDestroy {
    * Сохранение результатов заполнения формы
    */
   public save(): void {
-    this.serviceInfo.saveOrder(this.idService, this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue());
+    this.orderService.saveOrder(
+      this.idService,
+      this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue()
+    ).subscribe(res => {
+      alert('Ваша заявка зарегистрирована\nНажмите «OK» для перехода на предыдущую страницу портала');
+      window.history.back();
+    }, error => {
+      alert('Произошла ошибка, повторите попытку позже\nНажмите «OK» для перехода на предыдущую страницу портала');
+      window.history.back();
+    });
   }
 
 }
