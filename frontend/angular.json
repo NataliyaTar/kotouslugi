@@ -61,7 +61,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "proxyConfig": "./proxy.conf.json"
+            "buildTarget": "kotouslugi:build",
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {

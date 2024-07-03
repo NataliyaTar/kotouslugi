@@ -50,7 +50,6 @@ export class MainComponent implements OnInit {
   public ngOnInit(): void {
     this.getBanners();
     this.isCatExist();
-    this.getServices();
   }
 
   /**
@@ -74,7 +73,11 @@ export class MainComponent implements OnInit {
     this.catService.getCatList().pipe(
       take(1)
     ).subscribe(res => {
-      this.showServices = res.length >= 1;
+      // this.showServices = res.length >= 1;
+      // if (this.showServices) {
+      this.showServices = true;
+        this.getServices();
+      // }
     });
   }
 

@@ -5,6 +5,6 @@ export interface IService {
   mnemonic: string;
   icon: string;
   title: string;
-  tag: string;
+  categories: {name: string;}[];
   description: string;
 }

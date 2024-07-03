@@ -5,7 +5,12 @@
     <img class="icon" [src]="'../../assets/png/cats/' + service.icon">
     <div>
       <h5>{{service.title}}</h5>
-      <p class="tag">{{service.tag}}</p>
+      @for(tag of service.categories; track $index; let f = $first) {
+        @if (!f) {
+          <span>, </span>
+        }
+        <p class="tag">{{tag.name}}</p>
+      }
     </div>
   </div>
   <p class="description">{{service.description}}</p>

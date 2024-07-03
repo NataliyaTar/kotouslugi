@@ -20,23 +20,7 @@ export class CatService {
    * Возвращает список котов
    */
   public getCatList(): Observable<ICat[]> {
-    // return this.http.get<ICat[]>(`${this.catApi}listCat`);
-    return of([
-      {
-        id: 0,
-        name: 'Феликс',
-        age: '1',
-        sex: 'male',
-        breed: 'british_shorthair'
-      },
-      {
-        id: 1,
-        name: 'Феликс2',
-        age: '1',
-        sex: 'male',
-        breed: 'british_shorthair'
-      }
-    ]);
+    return this.http.get<ICat[]>(`${this.catApi}listCat`);
   }
 
   /**

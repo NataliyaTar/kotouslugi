@@ -20,7 +20,6 @@ export class BannerService {
    * Возвращает список баннеров
    */
   public getBanners(): Observable<IBanner[]> {
-    return this.http.get<IBanner[]>(`/assets/jsons/main-banners.json`);
-    // return this.http.get<IBanner[]>(`${this.bannerApi}listBanner`);
+    return this.http.get<IBanner[]>(`${this.bannerApi}listBanner`);
   }
 }

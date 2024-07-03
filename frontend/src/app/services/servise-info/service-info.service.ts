@@ -31,8 +31,8 @@ export class ServiceInfoService {
    * Возвращает список услуг
    */
   public getServices(): Observable<IService[]> {
-    // return this.http.get<IService[]>(`${this.serviceApi}listService`);
-    return of([
+    return this.http.get<IService[]>(`${this.serviceApi}listService`);
+   /* return of([
       {
         id: 0,
         mnemonic: 'new_family',
@@ -57,7 +57,7 @@ export class ServiceInfoService {
         tag: 'Отдых и развлечение',
         description: 'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры'
       }
-    ]);
+    ]);*/
   }
 
   /**
@@ -104,7 +104,7 @@ export class ServiceInfoService {
             });
           } else {
             try {
-              value = JSON.parse(value)?.text;
+              value = JSON.parse(value)?.text || value;
             } catch (error) {}
           }
 
