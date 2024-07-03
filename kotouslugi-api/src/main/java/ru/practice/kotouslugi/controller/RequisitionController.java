@@ -15,7 +15,6 @@ import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.service.RequisitionService;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/requisition")
