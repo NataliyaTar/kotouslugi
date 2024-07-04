@@ -10,7 +10,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="entityManagerFactory" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -89,6 +91,7 @@
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:3.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.30" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.h2database:h2:2.2.224" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20230227" level="project" />
     <orderEntry type="module" module-name="kotouslugi-api" />
     <orderEntry type="library" name="Maven: org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.springdoc:springdoc-openapi-starter-webmvc-api:2.5.0" level="project" />

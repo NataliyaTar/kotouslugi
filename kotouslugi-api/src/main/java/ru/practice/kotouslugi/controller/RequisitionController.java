@@ -26,7 +26,7 @@ public class RequisitionController extends BaseController {
       this.requisitionService = requisitionService;
     }
 
-    @GetMapping(value = "listRequisition", produces = "application/json")
+    @GetMapping(value = "/list", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Список реквизитов заявления", tags = {"Котоуслуги","Заявления"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
@@ -37,7 +37,7 @@ public class RequisitionController extends BaseController {
     }
 
 
-    @PostMapping(value = "createRequisition", produces = "application/json")
+    @PostMapping(value = "/create", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Создать заявление", tags = {"Котоуслуги","Заявления"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
@@ -49,7 +49,7 @@ public class RequisitionController extends BaseController {
     }
 
 
-    @PostMapping(value = "updateRequisition", produces = "application/json")
+    @PostMapping(value = "/update", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Обновить заявление", tags = {"Котоуслуги","Заявления"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),

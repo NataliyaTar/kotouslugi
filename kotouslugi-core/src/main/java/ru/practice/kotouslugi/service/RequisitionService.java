@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
 import ru.practice.kotouslugi.exception.ServiceException;
 import ru.practice.kotouslugi.model.Requisition;
+import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ public class RequisitionService {
     }
 
     public int createRequisition(Requisition requisition) {
+        requisition.setStatus(RequisitionStatus.FILED);
         requisition.setCreated(new Date(System.currentTimeMillis()));
         Requisition save = requisitionRepository.save(requisition);
         return save.getId();
