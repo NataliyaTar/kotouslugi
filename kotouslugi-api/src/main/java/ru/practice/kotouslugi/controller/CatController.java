@@ -19,7 +19,7 @@ import ru.practice.kotouslugi.service.CatService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/catService")
+@RequestMapping("/api/cat")
 @Tag(name = "CatController", description = "Методы для работы с АПИ пользователей")
 public class CatController extends BaseController {
     private final CatService catService;
@@ -28,7 +28,7 @@ public class CatController extends BaseController {
     this.catService = catService;
   }
 
-    @GetMapping(value = "listCat", produces = "application/json")
+    @GetMapping(value = "/list", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список котов", tags = {"Кошачье АПИ"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
@@ -38,7 +38,7 @@ public class CatController extends BaseController {
       return catService.listCat();
     }
 
-    @PostMapping(value = "addCat", produces = "application/json")
+    @PostMapping(value = "/add", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Добавить кота", tags = {"Кошачье АПИ"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
@@ -48,7 +48,7 @@ public class CatController extends BaseController {
         return wrapper((s) -> catService.addCat(cat));
     }
 
-    @GetMapping(value = "getCat", produces = "application/json")
+    @GetMapping(value = "/get", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить кота по идентификатору", tags = {"Кошачье АПИ"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),

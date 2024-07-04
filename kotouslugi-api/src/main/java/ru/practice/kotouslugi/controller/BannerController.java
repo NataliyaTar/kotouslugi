@@ -19,7 +19,7 @@ public class BannerController {
       this.bannerService = bannerService;
     }
 
-    @GetMapping(value = "listBanner", produces = "application/json")
+    @GetMapping(value = "/list", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список баннеров", tags = {"Тестовые запросы"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),

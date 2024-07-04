@@ -51,7 +51,7 @@ public class ProductServiceController extends BaseController {
         });
     }
 
-    @GetMapping(value = "listService", produces = "application/json")
+    @GetMapping(value = "/service/list", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Список сервисов котоуслуг", tags = {"Котоуслуги"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
@@ -61,7 +61,7 @@ public class ProductServiceController extends BaseController {
         return wrapper((s) -> kotoService.listServices());
     }
 
-    @GetMapping(value = "getServiceById/{id}", produces = "application/json")
+    @GetMapping(value = "/service/byId/{id}", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить сервис котоуслуг по идентификатору", tags = {"Котоуслуги"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
@@ -72,7 +72,7 @@ public class ProductServiceController extends BaseController {
         return wrapper((s) -> kotoService.getServiceById(asRequestId(id)));
     }
 
-    @GetMapping(value = "listCategories", produces = "application/json")
+    @GetMapping(value = "/service/categories", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список категорий", tags = {"Котоуслуги"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
