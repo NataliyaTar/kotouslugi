@@ -24,6 +24,18 @@ node.js версии v18.19.1 и angular-cli - 17.3.1
 2. блаблабла Алена, допиши
 
 # Полезные ссылки по фронту
+## Angular
+https://angdev.ru/
+## TypeScript
+https://scriptdev.ru/book/why-typescript/
+## Реактивное программирование
+RxJS: https://rxjs.dev/guide/overview и https://angdev.ru/rxjs/about/
+Angular reactive forms: https://angdev.ru/archive/angular9/angular-reactive-forms/
+## Стили
+Sass (scss): https://sass-lang.com/documentation/syntax/#scss и https://sass-scss.ru/guide/
+## A11y
+https://developer.mozilla.org/ru/docs/Web/Accessibility
+https://habr.com/ru/articles/762186/
 ## Иконки
 https://fonts.google.com/icons?selected=Material+Icons+Outlined:drive_file_rename_outline:&icon.category=file&icon.size=24&icon.color=%234D83FA&icon.set=Material+Icons&icon.platform=web
 ## Кот Пушин
