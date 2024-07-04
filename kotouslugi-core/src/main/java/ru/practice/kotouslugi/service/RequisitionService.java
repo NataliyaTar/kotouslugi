@@ -2,6 +2,7 @@ package ru.practice.kotouslugi.service;
 
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
+import ru.practice.kotouslugi.dao.KotoServiceRepository;
 import ru.practice.kotouslugi.exception.ServiceException;
 import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
@@ -13,14 +14,18 @@ import java.util.List;
 @Service
 public class RequisitionService {
     private final RequisitionRepository requisitionRepository;
+    private final KotoServiceRepository kotoServiceRepository;
 
-    public RequisitionService(RequisitionRepository requisitionRepository) {
+    public RequisitionService(RequisitionRepository requisitionRepository,
+                              KotoServiceRepository kotoServiceRepository) {
       this.requisitionRepository = requisitionRepository;
+      this.kotoServiceRepository = kotoServiceRepository;
     }
 
     public List<Requisition> listRequisition() {
         List<Requisition> result = new LinkedList<>();
         Iterable<Requisition> requisitions = requisitionRepository.findAll();
+        requisitions.forEach(r -> r.setName(kotoServiceRepository.findTitleByServiceMnemonic(r.getMnemonic())));
         requisitions.forEach(result::add);
         return result;
     }
