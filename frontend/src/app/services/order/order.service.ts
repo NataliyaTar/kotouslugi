@@ -14,7 +14,8 @@ export class OrderService {
 
   constructor(
     public http: HttpClient,
-  ) { }
+  ) {
+  }
 
   /**
    * Возвращает список заявок
@@ -37,24 +38,31 @@ export class OrderService {
    * @param rawValue - значение из формы
    */
   public saveOrder(mnemonicService: string, rawValue: any): Observable<any> {
-    let res: {[key: string]: any} = {
+    let res: { [key: string]: any } = {
       mnemonic: mnemonicService
     };
+    let fields = <any>[];
 
     Object.keys(rawValue).forEach((step, index) => {
-      let stepValue: {[key: string]: string | number} = {};
+      let stepValue: { [key: string]: string | number } = {
+        id: index
+      };
 
       Object.keys(rawValue[step]).forEach(key => {
         let value = rawValue[step][key];
         try {
           value = JSON.parse(value)?.id ?? value;
-        } catch (error) {}
+        } catch (error) {
+        }
         Object.assign(stepValue, {[key]: value});
       });
 
-      Object.assign(res, {[step]: stepValue});
+      fields.push(stepValue);
     });
 
+    Object.assign(res, {fields: fields});
+
+    console.log(res);
     return this.http.post(`${this.orderApi}createRequisition`, res);
   }
 
