@@ -21,7 +21,7 @@ export class OrderService {
    * Возвращает список заявок
    */
   public getOrdersList(): Observable<IOrder[]> {
-    return this.http.get<IOrder[]>(`${this.orderApi}listRequisition`);
+    return this.http.get<IOrder[]>(`${this.orderApi}list`);
   }
 
   /**
@@ -60,10 +60,10 @@ export class OrderService {
       fields.push(stepValue);
     });
 
-    Object.assign(res, {fields: fields});
+    Object.assign(res, {fields: JSON.stringify(fields)});
 
     console.log(res);
-    return this.http.post(`${this.orderApi}createRequisition`, res);
+    return this.http.post(`${this.orderApi}create`, res);
   }
 
 }

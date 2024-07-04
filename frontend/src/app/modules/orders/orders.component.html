@@ -17,8 +17,9 @@
               <img [src]="getIconPath(order.status)" class="icon">
             </div>
             <div class="flex-0">
-              <p>Ваша заявка по услуге <b>«{{order.title}}»</b></p>
+              <p>Ваша заявка по услуге <b>«{{order.name}}»</b></p>
               <p class="mt-16">В статусе: {{getStatus(order.status)}}</p>
+              <p class="mt-16">От : {{getDate(order.created)}}</p>
             </div>
           </div>
         </div>

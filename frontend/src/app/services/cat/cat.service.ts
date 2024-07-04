@@ -10,7 +10,7 @@ import { EBreedMap, ESexMap, ICat, TBreed, TSex } from '@models/cat.model';
 })
 export class CatService {
 
-  private catApi = '/catService/';
+  private catApi = 'api/cat/';
 
   constructor(
     public http: HttpClient,
@@ -20,7 +20,7 @@ export class CatService {
    * Возвращает список котов
    */
   public getCatList(): Observable<ICat[]> {
-    return this.http.get<ICat[]>(`${this.catApi}listCat`);
+    return this.http.get<ICat[]>(`${this.catApi}list`);
   }
 
   /**
@@ -44,7 +44,7 @@ export class CatService {
    * @param catInfo - данные с формы
    */
   public addCat(catInfo: any) {
-    return this.http.post<ICat>(`${this.catApi}addCat`, this.prepareInfo(catInfo));
+    return this.http.post<ICat>(`${this.catApi}add`, this.prepareInfo(catInfo));
   }
 
   /**

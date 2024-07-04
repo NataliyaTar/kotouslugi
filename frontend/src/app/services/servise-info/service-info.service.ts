@@ -21,7 +21,7 @@ export class ServiceInfoService {
   // хранение формы для использования из разных компонентов
   public servicesForms$ = new BehaviorSubject<IServiceForms>(null);
 
-  private serviceApi = '/api/';
+  private serviceApi = '/api/service/';
 
   constructor(
     private http: HttpClient,
@@ -31,7 +31,7 @@ export class ServiceInfoService {
    * Возвращает список услуг
    */
   public getServices(): Observable<IService[]> {
-    return this.http.get<IService[]>(`${this.serviceApi}listService`);
+    return this.http.get<IService[]>(`${this.serviceApi}list`);
   }
 
   /**

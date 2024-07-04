@@ -2,8 +2,11 @@
 
 export interface IOrder {
   id: string;
-  title: string;
-  status: TStatus
+  name: string;
+  mnemonic: string;
+  status: TStatus;
+  created: string; // as Data()
+  fields: string; // данные заполнения
 }
 
 export type TStatus = 'FILED' | 'UNDER_CONSIDERATION' | 'REJECTED' | 'ACCEPTED' | 'DONE';
