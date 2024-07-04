@@ -22,6 +22,8 @@ node.js версии v18.19.1 и angular-cli - 17.3.1
 # Как запустить бэк
 1. install мавен
 2. блаблабла Алена, допиши
+## Swagger
+http://localhost:8080/swagger-ui/index.html#/
 
 # Полезные ссылки по фронту
 ## Angular
@@ -30,6 +32,7 @@ https://angdev.ru/
 https://scriptdev.ru/book/why-typescript/
 ## Реактивное программирование
 RxJS: https://rxjs.dev/guide/overview и https://angdev.ru/rxjs/about/
+
 Angular reactive forms: https://angdev.ru/archive/angular9/angular-reactive-forms/
 ## Стили
 Sass (scss): https://sass-lang.com/documentation/syntax/#scss и https://sass-scss.ru/guide/
