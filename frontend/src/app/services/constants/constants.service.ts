@@ -3,6 +3,7 @@ import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex
 import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
 import { IValue } from '@models/common.model';
+import { IValueName } from '@models/common.model';
 
 @Injectable({
   providedIn: 'root'
@@ -78,6 +79,30 @@ export class ConstantsService {
     {
       id: 4,
       text: 'Дерматолог'
+    }
+  ];
+
+  // варианты мастеров
+  public groomerOptions: IValueName[] = [
+    {
+      id: 0,
+      text: 'Марина'
+    },
+    {
+      id: 1,
+      text: 'Федор'
+    },
+    {
+      id: 2,
+      text: 'Михаил'
+    },
+    {
+      id: 3,
+      text: 'Анастасия'
+    },
+    {
+      id: 4,
+      text: 'Вероника'
     }
   ];
 
