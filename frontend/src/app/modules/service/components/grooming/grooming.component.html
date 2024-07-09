@@ -42,15 +42,15 @@
                (invalid)="getControl(0, 'email').invalid">
       </div>
     </div>
-    <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
       <div class="field">
         <div>
           <p class="label">Мастер</p>
-          @if (getControl(2, 'groomer')?.errors?.['required'] && getControl(2, 'groomer')?.touched) {
+          @if (getControl(1, 'groomer')?.errors?.['required'] && getControl(1, 'groomer')?.touched) {
             <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
-        <select formControlName="groomer" (invalid)="getControl(2, 'groomer').invalid">
+        <select formControlName="groomer" (invalid)="getControl(1, 'groomer').invalid">
           @for (groom of groomerOptions; track $index) {
             <option [value]="getItem('groom', $index)">{{groom.text}}</option>
           }
@@ -59,25 +59,25 @@
       <div class="field">
         <div>
           <p class="label">Дата</p>
-          @if (getControl(2, 'date').errors && getControl(2, 'date').touched) {
-            @if (getControl(2, 'date').errors?.['required']) {
+          @if (getControl(1, 'date').errors && getControl(1, 'date').touched) {
+            @if (getControl(1, 'date').errors?.['required']) {
               <p class="error">Поле обязательно для заполнения</p>
             }
-            @if (getControl(2, 'date').errors?.['minDate']) {
+            @if (getControl(1, 'date').errors?.['minDate']) {
               <p class="error">Выберите дату в будущем</p>
             }
           }
         </div>
-        <input formControlName="date" type="date" (invalid)="getControl(2, 'date').invalid">
+        <input formControlName="date" type="date" (invalid)="getControl(1, 'date').invalid">
       </div>
       <div class="field">
         <div>
           <p class="label">Время</p>
-          @if (getControl(2, 'time').errors?.['required'] && getControl(2, 'time').touched) {
+          @if (getControl(1, 'time').errors?.['required'] && getControl(1, 'time').touched) {
             <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
-        <input formControlName="time" type="time" list="time_list" (invalid)="getControl(2, 'time').invalid">
+        <input formControlName="time" type="time" list="time_list" (invalid)="getControl(1, 'time').invalid">
         <datalist id="time_list">
           <option value="10:00">
           <option value="11:30">
@@ -90,7 +90,7 @@
       </div>
     </div>
 
-    @if (active === 3) {
+    @if (active === 2) {
       <app-check-info [data]="getResult"></app-check-info>
     }
   </div>
