@@ -12,17 +12,17 @@ import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
 export enum FormMap {
-  cat  = 'Кличка',
+  cat = 'Кличка',
   telephone = 'Телефон для связи',
   email = 'Email для связи',
   indications = 'Показания к вакцинации',
-  typeofvaccin = 'Тип вакцинации',
+  typeOfVaccine = 'Тип вакцинации',
   date = 'Дата',
   time = 'Время'
 }
 
 @Component({
-  selector: 'app-vaccin',
+  selector: 'app-vaccine',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -30,16 +30,16 @@ export enum FormMap {
     JsonPipe,
     ThrobberComponent,
   ],
-  templateUrl: './vaccin.component.html',
-  styleUrl: './vaccin.component.scss'
+  templateUrl: './vaccine.component.html',
+  styleUrl: './vaccine.component.scss'
 })
-export class VaccinComponent implements OnInit, OnDestroy {
+export class VaccineComponent implements OnInit, OnDestroy {
 
   public loading = true; // загружена ли информация для страницы
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
-  public typeofvaccinOptions = this.constantService.typeofvaccinOptions; // список специальностей докторов
+  public typeOfVaccineOption = this.constantService.typeOfVaccineOptions;
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
@@ -126,7 +126,7 @@ export class VaccinComponent implements OnInit, OnDestroy {
         indications: ['', [Validators.required, Validators.max(256)]]
       }),
       2: this.fb.group({
-        typeofvaccin: [JSON.stringify(this.typeofvaccinOptions[0]), [Validators.required]],
+        typeOfVaccine: [JSON.stringify(this.typeOfVaccineOption[0]), [Validators.required]],
         date: ['', [Validators.required, this.dateValidator]],
         time: ['', [Validators.required]]
       })
@@ -146,7 +146,7 @@ export class VaccinComponent implements OnInit, OnDestroy {
    */
   private dateValidator(control: FormControl) {
     if (new Date(control.value) < new Date()) {
-      return {minDate: true};
+      return { minDate: true };
     }
 
     return false;
@@ -157,12 +157,13 @@ export class VaccinComponent implements OnInit, OnDestroy {
    * @param type
    * @param index
    */
-  public getItem(type: 'cat' | 'typ', index: number): string {
+  public getItem(type: 'cat' | 'indications' | 'typeOfVaccine', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
+    } else if (type === 'typeOfVaccine') {
+      return JSON.stringify(this.typeOfVaccineOption[index]);
     }
-
-    return JSON.stringify(this.typeofvaccinOptions[index]);
+    return '';
   }
 
   /**

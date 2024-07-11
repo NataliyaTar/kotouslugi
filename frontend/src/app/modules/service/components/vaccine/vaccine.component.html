@@ -1,3 +1,4 @@
+
 @if (loading) {
   <app-throbber></app-throbber>
 } @else {
@@ -28,7 +29,7 @@
             }
           }
         </div>
-        <input formControlName="telephone" placeholder="12345678901"
+        <input formControlName="telephone" placeholder="8(800)-535-35-35"
               (invalid)="getControl(0, 'telephone').invalid">
       </div>
       <div class="field">
@@ -38,7 +39,7 @@
             <p class="error">Введите 11 цифр</p>
           }
         </div>
-        <input formControlName="email" type="email" placeholder="abc@dfg.ru"
+        <input formControlName="email" type="email" placeholder="mya@murrr.mur"
               (invalid)="getControl(0, 'email').invalid">
       </div>
     </div>
@@ -62,14 +63,14 @@
     <div class="field">
       <div>
         <p class="label">Специалист</p>
-        @if (getControl(2, 'typeofvaccin')?.errors?.['required'] && getControl(2, 'typeofvaccin')?.touched) {
+        @if (getControl(2, 'indications')?.errors?.['required'] && getControl(2, 'indications')?.touched) {
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="typeofvaccin" (invalid)="getControl(2, 'typeofvaccin').invalid">
-        @for (typ of typeofvaccinOptions; track $index) {
-          <option [value]="getItem('typ', $index)">{{typ.text}}</option>
-        }
+      <select formControlName="typeOfVaccine" (invalid)="getControl(2, 'typeOfVaccine').invalid">
+        @for (ty of typeOfVaccineOption; track $index) {
+          <option [value]="getItem('typeOfVaccine', $index)">{{ty.text}}</option>
+          }
       </select>
     </div>
     <div class="field">

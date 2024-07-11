@@ -80,8 +80,9 @@ export class ConstantsService {
       text: 'Дерматолог'
     }
   ];
- // типы вакцинации
-  public typeofvaccinOptions: IValue[] = [
+
+  // варианты вакцин
+  public typeOfVaccineOptions: IValue[] = [
     {
       id: 0,
       text: 'Против бешенства'
@@ -103,6 +104,7 @@ export class ConstantsService {
       text: 'Против хламидиоза'
     }
   ];
+
   constructor(
     private catService: CatService,
   ) { }
@@ -119,9 +121,9 @@ export class ConstantsService {
         const female: IValueCat[] = [];
         res.forEach(item => {
           if (item.sex === 'male') {
-            male.push({id: item.id, text: item.name});
+            male.push({ id: item.id, text: item.name });
           } else {
-            female.push({id: item.id, text: item.name});
+            female.push({ id: item.id, text: item.name });
           }
         });
         return of({
@@ -135,7 +137,7 @@ export class ConstantsService {
   /**
    * Возвращает список котов, преобразовывая ответ для использования в dropdown
    */
-  public getCatOptionsAll():  Observable<IValueCat[]> {
+  public getCatOptionsAll(): Observable<IValueCat[]> {
     return this.catService.getCatList().pipe(
       take(1)
     ).pipe(
