@@ -56,7 +56,7 @@ values (3,
         'grooming',
         'wash.webp',
         'Груминг',
-        '');
+        'Запишись, чтобы сиять от усов до хвоста');
 
 -- category
 INSERT INTO category
