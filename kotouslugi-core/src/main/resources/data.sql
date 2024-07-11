@@ -66,7 +66,7 @@ values (1, 'Медицина');
 INSERT INTO category
 values (2, 'Отдых и развлечение');
 INSERT INTO category
-values (3, 'Уход');
+values (4, 'Уход');
 
 -- service_to_category
 INSERT INTO service_category
@@ -76,4 +76,4 @@ values (1, 1);
 INSERT INTO service_category
 values (2, 2);
 INSERT INTO service_category
-values (3, 3);
+values (4, 4);
