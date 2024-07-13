@@ -1,12 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { IValueCat } from '@models/cat.model';
+import { IVaccineType } from '@models/vaccine.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
 import { CatService } from '@services/cat/cat.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
+import { VaccineService } from '@services/vaccine/vaccine.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
@@ -58,11 +60,13 @@ export class VaccineComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private catService: CatService,
     private constantService: ConstantsService,
+    private vaccineService: VaccineService
   ) {
   }
 
   public ngOnInit(): void {
     this.getCatOption();
+    this.getVaccineOptions();
   }
 
   public ngOnDestroy() {
@@ -81,6 +85,17 @@ export class VaccineComponent implements OnInit, OnDestroy {
       this.optionsCat = res;
 
       this.prepareService();
+    });
+  }
+
+   /**
+   * Запрашиваем список вакцин с сервера
+   */
+  private getVaccineOptions(): void {
+    this.vaccineService.getVaccineTypes().pipe(
+      take(1)
+    ).subscribe((res: any[]) => {
+      this.typeOfVaccineOption = res;
     });
   }
 

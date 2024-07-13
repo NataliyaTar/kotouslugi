@@ -63,15 +63,10 @@
     <div class="field">
       <div>
         <p class="label">Тип вакцины</p>
-        @if (getControl(2, 'indications')?.errors?.['required'] && getControl(2, 'indications')?.touched) {
-          <p class="error">Поле обязательно для заполнения</p>
-        }
+        <select formControlName="typeOfVaccine" (invalid)="getControl(2, 'typeOfVaccine').invalid">
+          <option *ngFor="let ty of typeOfVaccineOption; let i = index" [value]="getItem('typeOfVaccine', i)">{{ ty.name }}</option>
+        </select>
       </div>
-      <select formControlName="typeOfVaccine" (invalid)="getControl(2, 'typeOfVaccine').invalid">
-        @for (ty of typeOfVaccineOption; track $index) {
-          <option [value]="getItem('typeOfVaccine', $index)">{{ty.text}}</option>
-          }
-      </select>
     </div>
     <div class="field">
       <div>

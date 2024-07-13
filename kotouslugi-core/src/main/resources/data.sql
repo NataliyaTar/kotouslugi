@@ -73,4 +73,4 @@ values (1, 1);
 INSERT INTO service_category
 values (2, 2);
 INSERT INTO service_category
-values (3, 2);
+values (3, 1);
