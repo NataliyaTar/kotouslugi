@@ -1,0 +1,34 @@
+<!--Файл трогаем :)-->
+
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem('cat', $index)">{{option.text}}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <!-- второе окно -->
+
+    </div>
+    <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+      <!-- третье окно -->
+    </div>
+
+    @if (active === 3) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+  </div>
+}
