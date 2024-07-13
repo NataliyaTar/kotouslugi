@@ -17,8 +17,15 @@ values (2,
         'Хотите завести котёнка?',
         'Услуга «Укотоение» поможет подобрать кото-приют и котёнка',
         'hugs.png');
+/* Баннер для К-ЕГЭ */
+INSERT INTO banner (id, bg, title, text, imgurl)
+values (3,
+        'linear-gradient(86deg, #EDF2FE 0%, #FFDDE8 100%)',
+        'Узнайте результаты К-ЕГЭ!',
+        'Новая услуга «Результаты К-ЕГЭ» отобразит текущие баллы по экзаменам и поможет с выбором подходящего Кото-Вуза',
+        'read.png');
 
-/*-- cat
+/*-- cat*/
 INSERT INTO cat (id, name, age, sex, breed)
 values (0,
         'Феликс',
@@ -30,7 +37,7 @@ values (1,
         'Муся',
         '1',
         'female',
-        'maine_coon');*/
+        'maine_coon');
 
 -- service
 INSERT INTO service(id, mnemonic, icon, title, description)
@@ -51,6 +58,13 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+/* Котоуслуга "К-ЕГЭ" */
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'education',
+        'student.png',
+        'Результаты К-ЕГЭ',
+        'Узнай баллы по К-ЕГЭ и выбери подходящий для поступления Кото-ВУЗ вместе с котоуслугами!');
 
 -- category
 INSERT INTO category
@@ -59,6 +73,9 @@ INSERT INTO category
 values (1, 'Медицина');
 INSERT INTO category
 values (2, 'Отдых и развлечение');
+/* Категория для К-ЕГЭ */
+INSERT INTO category
+values (3, 'Образование');
 
 -- service_to_category
 INSERT INTO service_category
@@ -67,3 +84,6 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+/* Для К-ЕГЭ */
+INSERT INTO service_category
+values (3, 3);
