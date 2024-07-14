@@ -81,30 +81,6 @@ export class ConstantsService {
     }
   ];
 
-  // варианты вакцин
-  public typeOfVaccineOptions: IValue[] = [
-    {
-      id: 0,
-      text: 'Против бешенства'
-    },
-    {
-      id: 1,
-      text: 'Против калицивироза'
-    },
-    {
-      id: 2,
-      text: 'Против панлейкопении'
-    },
-    {
-      id: 3,
-      text: 'Против бордетеллеза'
-    },
-    {
-      id: 4,
-      text: 'Против хламидиоза'
-    }
-  ];
-
   constructor(
     private catService: CatService,
   ) { }
