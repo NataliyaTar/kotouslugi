@@ -1,3 +1,11 @@
+-- Вставка данных в таблицу `vaccine`
+INSERT INTO vaccine (id, name) VALUES
+(0, 'Против бешенства'),
+(1, 'Против калицивироза'),
+(2, 'Против панлейкопении'),
+(3, 'Против бордетеллеза'),
+(4, 'Против хламидиоза');
+
 -- banners
 INSERT INTO banner (id, bg, title, text, imgurl)
 values (0,

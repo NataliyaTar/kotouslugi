@@ -41,7 +41,7 @@ export class VaccineComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
-  public typeOfVaccineOption = this.constantService.typeOfVaccineOptions;
+  public typeOfVaccineOptions: IVaccineType[]; // список вакцин
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
@@ -52,6 +52,23 @@ export class VaccineComponent implements OnInit, OnDestroy {
    */
   public get getResult() {
     return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
+  }
+
+  public getTransformedResult(): any {
+    const rawValue = this.form.getRawValue();
+    const transformedValue = { ...rawValue };
+
+    if (transformedValue[2] && transformedValue[2].typeOfVaccine) {
+      try {
+        const vaccine = JSON.parse(transformedValue[2].typeOfVaccine);
+        transformedValue[2].typeOfVaccine = vaccine.name;
+      } catch (error) {
+        console.error('Error parsing vaccine JSON:', error);
+        transformedValue[2].typeOfVaccine = 'Unknown vaccine';
+      }
+    }
+
+    return this.serviceInfo.prepareDataForPreview(transformedValue, this.steps, FormMap);
   }
 
   constructor(
@@ -88,14 +105,14 @@ export class VaccineComponent implements OnInit, OnDestroy {
     });
   }
 
-   /**
-   * Запрашиваем список вакцин с сервера
-   */
+  /**
+  * Запрашиваем список вакцин с сервера
+  */
   private getVaccineOptions(): void {
     this.vaccineService.getVaccineTypes().pipe(
       take(1)
-    ).subscribe((res: any[]) => {
-      this.typeOfVaccineOption = res;
+    ).subscribe((res: IVaccineType[]) => {
+      this.typeOfVaccineOptions = res;
     });
   }
 
@@ -141,7 +158,7 @@ export class VaccineComponent implements OnInit, OnDestroy {
         indications: ['', [Validators.required, Validators.max(256)]]
       }),
       2: this.fb.group({
-        typeOfVaccine: [JSON.stringify(this.typeOfVaccineOption[0]), [Validators.required]],
+        typeOfVaccine: [JSON.stringify(this.typeOfVaccineOptions[0]), [Validators.required]],
         date: ['', [Validators.required, this.dateValidator]],
         time: ['', [Validators.required]]
       })
@@ -172,11 +189,11 @@ export class VaccineComponent implements OnInit, OnDestroy {
    * @param type
    * @param index
    */
-  public getItem(type: 'cat' | 'indications' | 'typeOfVaccine', index: number): string {
+  public getItem(type: 'cat' | 'typeOfVaccine', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
     } else if (type === 'typeOfVaccine') {
-      return JSON.stringify(this.typeOfVaccineOption[index]);
+      return JSON.stringify(this.typeOfVaccineOptions[index]);
     }
     return '';
   }
