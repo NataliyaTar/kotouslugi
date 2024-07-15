@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "cat")
 @NoArgsConstructor
 @AllArgsConstructor

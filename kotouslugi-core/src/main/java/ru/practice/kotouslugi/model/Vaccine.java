@@ -6,6 +6,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "vaccine")
 @NoArgsConstructor
 @AllArgsConstructor
