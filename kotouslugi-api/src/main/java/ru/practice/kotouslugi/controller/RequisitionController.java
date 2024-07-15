@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practice.kotouslugi.model.InsuranceInfo;
 import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.service.RequisitionService;
 
@@ -59,4 +60,14 @@ public class RequisitionController extends BaseController {
                                                    @RequestBody Requisition requisition) {
         return wrapper((s) -> requisitionService.updateRequisition(requisition));
     }
+
+  @GetMapping(value = "/insurance/info", produces = "application/json")
+  @ResponseBody
+  @Operation(summary = "Возвращение информации о стр. комп.", tags = {"Котоуслуги","Заявления"}, responses = {
+    @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+  )
+  public List<InsuranceInfo> listInsuranceInfo() {
+    return requisitionService.listInsuranceInfo();
+  }
 }

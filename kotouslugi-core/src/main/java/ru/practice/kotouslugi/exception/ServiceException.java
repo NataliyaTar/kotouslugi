@@ -1,5 +1,5 @@
 package ru.practice.kotouslugi.exception;
-//пенис (проверка ес чо)
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

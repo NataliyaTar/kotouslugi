@@ -1,9 +1,11 @@
 package ru.practice.kotouslugi.service;
 
 import org.springframework.stereotype.Service;
+import ru.practice.kotouslugi.dao.InsuranceRepository;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
 import ru.practice.kotouslugi.dao.KotoServiceRepository;
 import ru.practice.kotouslugi.exception.ServiceException;
+import ru.practice.kotouslugi.model.InsuranceInfo;
 import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
@@ -15,11 +17,14 @@ import java.util.List;
 public class RequisitionService {
     private final RequisitionRepository requisitionRepository;
     private final KotoServiceRepository kotoServiceRepository;
+    private final InsuranceRepository insuranceRepository;
 
     public RequisitionService(RequisitionRepository requisitionRepository,
-                              KotoServiceRepository kotoServiceRepository) {
+                              KotoServiceRepository kotoServiceRepository,
+                              InsuranceRepository insuranceRepository) {
       this.requisitionRepository = requisitionRepository;
       this.kotoServiceRepository = kotoServiceRepository;
+        this.insuranceRepository = insuranceRepository;
     }
 
     public List<Requisition> listRequisition() {
@@ -49,4 +54,11 @@ public class RequisitionService {
         requisitionRepository.save(updRequisition);
         return true;
     }
+
+  public List<InsuranceInfo> listInsuranceInfo() {
+    List<InsuranceInfo> list = new LinkedList<>();
+    Iterable<InsuranceInfo> requisitions = insuranceRepository.findAll();
+    requisitions.forEach(list::add);
+    return list;
+  }
 }
