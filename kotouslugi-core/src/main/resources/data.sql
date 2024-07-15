@@ -76,3 +76,11 @@ INSERT INTO service_category
 values (2, 2);
 INSERT INTO service_category
 values (3, 1);
+
+-- insurance
+INSERT INTO insurance(id, insurance_name, cash)
+values (1, 'МурЧудо Страхование', 1000);
+INSERT INTO insurance(id, insurance_name, cash)
+values (2, 'Пушистая Защита', 1500);
+INSERT INTO insurance(id, insurance_name, cash)
+values (3, 'Лапки в Безопасности', 2000);
