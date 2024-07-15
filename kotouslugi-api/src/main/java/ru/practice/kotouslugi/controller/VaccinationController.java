@@ -1,10 +1,10 @@
 package ru.practice.kotouslugi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.practice.kotouslugi.dto.VaccineDTO;
 import ru.practice.kotouslugi.model.Vaccine;
 import ru.practice.kotouslugi.service.VaccinationService;
 
@@ -27,5 +27,10 @@ public class VaccinationController {
     return ResponseEntity.ok(vaccines);
   }
 
+  @PostMapping("/add")
+  public ResponseEntity<Vaccine> addVaccine(@RequestBody VaccineDTO vaccineDTO) {
+    Vaccine newVaccine = vaccinationService.addVaccine(vaccineDTO);
+    return ResponseEntity.status(HttpStatus.CREATED).body(newVaccine);
+  }
 }
 
