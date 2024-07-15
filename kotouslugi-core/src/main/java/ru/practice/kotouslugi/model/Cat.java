@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practice.kotouslugi.model.enums.Sex;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +14,7 @@ import jakarta.persistence.Table;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "cat")
 @NoArgsConstructor
 @AllArgsConstructor
