@@ -118,8 +118,8 @@ export class GroomingComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       0: this.fb.group({
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
-        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['', [Validators.email]]
+        telephone: ['', [Validators.required, Validators.pattern(/^[\+]?\d{1}\s[\(]\d{3}[\)]\s\d{3}[\-]\d{2}[\-]\d{2}$/)]],
+        email: ['', [Validators.email, Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/)]]
       }),
       1: this.fb.group({
         groomer: [JSON.stringify(this.groomerOptions[0]), [Validators.required]],
