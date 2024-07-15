@@ -3,13 +3,15 @@ import {FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validat
 import {CheckInfoComponent} from "@components/check-info/check-info.component";
 import {ThrobberComponent} from "@components/throbber/throbber.component";
 import {ActivatedRoute, RouterModule} from "@angular/router";
-import {IValueCat} from "@models/cat.model";
+import {ICat, IValueCat} from "@models/cat.model";
 import {IStep} from "@models/step.model";
 import {Subscription, take} from "rxjs";
 import {ServiceInfoService} from "@services/servise-info/service-info.service";
 import {ConstantsService} from "@services/constants/constants.service";
-import {JsonPipe} from "@angular/common";
+import {JsonPipe, NgForOf, NgIf} from "@angular/common";
 import {CatService} from "@services/cat/cat.service";
+import {ExamService} from "@services/exam/exam.service";
+import {IExam} from "@models/exam.model";
 
 export enum FormMap { // маппинг названия поля - значение
   cat  = 'Кличка',
@@ -25,6 +27,8 @@ export enum FormMap { // маппинг названия поля - значен
     CheckInfoComponent,
     JsonPipe,
     ThrobberComponent,
+    NgForOf,
+    NgIf,
   ],
   templateUrl: './exams.component.html',
   styleUrl: './exams.component.scss'
@@ -35,8 +39,13 @@ export class ExamsComponent implements OnInit, OnDestroy  {
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
+  public examScores: IExam[] = []; // баллы ЕГЭ кота
+  public selectedCatName: string; // кличка выбранного кота
+  public errorMessage: string | null = null; // сообщение об ошибке
+  //public cats: ICat[]; // один кот
   /*public optionsSubject: IValueSubject[]; // список предметов
-  public optionsUniversity: IValueUniversity[]; // список университетов*/
+  public optionsUniversity: IValueUniversity[]; // список университетов
+  */
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
@@ -54,7 +63,8 @@ export class ExamsComponent implements OnInit, OnDestroy  {
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private constantService: ConstantsService,
-    private catService: CatService,
+    //protected catService: CatService,
+    private examService: ExamService,
   ) {
   }
 
@@ -73,7 +83,7 @@ export class ExamsComponent implements OnInit, OnDestroy  {
    */
   private getCatOption(): void {
     this.constantService.getCatOptionsAll().pipe(
-      take(1)
+        take(1)
     ).subscribe((res: IValueCat[]) => {
       this.optionsCat = res;
 
@@ -87,20 +97,20 @@ export class ExamsComponent implements OnInit, OnDestroy  {
    */
   private prepareService(): void {
     this.route.data.pipe(
-      take(1)
+        take(1)
     ).subscribe(res => {
       this.idService = res['idService'];
 
       this.serviceInfo.getSteps(this.idService).pipe(
-        take(1)
+          take(1)
       ).subscribe(res => {
         this.steps = res;
       });
 
       this.subscriptions.push(
-        this.serviceInfo.activeStep.subscribe(res => {
-          this.active = res?.[this.idService] || 0;
-        })
+          this.serviceInfo.activeStep.subscribe(res => {
+            this.active = res?.[this.idService] || 0;
+          })
       );
 
       this.initForm();
@@ -115,15 +125,23 @@ export class ExamsComponent implements OnInit, OnDestroy  {
     this.form = this.fb.group({
       0: this.fb.group({
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]]
-      })
-     /* 1: this.fb.group({
-        subject: [JSON.stringify(this.optionsSubject[0]), [Validators.required]]
       }),
-      2: this.fb.group({
-        university: [JSON.stringify(this.optionsUniversity[0]), [Validators.required]]
-      })*/
+      1: this.fb.group({
+        //
+      }),
+       /*2: this.fb.group({
+         university: [JSON.stringify(this.optionsUniversity[0]), [Validators.required]]
+       })*/
     });
 
+    // Возвращаем кличку кота
+    this.selectedCatName = this.optionsCat[0]?.text || '';
+
+    // Загрузка баллов для кота с id = 0
+    if (this.optionsCat[0]) {
+      const selectedCat = this.optionsCat[0];
+      this.loadExamScores(selectedCat.id);
+    }
 
     // сеттим значение формы в сервис
     this.serviceInfo.servicesForms$.next({
@@ -131,6 +149,39 @@ export class ExamsComponent implements OnInit, OnDestroy  {
     });
 
     this.loading = false;
+  }
+
+
+  /**
+   * Обновляет кличку выбранного кота при изменении выбора
+   */
+  public onCatSelect(): void {
+    const selectedCatValue = this.form.get('0.cat')?.value;
+    if (selectedCatValue) {
+      const selectedCat = JSON.parse(selectedCatValue) as IValueCat;
+      this.selectedCatName = selectedCat.text;
+      this.loadExamScores(selectedCat.id);
+    }
+  }
+
+  /**
+   * Загружает баллы ЕГЭ для выбранного кота
+   * @param catId ID выбранного кота
+   */
+  private loadExamScores(catId: number): void {
+    this.examService.findExamsByCatId(catId).subscribe({
+      next: (scores: IExam[]) => {
+        this.examScores = scores;
+        this.errorMessage = null;
+        if (scores.length === 0) {
+          this.errorMessage = 'У этого кота нет результатов экзаменов';
+        }
+      },
+      error: () => {
+        this.examScores = [];
+        this.errorMessage = 'Произошла ошибка при загрузке баллов К-ЕГЭ';
+      }
+    });
   }
 
   /**

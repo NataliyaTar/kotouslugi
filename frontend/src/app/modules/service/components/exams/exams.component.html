@@ -12,7 +12,7 @@
             <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
-        <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+        <select formControlName="cat" (change)="onCatSelect()">
           @for (option of optionsCat; track $index) {
             <option [value]="getItem('cat', $index)">{{option.text}}</option>
           }
@@ -21,10 +21,52 @@
     </div>
     <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
       <!-- второе окно -->
+      <div class="field">
+        <div>
+          <p class="label">Результаты К-ЕГЭ для <span class="cat-name-highlight">{{ selectedCatName }}</span></p>
+        </div>
+        <!--таблица егэ-->
+        <table class="ege-table" *ngIf="examScores.length > 0; else noExams">
+          <tbody>
+          <tr *ngFor="let exam of examScores">
+            <td>{{ exam.subjectName }}</td>
+            <td>{{ exam.score }}</td>
+          </tr>
+          </tbody>
+        </table>
+        <ng-template #noExams>
+          <p *ngIf="!errorMessage"><span class="error-highlight">У этого кота нет результатов экзаменов</span></p>
+          <p *ngIf="errorMessage"><span class="error-highlight">{{ errorMessage }}</span></p>
+        </ng-template>
+      </div>
 
-    </div>
+      </div>
+
     <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
       <!-- третье окно -->
+      <div class="field">
+        <div>
+          <p class="label">Кото-Вузы, в которые вы проходите, <span class="cat-name-highlight">{{ selectedCatName }}</span></p>
+        </div>
+        <!--таблица университетов-->
+        <table class="university-table">
+          <tbody>
+          <tr>
+            <td>МГкУ</td>
+            <td>290</td>
+          </tr>
+          <tr>
+            <td>ФГУ имени Барсика</td>
+            <td>211</td>
+          </tr>
+          <tr>
+            <td>ВГТкУ</td>
+            <td>223</td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
     </div>
 
     @if (active === 3) {

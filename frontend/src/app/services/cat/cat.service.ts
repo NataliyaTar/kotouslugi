@@ -2,8 +2,8 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { EBreedMap, ESexMap, ICat, TBreed, TSex } from '@models/cat.model';
+import {map, Observable, of} from 'rxjs';
+import {EBreedMap, ESexMap, ICat, IValueCat, TBreed, TSex} from '@models/cat.model';
 
 @Injectable({
   providedIn: 'root'
@@ -76,5 +76,17 @@ export class CatService {
       }
     });
   }
+
+  /* Простите, нужно было тронуть ваши сервисы. Только добавила свои и ничего больше :)
+  /**
+   * Возвращает кличку кота по его идентификатору
+   * @param id - идентификатор кота
+
+  public getCatName(id: number): Observable<string> {
+    return this.http.get<ICat>(`${this.catApi}${id}`).pipe(
+      map(cat => cat.name)
+    );
+  }
+  */
 
 }
