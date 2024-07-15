@@ -15,15 +15,8 @@ export class ExamService {
   ) { }
 
   /**
-   * Возвращает список экзаменов
-
-  public getExams(): Observable<IExam[]> {
-    return this.http.get<IExam[]>(`${this.examApi}list`);
-  } */
-
-  /**
-   * Возвращает баллы ЕГЭ кота по его ID
-   * @param catId ID кота
+   * Возвращает баллы К-ЕГЭ кота по его id
+   * @param catId id кота
    */
   public findExamsByCatId(catId: number): Observable<IExam[]> {
     return this.http.get<IExam[]>(`${this.examApi}cat/${catId}`);

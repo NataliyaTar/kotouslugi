@@ -1,4 +1,4 @@
-<!--Файл трогаем :)-->
+<!--Файл трогаем аккуратно :/-->
 
 @if (loading) {
   <app-throbber></app-throbber>
@@ -29,14 +29,15 @@
         <table class="ege-table" *ngIf="examScores.length > 0; else noExams">
           <tbody>
           <tr *ngFor="let exam of examScores">
-            <td>{{ exam.subjectName }}</td>
-            <td>{{ exam.score }}</td>
+            <td class="subject-name">{{ exam.subjectName }}</td>
+            <td class="score">{{ exam.score }}</td>
           </tr>
           </tbody>
         </table>
+        <!--ошибки экзаменов-->
         <ng-template #noExams>
-          <p *ngIf="!errorMessage"><span class="error-highlight">У этого кота нет результатов экзаменов</span></p>
-          <p *ngIf="errorMessage"><span class="error-highlight">{{ errorMessage }}</span></p>
+          <p *ngIf="!errorMessageStepTwo"><span class="error"></span></p>
+          <p *ngIf="errorMessageStepTwo"><span class="error">{{ errorMessageStepTwo }}</span></p>
         </ng-template>
       </div>
 
@@ -46,31 +47,24 @@
       <!-- третье окно -->
       <div class="field">
         <div>
-          <p class="label">Кото-Вузы, в которые вы проходите, <span class="cat-name-highlight">{{ selectedCatName }}</span></p>
+          Сумма баллов К-ЕГЭ для <span class="cat-name-highlight">{{ selectedCatName }}</span> =
+          <span class="total-score">{{ getTotalScore() }}</span>
         </div>
         <!--таблица университетов-->
-        <table class="university-table">
+        <table class="university-table" *ngIf="universities.length > 0; else noUniversities">
           <tbody>
-          <tr>
-            <td>МГкУ</td>
-            <td>290</td>
-          </tr>
-          <tr>
-            <td>ФГУ имени Барсика</td>
-            <td>211</td>
-          </tr>
-          <tr>
-            <td>ВГТкУ</td>
-            <td>223</td>
+          <tr *ngFor="let university of universities">
+            <td class="university-name">{{ university.universityName }}</td>
+            <td class="score">{{ university.universityScore }}</td>
           </tr>
           </tbody>
         </table>
-
+        <!--ошибки университетов-->
+        <ng-template #noUniversities>
+          <p *ngIf="!errorMessageStepThree"><span class="error"></span></p>
+          <p *ngIf="errorMessageStepThree"><span class="error">{{ errorMessageStepThree }}</span></p>
+        </ng-template>
       </div>
     </div>
-
-    @if (active === 3) {
-      <app-check-info [data]="getResult"></app-check-info>
-    }
   </div>
 }

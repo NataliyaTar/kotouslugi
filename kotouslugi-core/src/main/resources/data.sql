@@ -94,20 +94,21 @@ values (2, 2);
 INSERT INTO service_category
 values (3, 3);
 
-/*-- exams_for_cat*/
+/*-- exams_for_cat_id0*/
 INSERT INTO Exam (Exam_ID, Subject_Name, Score, ID_Cat) VALUES (1, 'Математика', 85, 0);
 INSERT INTO Exam (Exam_ID, Subject_Name, Score, ID_Cat) VALUES (2, 'Русский язык', 90, 0);
 INSERT INTO Exam (Exam_ID, Subject_Name, Score, ID_Cat) VALUES (3, 'Информатика', 73, 0);
 INSERT INTO Exam (Exam_ID, Subject_Name, Score, ID_Cat) VALUES (4, 'Физика', 100, 0);
 
 /*-- information_for_universities*/
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (1, 'МГУ имени М.В. Ломоносова', 400);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (2, 'СПбГУ', 390);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (3, 'Новосибирский государственный университет', 380);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (4, 'Томский государственный университет', 370);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (5, 'Московский физико-технический институт', 360);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (6, 'Национальный исследовательский ядерный университет "МИФИ"', 350);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (7, 'Высшая школа экономики', 340);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (8, 'Московский государственный технический университет имени Н.Э. Баумана', 330);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (9, 'Санкт-Петербургский политехнический университет Петра Великого', 320);
-INSERT INTO University (ID_University, University_Name, University_Score) VALUES (10, 'Уральский федеральный университет имени первого Президента России Б.Н. Ельцина', 310);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (1, 'МГкУ имени Барсика', 400);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (2, 'Мур-Мяу Университет', 390);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (3, 'Пушистый Государственный Университет', 380);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (4, 'Академия Лапочек и Усиков', 370);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (5, 'Ушастый Университет Наук', 360);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (6, 'КотоГрадский Институт Искусств', 350);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (7, 'Институт Котоведения', 340);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (8, 'Университет КотоГения', 330);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (9, 'Мяуксфордский Университет', 320);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (10, 'Институт Бархатных Лапок', 310);
+INSERT INTO University (ID_University, University_Name, University_Score) VALUES (11, 'Муррский Университет Инноваций', 355);

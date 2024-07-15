@@ -3,20 +3,19 @@ import {FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validat
 import {CheckInfoComponent} from "@components/check-info/check-info.component";
 import {ThrobberComponent} from "@components/throbber/throbber.component";
 import {ActivatedRoute, RouterModule} from "@angular/router";
-import {ICat, IValueCat} from "@models/cat.model";
+import {IValueCat} from "@models/cat.model";
 import {IStep} from "@models/step.model";
-import {Subscription, take} from "rxjs";
+import {catchError, of, Subscription, take} from "rxjs";
 import {ServiceInfoService} from "@services/servise-info/service-info.service";
 import {ConstantsService} from "@services/constants/constants.service";
 import {JsonPipe, NgForOf, NgIf} from "@angular/common";
-import {CatService} from "@services/cat/cat.service";
 import {ExamService} from "@services/exam/exam.service";
 import {IExam} from "@models/exam.model";
+import {IUniversity} from "@models/university.model";
+import {UniversityService} from "@services/university/university.service";
 
 export enum FormMap { // маппинг названия поля - значение
-  cat  = 'Кличка',
-  subject  = 'Предмет',
-  university = 'Университет'
+  cat  = 'Кличка'
 }
 
 @Component({
@@ -39,32 +38,23 @@ export class ExamsComponent implements OnInit, OnDestroy  {
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
-  public examScores: IExam[] = []; // баллы ЕГЭ кота
+  public examScores: IExam[] = []; // баллы К-ЕГЭ кота
+  public universities: IUniversity[] = []; // подходящие университеты
   public selectedCatName: string; // кличка выбранного кота
-  public errorMessage: string | null = null; // сообщение об ошибке
-  //public cats: ICat[]; // один кот
-  /*public optionsSubject: IValueSubject[]; // список предметов
-  public optionsUniversity: IValueUniversity[]; // список университетов
-  */
+  public errorMessageStepTwo: string | null = null; // сообщение об ошибке шага 2
+  public errorMessageStepThree: string | null = null; // сообщение об ошибке шага 3
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
-
-  /**
-   * Возвращает преобразованное значение формы для отображения заполненных данных
-   */
-  public get getResult() {
-    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
-  }
 
   constructor(
     private fb: FormBuilder,
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private constantService: ConstantsService,
-    //protected catService: CatService,
     private examService: ExamService,
+    private universityService: UniversityService
   ) {
   }
 
@@ -126,18 +116,14 @@ export class ExamsComponent implements OnInit, OnDestroy  {
       0: this.fb.group({
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]]
       }),
-      1: this.fb.group({
-        //
-      }),
-       /*2: this.fb.group({
-         university: [JSON.stringify(this.optionsUniversity[0]), [Validators.required]]
-       })*/
+      1: this.fb.group({ }),
+      2: this.fb.group({ })
     });
 
-    // Возвращаем кличку кота
+    // возвращаем кличку кота
     this.selectedCatName = this.optionsCat[0]?.text || '';
 
-    // Загрузка баллов для кота с id = 0
+    // загрузка баллов для кота с id = 0
     if (this.optionsCat[0]) {
       const selectedCat = this.optionsCat[0];
       this.loadExamScores(selectedCat.id);
@@ -150,7 +136,6 @@ export class ExamsComponent implements OnInit, OnDestroy  {
 
     this.loading = false;
   }
-
 
   /**
    * Обновляет кличку выбранного кота при изменении выбора
@@ -165,23 +150,58 @@ export class ExamsComponent implements OnInit, OnDestroy  {
   }
 
   /**
-   * Загружает баллы ЕГЭ для выбранного кота
+   * Загружает баллы ЕГЭ для выбранного кота и подходящие университеты
    * @param catId ID выбранного кота
    */
   private loadExamScores(catId: number): void {
-    this.examService.findExamsByCatId(catId).subscribe({
+    this.examService.findExamsByCatId(catId).pipe(
+      take(1)
+    ).subscribe({
       next: (scores: IExam[]) => {
         this.examScores = scores;
-        this.errorMessage = null;
+        this.errorMessageStepTwo = null;
         if (scores.length === 0) {
-          this.errorMessage = 'У этого кота нет результатов экзаменов';
+          this.errorMessageStepTwo = 'У этого кота нет результатов экзаменов :(';
         }
+        // загружаем университеты на основе суммы баллов
+        const totalScore = this.getTotalScore();
+        this.loadUniversities(totalScore);
       },
       error: () => {
         this.examScores = [];
-        this.errorMessage = 'Произошла ошибка при загрузке баллов К-ЕГЭ';
+        this.errorMessageStepTwo = 'Произошла ошибка при загрузке баллов К-ЕГЭ';
       }
     });
+  }
+
+  /**
+   * Загружает подходящие университеты на основе суммы баллов кота
+   * @param score сумма баллов кота
+   */
+  private loadUniversities(score: number): void {
+    this.universityService.findUniversitiesByScore(score).pipe(
+      take(1),
+      catchError(() => {
+        this.errorMessageStepThree = 'Произошла ошибка при загрузке университетов';
+        return of([]);
+      })
+    ).subscribe((universities: IUniversity[]) => {
+      // сортировка университетов по убыванию проходного балла
+      this.universities = universities
+        .filter(university => university.universityScore <= score)
+        .sort((a, b) => b.universityScore - a.universityScore);
+      this.errorMessageStepThree = null;
+      if (universities.length === 0) {
+        this.errorMessageStepThree = 'Нет подходящих университетов для данного кота :(';
+      }
+    });
+  }
+
+  /**
+   * Возвращает общую сумму баллов кота по экзаменам
+   */
+  protected getTotalScore(): number {
+    return this.examScores.reduce((total, exam) => total + exam.score, 0);
   }
 
   /**

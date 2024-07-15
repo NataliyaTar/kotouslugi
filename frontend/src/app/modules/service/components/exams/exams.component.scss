@@ -3,6 +3,32 @@
   font-weight: bold;
 }
 
-.error-highlight {
-  color: #EE3F58;
+.total-score {
+  color: #f1213f;
+  font-weight: bold;
 }
+
+table {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border: 3px solid #4068c4;
+
+}
+td {
+  padding: 10px;
+  border: 3px solid #4068c4;
+}
+
+td.subject-name, td.university-name {
+  text-align: left;
+  font-weight: normal;
+}
+
+td.score {
+  text-align: center;
+  font-weight: bold;
+}
+
+

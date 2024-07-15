@@ -16,8 +16,9 @@ export class UniversityService {
 
   /**
    * Возвращает список университетов по сумме баллов К-ЕГЭ котика
+   * @param score сумма баллов кота
    */
-  public findUniversitiesByScore(): Observable<IUniversity[]> {
-    return this.http.get<IUniversity[]>(`${this.universityApi}list`);
+  public findUniversitiesByScore(score: number): Observable<IUniversity[]> {
+    return this.http.get<IUniversity[]>(`${this.universityApi}eligible?score=${score}`);
   }
 }
