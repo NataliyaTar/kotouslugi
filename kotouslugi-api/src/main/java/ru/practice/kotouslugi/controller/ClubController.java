@@ -13,57 +13,53 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practice.kotouslugi.model.Cat;
-import ru.practice.kotouslugi.service.CatService;
+import ru.practice.kotouslugi.model.Club;
+import ru.practice.kotouslugi.service.ClubService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cat")
-@Tag(name = "CatController", description = "Методы для работы с АПИ пользователей")
-public class CatController extends BaseController {
-    private final CatService catService;
+@RequestMapping("/api/club")
+@Tag(name = "ClubController", description = "Методы для работы с АПИ клубами")
+public class ClubController extends BaseController{
+    private final ClubService clubService;
 
-    public CatController(CatService catService) {
-    this.catService = catService;
-  }
+    public ClubController(ClubService clubService) {this.clubService = clubService;}
 
     @GetMapping(value = "/list", produces = "application/json")
     @ResponseBody
-    @Operation(summary = "Получить список котов", tags = {"Кошачье АПИ"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+    @Operation(summary = "Получить список клубов", tags = {"АПИ Клубов"}, responses = {
+    @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public List<Cat> listCat() {
-      return catService.listCat();
-    }
+    public List<Club> listClub() {
+    return clubService.listClub();
+  }
 
     @PostMapping(value = "/add", produces = "application/json")
     @ResponseBody
-    @Operation(summary = "Добавить кота", tags = {"Кошачье АПИ"}, responses = {
+    @Operation(summary = "Добавить клуб", tags = {"АПИ Клубов"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public ResponseEntity<Long> addCat(@RequestBody Cat cat) {
-        return wrapper((s) -> catService.addCat(cat));
-    }
+    public ResponseEntity<Long> addClub(@RequestBody Club club) {return wrapper((s) -> clubService.addClub(club));}
 
     @GetMapping(value = "/get", produces = "application/json")
     @ResponseBody
-    @Operation(summary = "Получить кота по идентификатору", tags = {"Кошачье АПИ"}, responses = {
+    @Operation(summary = "Получить клуб по идентификатору", tags = {"АПИ Клубов"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public ResponseEntity<Cat> getCat(@Parameter(name = "id", required = true) @RequestParam Long id) {
-        return wrapper((s) -> catService.getCat(id));
+    public ResponseEntity<Club> getClub(@Parameter(name = "id", required = true) @RequestParam Long id) {
+      return wrapper((s) -> clubService.getClub(id));
     }
 
-    @DeleteMapping(value = "deleteCat", produces = "application/json")
-    @Operation(summary = "Удалить кота", tags = {"Кошачье АПИ"}, responses = {
+    @DeleteMapping(value = "deleteClub", produces = "application/json")
+    @Operation(summary = "Удалить клуб", tags = {"АПИ Клубов"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public void deleteCat(@RequestParam Long id) {
-        catService.deleteCat(id);
-    }
+    public void deleteClub(@RequestParam Long id) {
+    clubService.deleteClub(id);
+  }
 }
