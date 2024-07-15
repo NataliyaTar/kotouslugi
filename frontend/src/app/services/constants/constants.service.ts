@@ -81,6 +81,40 @@ export class ConstantsService {
     }
   ];
 
+   // варианты компаний
+    public CompaniesOptions: IValue[] = [
+      {
+        id: 0,
+        text: 'МурЧудо Страхование'
+      },
+      {
+        id: 1,
+        text: 'Пушистая Защита'
+      },
+      {
+        id: 2,
+        text: 'Лапки в Безопасности'
+      }
+    ];
+
+   // варианты категорий страховок
+    public CategoriesOptions: IValue[] = [
+      {
+        id: 0,
+        text: 'По болезни'
+      },
+      {
+        id: 1,
+        text: 'Травмы'
+      },
+      {
+        id: 2,
+        text: 'Ущерб третьим лицам'
+      }
+    ];
+
+
+
   constructor(
     private catService: CatService,
   ) { }

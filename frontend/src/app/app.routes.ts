@@ -36,4 +36,5 @@ export const routes: Routes = [
     path: '**',
     loadChildren: () => import('./modules/not-found/not-found.module').then(mod => mod.NotFoundModule)
   }
+
 ];
