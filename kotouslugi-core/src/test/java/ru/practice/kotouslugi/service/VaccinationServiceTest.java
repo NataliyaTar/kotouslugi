@@ -13,46 +13,46 @@ import static org.mockito.Mockito.*;
 
 public class VaccinationServiceTest {
 
-    private VaccineRepository vaccineRepository;
-    private VaccinationService vaccinationService;
+  private VaccineRepository vaccineRepository;
+  private VaccinationService vaccinationService;
 
-    @BeforeEach
-    void setUp() {
-        vaccineRepository = mock(VaccineRepository.class);
-        vaccinationService = new VaccinationService(vaccineRepository);
-    }
+  @BeforeEach
+  void setUp() {
+    vaccineRepository = mock(VaccineRepository.class);
+    vaccinationService = new VaccinationService(vaccineRepository);
+  }
 
-    @Test
-    void shouldReturnVaccineList() {
-        when(vaccineRepository.findAll()).thenReturn(getVaccineList());
+  @Test
+  void shouldReturnVaccineList() {
+    when(vaccineRepository.findAll()).thenReturn(getVaccineList());
 
-        vaccinationService.getAllVaccines();
+    vaccinationService.getAllVaccines();
 
-        verify(vaccineRepository).findAll();
-    }
+    verify(vaccineRepository).findAll();
+  }
 
-    @Test
-    void shouldAddVaccine() {
-        VaccineDTO vaccineDTO = new VaccineDTO();
-        vaccineDTO.setName("Против бешенства");
+  @Test
+  void shouldAddVaccine() {
+    VaccineDTO vaccineDTO = new VaccineDTO();
+    vaccineDTO.setName("Против бешенства");
 
-        Vaccine savedVaccine = new Vaccine();
-        savedVaccine.setName("Против бешенства");
+    Vaccine savedVaccine = new Vaccine();
+    savedVaccine.setName("Против бешенства");
 
-        when(vaccineRepository.save(any(Vaccine.class))).thenReturn(savedVaccine);
+    when(vaccineRepository.save(any(Vaccine.class))).thenReturn(savedVaccine);
 
-        Vaccine result = vaccinationService.addVaccine(vaccineDTO);
+    Vaccine result = vaccinationService.addVaccine(vaccineDTO);
 
-        verify(vaccineRepository).save(any(Vaccine.class));
-        assertEquals("Против бешенства", result.getName());
-    }
+    verify(vaccineRepository).save(any(Vaccine.class));
+    assertEquals("Против бешенства", result.getName());
+  }
 
-    private List<Vaccine> getVaccineList() {
-        return List.of(
-          Vaccine.builder()
-            .id(1L)
-            .name("Против бешенства")
-            .build()
-        );
-    }
+  private List<Vaccine> getVaccineList() {
+    return List.of(
+      Vaccine.builder()
+        .id(1L)
+        .name("Против бешенства")
+        .build()
+    );
+  }
 }
