@@ -17,8 +17,14 @@ values (2,
         'Хотите завести котёнка?',
         'Услуга «Укотоение» поможет подобрать кото-приют и котёнка',
         'hugs.png');
+INSERT INTO banner (id, bg, title, text, imgurl)
+values (3,
+        'linear-gradient(86deg, #EDF2FE 0%, #D7E7FF 100%)',
+        'Как избавится от перекати-поле в доме?',
+        'Услуга «Груминг» поможет подобрать необходимый уход за кошечкой',
+        'cinema.png');
 
-/*-- cat
+/*--
 INSERT INTO cat (id, name, age, sex, breed)
 values (0,
         'Феликс',
@@ -30,8 +36,8 @@ values (1,
         'Муся',
         '1',
         'female',
-        'maine_coon');*/
-
+        'maine_coon');
+--*/
 -- service
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (0,
@@ -56,8 +62,7 @@ values (3,
         'grooming',
         'wash.webp',
         'Груминг',
-        'Запишись, чтобы сиять от усов до хвоста');
-
+        'Устали от бесконечной линьки? Пора начать ухаживать за собой');
 -- category
 INSERT INTO category
 values (0, 'Семья и дети');
