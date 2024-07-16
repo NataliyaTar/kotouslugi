@@ -24,8 +24,8 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
         @if (getControl(0, 'telephone').errors?.['pattern']) {
-        <p class="error">Введите 11 цифр</p>
-        }
+          <p class="error">Введите 11 цифр</p>
+         }
         }
       </div>
       <input formControlName="telephone" placeholder="88005355555"
@@ -38,7 +38,7 @@
         <p class="error">Введите 11 цифр</p>
         }
       </div>
-      <input formControlName="email" type="email" placeholder="abc@dfg.ru"
+      <input formControlName="email" type="email" placeholder="cat@milk.ru"
              (invalid)="getControl(0, 'email').invalid">
     </div>
   </div>
@@ -60,7 +60,7 @@
       <div>
         <p class="label">Категория страхования</p>
         @if (getControl(1, 'category')?.errors?.['required'] && getControl(1, 'category')?.touched) {
-        <p class="error">Поле обязательно для заполнения</p>
+          <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
       <select formControlName="category" (invalid)="getControl(1, 'category').invalid">
@@ -76,9 +76,9 @@
         @if (getControl(1, 'date').errors?.['required']) {
         <p class="error">Поле обязательно для заполнения</p>
         }
-        @if (getControl(1, 'date').errors?.['minDate']) {
-        <p class="error">Выберите дату в будущем</p>
-        }
+         @if (getControl(1, 'date').errors?.['minDate']) {
+            <p class="error">Выберите дату в будущем</p>
+          }
         }
       </div>
       <input formControlName="date" type="date" (invalid)="getControl(1, 'date').invalid">
@@ -87,7 +87,7 @@
       <div>
         <p class="label">Длительность страховки (в месяцах)</p>
         @if (getControl(1, 'duration').errors && getControl(1, 'duration').touched) {
-          @if (getControl(1, 'duration').errors?.['required']) {
+         @if (getControl(1, 'duration').errors?.['required']) {
             <p class="error">Поле обязательно для заполнения</p>
           }
         }
@@ -98,7 +98,7 @@
     <div class="field">
       <div>
         <p class="label">Стоимость страховки</p>
-        {{getSumm()}}
+        <input formControlName="cash" type="text" [readonly]="true" [value]="getSumm()">
       </div>
     </div>
   </div>
@@ -107,3 +107,4 @@
   }
 </div>
 }
+

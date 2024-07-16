@@ -5,7 +5,7 @@ export interface IInsurance {
 }
 
 export enum TCash {
-  first = 1000,
-  second = 1500,
-  third = 2000
+  first = 300,
+  second = 350,
+  third = 450
 }

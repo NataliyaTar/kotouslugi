@@ -51,9 +51,16 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
   /**
    * Возвращает преобразованное значение формы для отображения заполненных данных
    */
-  public get getResult() {
-    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
-  }
+public get getResult() {
+  // Получаем значения формы
+  const formData = this.form.getRawValue();
+  const insuranceName = JSON.parse(formData['1']['company']).insuranceName;
+  // Вычисляем cash и company
+  formData['1']['cash'] = this.getSumm();
+  formData['1']['company'] = insuranceName;
+  // Подготавливаем данные для предварительного просмотра
+  return this.serviceInfo.prepareDataForPreview(formData, this.steps, FormMap);
+}
 
   constructor(
     private fb: FormBuilder,
@@ -142,8 +149,9 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
         company: [JSON.stringify(this.CompaniesOptions[0]), [Validators.required]],
         category: [JSON.stringify(this.CategoriesOptions[0]), [Validators.required]],
         duration: ['', [Validators.required, Validators.pattern(/^\d{1,3}$/)]],
-        cash: ['', [Validators.required, Validators.pattern(/^\d{1,5}$/)]],
-        date: ['', [Validators.required, this.dateValidator]]
+        date: ['', [Validators.required, this.dateValidator]],
+        cash: ['0']
+      //  cash: ['']
       })
     });
     this.serviceInfo.servicesForms$.next({
