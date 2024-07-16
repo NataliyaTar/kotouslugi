@@ -1,0 +1,69 @@
+
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat" (change)="onCatSelect()">
+          @for (option of optionsCat; let index = $index; track option.id) {
+            <option [value]="getItem('cat', index)">{{ option.text }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <!-- второе окно -->
+      <div class="field">
+        <div>
+          <p class="label">Результаты К-ЕГЭ для <span class="cat-name-highlight">{{ selectedCatName }}</span></p>
+        </div>
+        <!--таблица егэ-->
+        @if (examScores.length > 0) {
+          <table>
+            <tbody>
+              @for (exam of examScores; track exam.examId) {
+                <tr>
+                  <td class="subject-name">{{ exam.subjectName }}</td>
+                  <td class="score">{{ exam.score }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p><span class="error">{{ errorMessageStepTwo || 'У этого кота нет результатов экзаменов :(' }}</span></p>
+        }
+      </div>
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+      <div class="field">
+        <div>
+          Сумма баллов К-ЕГЭ для <span class="cat-name-highlight">{{ selectedCatName }}</span> =
+          <span class="total-score">{{ getTotalScore() }}</span>
+        </div>
+        @if (universities.length > 0) {
+          <table>
+            <tbody>
+              @for (university of universities; track university.id) {
+                <tr>
+                  <td class="university-name">{{ university.universityName }}</td>
+                  <td class="score">{{ university.universityScore }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p><span class="error">{{ errorMessageStepThree || 'Нет подходящих университетов для данного кота :(' }}</span></p>
+        }
+      </div>
+    </div>
+  </div>
+}
