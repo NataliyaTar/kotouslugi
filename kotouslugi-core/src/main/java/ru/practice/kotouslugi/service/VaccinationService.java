@@ -17,7 +17,7 @@ public class VaccinationService {
   }
 
     public List<Vaccine> getAllVaccines() {
-      return vaccineRepository.findAll();
+      return (List<Vaccine>) vaccineRepository.findAll();
     }
 
     public Vaccine addVaccine(VaccineDTO vaccineDTO) {
