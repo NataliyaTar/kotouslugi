@@ -47,6 +47,10 @@ export class VaccineComponent implements OnInit, OnDestroy {
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
 
+  private catOptionsLoaded = false; // флаг загрузки опций котов
+  private vaccineOptionsLoaded = false; // флаг загрузки опций вакцин
+  private stepsLoaded = false; // флаг загрузки шагов
+
   /**
    * Возвращает преобразованное значение формы для отображения заполненных данных
    */
@@ -84,6 +88,7 @@ export class VaccineComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.getCatOption();
     this.getVaccineOptions();
+    this.prepareService();
   }
 
   public ngOnDestroy() {
@@ -100,8 +105,8 @@ export class VaccineComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe((res: IValueCat[]) => {
       this.optionsCat = res;
-
-      this.prepareService();
+      this.catOptionsLoaded = true;
+      this.checkAllDataLoaded();
     });
   }
 
@@ -113,6 +118,8 @@ export class VaccineComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe((res: IVaccineType[]) => {
       this.typeOfVaccineOptions = res;
+      this.vaccineOptionsLoaded = true;
+      this.checkAllDataLoaded();
     });
   }
 
@@ -131,6 +138,8 @@ export class VaccineComponent implements OnInit, OnDestroy {
         take(1)
       ).subscribe(res => {
         this.steps = res;
+        this.stepsLoaded = true;
+        this.checkAllDataLoaded();
       });
 
       this.subscriptions.push(
@@ -138,9 +147,17 @@ export class VaccineComponent implements OnInit, OnDestroy {
           this.active = res?.[this.idService] || 0;
         })
       );
-
-      this.initForm();
     });
+  }
+
+  /**
+   * Проверка загрузки всех данных перед инициализацией формы
+   * @private
+   */
+  private checkAllDataLoaded(): void {
+    if (this.catOptionsLoaded && this.vaccineOptionsLoaded && this.stepsLoaded) {
+      this.initForm();
+    }
   }
 
   /**
