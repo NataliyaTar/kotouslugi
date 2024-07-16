@@ -21,7 +21,7 @@ public class ExamController extends BaseController {
 
   @GetMapping("/cat/{catId}")
   @ResponseBody
-  @Operation(summary = "Получить список экзаменов для кота", tags = {"АПИ для акзаменов"}, responses = {
+  @Operation(summary = "Получить список экзаменов для кота", tags = {"АПИ для экзаменов"}, responses = {
     @ApiResponse(responseCode = "200", description = "OK"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
   )
