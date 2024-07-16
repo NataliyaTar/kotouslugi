@@ -29,8 +29,8 @@ public class ApplicationsController extends BaseController{
     @GetMapping(value = "/list", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список заявок", tags = {"АПИ заявок"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
     public List<Applications> listapplications() {
       return applicationsService.listApplications();
@@ -39,24 +39,24 @@ public class ApplicationsController extends BaseController{
     @GetMapping(value = "/getAccepted", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список участников клуба", tags = {"АПИ заявок"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
     public List<Applications> listacceptedapplications(@Parameter(name = "id", required = true) @RequestParam Long id){ return applicationsService.findAcceptedApplicationsById(id); }
 
     @GetMapping(value = "/getExpectation", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список заявок в клуб", tags = {"АПИ заявок"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
     public List<Applications> listexpectationapplications(@Parameter(name = "id", required = true) @RequestParam Long id){ return applicationsService.findExpectationApplicationsById(id); }
 
     @PostMapping(value = "/add", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Добавить заявку", tags = {"АПИ заявок"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
     public ResponseEntity<Long> addApplications(@RequestBody Applications applications) {
         return wrapper((s) -> applicationsService.addApplications(applications));
@@ -65,11 +65,11 @@ public class ApplicationsController extends BaseController{
     @PostMapping(value = "/confirm", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Подтвердить заявку", tags = {"АПИ заявок"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
     public void confirmApplications(@RequestBody Long id) {
-      applicationsService.confirmApplications(id);
+        applicationsService.confirmApplications(id);
     }
 
     @PostMapping(value = "/reject", produces = "application/json")
@@ -82,7 +82,7 @@ public class ApplicationsController extends BaseController{
       applicationsService.rejectApplications(id);
     }
 
-    @DeleteMapping(value = "delete", produces = "application/json")
+    @DeleteMapping(value = "/delete", produces = "application/json")
     @Operation(summary = "Удалить заявку", tags = {"АПИ заявок"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}

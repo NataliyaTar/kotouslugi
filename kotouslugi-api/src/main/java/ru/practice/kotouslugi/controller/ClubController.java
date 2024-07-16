@@ -29,8 +29,8 @@ public class ClubController extends BaseController{
     @GetMapping(value = "/list", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список клубов", tags = {"АПИ Клубов"}, responses = {
-    @ApiResponse(responseCode = "200", description = "OK"),
-    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
     public List<Club> listClub() {
     return clubService.listClub();
@@ -39,27 +39,25 @@ public class ClubController extends BaseController{
     @PostMapping(value = "/add", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Добавить клуб", tags = {"АПИ Клубов"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
     public ResponseEntity<Long> addClub(@RequestBody Club club) {return wrapper((s) -> clubService.addClub(club));}
 
     @GetMapping(value = "/get", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить клуб по идентификатору", tags = {"АПИ Клубов"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
     public ResponseEntity<Club> getClub(@Parameter(name = "id", required = true) @RequestParam Long id) {
-      return wrapper((s) -> clubService.getClub(id));
+        return wrapper((s) -> clubService.getClub(id));
     }
 
-    @DeleteMapping(value = "deleteClub", produces = "application/json")
+    @DeleteMapping(value = "/deleteClub", produces = "application/json")
     @Operation(summary = "Удалить клуб", tags = {"АПИ Клубов"}, responses = {
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public void deleteClub(@RequestParam Long id) {
-    clubService.deleteClub(id);
-  }
+    public void deleteClub(@RequestParam Long id) {clubService.deleteClub(id);}
 }

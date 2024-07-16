@@ -27,7 +27,6 @@ public class ClubService {
     public Long addClub(Club club) {
         try {
             club = clubRepository.save(club);
-//            logger.info(String.format("Клуб %s добавлен", club.getName()));
             return club.getId();
         } catch (Exception e) {
             logger.error(e.getMessage());
