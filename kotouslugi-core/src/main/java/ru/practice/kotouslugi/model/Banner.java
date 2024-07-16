@@ -1,15 +1,15 @@
 package ru.practice.kotouslugi.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @Builder
 @Table(name = "banner")
-@NoArgsConstructor
-@AllArgsConstructor
 public class Banner {
     @Id
     @GeneratedValue
@@ -19,4 +19,5 @@ public class Banner {
     private String text;
     @Column(name="imgurl")
     private String imgUrl;
+
 }
