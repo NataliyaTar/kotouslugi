@@ -14,23 +14,21 @@ import java.util.List;
 @RequestMapping("/api/vaccination")
 public class VaccinationController {
 
-  private final VaccinationService vaccinationService;
+    private final VaccinationService vaccinationService;
 
-  @Autowired
-  public VaccinationController(VaccinationService vaccinationService) {
-    this.vaccinationService = vaccinationService;
-  }
+    public VaccinationController(VaccinationService vaccinationService) {
+        this.vaccinationService = vaccinationService;
+    }
 
-  @GetMapping("/all")
-  public ResponseEntity<List<Vaccine>> getAllVaccines() {
-    List<Vaccine> vaccines = vaccinationService.getAllVaccines();
-    return ResponseEntity.ok(vaccines);
-  }
+    @GetMapping("/all")
+    public ResponseEntity<List<Vaccine>> getAllVaccines() {
+        List<Vaccine> vaccines = vaccinationService.getAllVaccines();
+        return ResponseEntity.ok(vaccines);
+    }
 
-  @PostMapping("/add")
-  public ResponseEntity<Vaccine> addVaccine(@RequestBody VaccineDTO vaccineDTO) {
-    Vaccine newVaccine = vaccinationService.addVaccine(vaccineDTO);
-    return ResponseEntity.status(HttpStatus.CREATED).body(newVaccine);
-  }
+    @PostMapping("/add")
+    public ResponseEntity<Vaccine> addVaccine(@RequestBody VaccineDTO vaccineDTO) {
+        Vaccine newVaccine = vaccinationService.addVaccine(vaccineDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newVaccine);
+    }
 }
-
