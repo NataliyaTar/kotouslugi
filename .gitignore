@@ -13,7 +13,7 @@ frontend/yarn-error.log
 frontend/package-lock.json
 
 # IDEs and editors
-.idea/
+.idea/*
 .project
 .classpath
 .c9/
@@ -46,3 +46,6 @@ Thumbs.db
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
+kotouslugi-api/kotouslugi-api.iml
+kotouslugi-core/kotouslugi-core.iml
+kotouslugi-report-aggregate/kotouslugi-report-aggregate.iml
