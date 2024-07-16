@@ -52,7 +52,7 @@
       </div>
       <select formControlName="company" (invalid)="getControl(1, 'company').invalid">
         @for (company of CompaniesOptions; track $index) {
-        <option [value]="getItem('company', $index)">{{company.text}}</option>
+        <option [value]="getItem('company', $index)">{{company.insuranceName}}</option>
         }
       </select>
     </div>
@@ -104,8 +104,11 @@
         }
         }
       </div>
-      <input formControlName="cash" placeholder="12"
-             (invalid)="getControl(1, 'cash').invalid">
+      <select formControlName="cash" (invalid)="getControl(1, 'company').invalid">
+        @for (company of CompaniesOptions; track $index) {
+        <option [value]="getItem('company', $index)">{{company.insuranceName}}</option>
+        }
+      </select>
     </div>
   </div>
   @if (active === 2) {

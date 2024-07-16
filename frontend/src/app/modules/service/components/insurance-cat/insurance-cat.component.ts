@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { IValueCat } from '@models/cat.model';
+import { IInsurance } from '@models/insurance.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
 import { CatService } from '@services/cat/cat.service';
+import { InsuranceService } from '@services/insurance/insurance.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
@@ -40,8 +42,10 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
-  public CompaniesOptions = this.constantService.CompaniesOptions; // список траховой компании
+  public optionsInsurance: IInsurance[]; // список страховой компании
+  public CompaniesOptions = this.constantService.CompaniesOptions; // список страховой компании
   public CategoriesOptions = this.constantService.CategoriesOptions; // список категории страхования
+  public IService = new InsuranceService();
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
@@ -63,6 +67,7 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.getCatOption();
+    this.getInsuranceOption();
   }
 
   public ngOnDestroy() {
@@ -79,9 +84,20 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
       take(1)
     ).subscribe((res: IValueCat[]) => {
       this.optionsCat = res;
-
       this.prepareService();
     });
+  }
+  /**
+   * Запрашиваем цены страховых компаний
+   */
+  private getInsuranceOption(): void {
+      this.IService.getInsuranceList().pipe(
+         take(2)
+      ).subscribe(()res: IInsurance[]) => {
+         this.optionsInsurance = res;
+         //this.loading = false;
+         this.prepareService();
+      });
   }
 
   /**
@@ -142,11 +158,11 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
    * @param control
    * @private
    */
-  private dateValidator(control: FormControl) {
-    if (new Date(control.value) < new Date()) {
-      return {minDate: true};
-    }
-    return false;
+  private dateValidator(control: FormControl): { [key: string]: boolean } | null {
+      if (control.value && new Date(control.value) < new Date()) {
+          return { minDate: true };
+      }
+      return null;
   }
 
   /**

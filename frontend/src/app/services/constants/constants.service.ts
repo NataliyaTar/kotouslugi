@@ -3,6 +3,7 @@ import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex
 import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
 import { IValue } from '@models/common.model';
+import { IInsurance, TCash } from '@models/insurance.model';
 
 @Injectable({
   providedIn: 'root'
@@ -82,18 +83,21 @@ export class ConstantsService {
   ];
 
    // варианты компаний
-    public CompaniesOptions: IValue[] = [
+    public CompaniesOptions: IInsurance[] = [
       {
         id: 0,
-        text: 'МурЧудо Страхование'
+        insuranceName: 'МурЧудо Страхование',
+        cash: TCash.first
       },
       {
         id: 1,
-        text: 'Пушистая Защита'
+        insuranceName: 'Пушистая Защита',
+        cash: TCash.second
       },
       {
         id: 2,
-        text: 'Лапки в Безопасности'
+        insuranceName: 'Лапки в Безопасности',
+        cash: TCash.third
       }
     ];
 

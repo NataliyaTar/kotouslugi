@@ -17,5 +17,4 @@ public class InsuranceInfo {
   @Column(name = "insurance_name")
   private String insuranceName;
   private int cash;
-
 }
