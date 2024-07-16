@@ -1,0 +1,44 @@
+// Файл не трогаем
+
+.not-have-cat {
+    text-align: center;
+  
+    .image {
+      max-width: 150px;
+      margin-bottom: 24px;
+    }
+  
+    .text {
+      margin-top: 12px;
+    }
+  }
+
+  .club-info {
+    margin-top: 4%;
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень для эффекта поднятия */
+    max-width: 600px; /* Примерная максимальная ширина блока */
+}
+
+.club-image {
+    flex-shrink: 0; /* Изображение не будет растягиваться */
+    margin-right: 20px; /* Отступ между изображением и текстом */
+}
+
+.club-image img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.club-details {
+    flex-grow: 1; /* Текст будет занимать всё доступное пространство */
+}
+
+.club-details h2 {
+    margin-top: 0; /* Убираем верхний отступ у заголовка */
+}
