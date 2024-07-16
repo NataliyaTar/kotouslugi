@@ -28,18 +28,18 @@
             }
           }
         </div>
-<input formControlName="telephone" placeholder="Ваш телефон"
-(invalid)="getControl(0, 'telephone').invalid">
-</div>
-<div class="field">
-<div>
-<p class="label">Email для связи</p>
-@if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
-<p class="error">Проверти правильность E-mail</p>
-}
-</div>
-<input formControlName="email" type="email" placeholder="Ваш E-mail"
-(invalid)="getControl(0, 'email').invalid">
+          <input formControlName="telephone" placeholder="Формат ввода +7/8 (XXX) XXX-XX-XX"
+                 (invalid)="getControl(0, 'telephone').invalid">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Email для связи</p>
+          @if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
+            <p class="error">Проверти правильность E-mail</p>
+          }
+        </div>
+          <input formControlName="email" type="email" placeholder="Ваш E-mail"
+                 (invalid)="getControl(0, 'email').invalid">
       </div>
     </div>
     <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
