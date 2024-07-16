@@ -1,8 +1,6 @@
 @if (loading) {
 <app-throbber></app-throbber>
 } @else {
-
-
 <div class="fields-wrapper" [formGroup]="form">
   <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
     <div class="field">
@@ -44,10 +42,6 @@
              (invalid)="getControl(0, 'email').invalid">
     </div>
   </div>
-
-
-
-
   <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
     <div class="field">
       <div>
@@ -57,12 +51,11 @@
         }
       </div>
       <select formControlName="company" (invalid)="getControl(1, 'company').invalid">
-        @for (com of CompaniesOptions; track $index) {
-        <option [value]="getItem('com', $index)">{{com.text}}</option>
+        @for (company of CompaniesOptions; track $index) {
+        <option [value]="getItem('company', $index)">{{company.text}}</option>
         }
       </select>
     </div>
-
     <div class="field">
       <div>
         <p class="label">Категория страхования</p>
@@ -71,12 +64,11 @@
         }
       </div>
       <select formControlName="category" (invalid)="getControl(1, 'category').invalid">
-        @for (categ of CategoriesOptions; track $index) {
-        <option [value]="getItem('categ', $index)">{{categ.text}}</option>
+        @for (category of CategoriesOptions; track $index) {
+        <option [value]="getItem('category', $index)">{{category.text}}</option>
         }
       </select>
     </div>
-
     <div class="field">
       <div>
         <p class="label">Дата начала страховки</p>
@@ -91,15 +83,31 @@
       </div>
       <input formControlName="date" type="date" (invalid)="getControl(1, 'date').invalid">
     </div>
-
-
+    <div class="field">
+      <div>
+        <p class="label">Длительность страховки (в месяцах)</p>
+        @if (getControl(1, 'duration').errors && getControl(1, 'duration').touched) {
+        @if (getControl(1, 'duration').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        }
+      </div>
+      <input formControlName="duration" placeholder="12"
+             (invalid)="getControl(1, 'duration').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Стоимость страховки</p>
+        @if (getControl(1, 'cash').errors && getControl(1, 'cash').touched) {
+        @if (getControl(1, 'cash').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        }
+      </div>
+      <input formControlName="cash" placeholder="12"
+             (invalid)="getControl(1, 'cash').invalid">
+    </div>
   </div>
-
-
-
-
-
-
   @if (active === 2) {
   <app-check-info [data]="getResult"></app-check-info>
   }

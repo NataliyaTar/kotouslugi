@@ -1,6 +1,3 @@
-
-// Файл не трогаем
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { IValueCat } from '@models/cat.model';
@@ -20,7 +17,9 @@ export enum FormMap {
   email = 'Email для связи',
   company = 'Страховая компания',
   category = 'Категория страхования',
-  date = 'Дата'
+  duration = 'Длительность страховки',
+  date = 'Дата',
+  cash = 'Стоимость'
 }
 
 @Component({
@@ -46,15 +45,12 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
-
-
   /**
    * Возвращает преобразованное значение формы для отображения заполненных данных
    */
   public get getResult() {
     return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
   }
-
 
   constructor(
     private fb: FormBuilder,
@@ -63,7 +59,6 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
     private catService: CatService,
     private constantService: ConstantsService,
   ){
-
   }
 
   public ngOnInit(): void {
@@ -129,7 +124,9 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
       }),
       1: this.fb.group({
         company: [JSON.stringify(this.CompaniesOptions[0]), [Validators.required]],
-        category: [JSON.stringify(this.CompaniesOptions[0]), [Validators.required]],
+        category: [JSON.stringify(this.CategoriesOptions[0]), [Validators.required]],
+        duration: ['', [Validators.required, Validators.pattern(/^\d{1,3}$/)]],
+        cash: ['', [Validators.required, Validators.pattern(/^\d{1,5}$/)]],
         date: ['', [Validators.required, this.dateValidator]]
       })
     });
@@ -149,7 +146,6 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
     if (new Date(control.value) < new Date()) {
       return {minDate: true};
     }
-
     return false;
   }
 
@@ -158,15 +154,13 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
    * @param type
    * @param index
    */
-  public getItem(type: 'cat' | 'com' | 'categ', index: number): string {
+  public getItem(type: 'cat' | 'company' | 'category', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
     }
-     if (type === 'categ') {
+     if (type === 'category') {
           return JSON.stringify(this.CategoriesOptions[index]);
      }
-
-
     return JSON.stringify(this.CompaniesOptions[index]);
   }
 
@@ -178,13 +172,5 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
-
-
-
-
-
-
-
-
 
 }
