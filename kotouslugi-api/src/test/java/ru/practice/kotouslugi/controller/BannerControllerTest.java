@@ -37,7 +37,7 @@ class BannerControllerTest {
                     .id(1L)
                     .title("Хотите завести котёнка?")
                     .bg("linear-gradient(86deg, #EDF2FE 0%, #D7E7FF 100%)")
-                    .imgurl("hugs.png")
+                    .imgUrl("hugs.png")
                     .text("Услуга «Укотоение» поможет подобрать кото-приют и котёнка")
                     .build()
             )
