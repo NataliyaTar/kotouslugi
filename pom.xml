@@ -62,6 +62,8 @@
             <exclude>**/exception/*</exclude>
             <exclude>**/mapper/*</exclude>
             <exclude>**/config/*</exclude>
+            <exclude>**/config/*</exclude>
+            <exclude>**/ApiApplication.class</exclude>
           </excludes>
         </configuration>
 
