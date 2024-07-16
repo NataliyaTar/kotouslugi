@@ -45,7 +45,6 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
   public optionsInsurance: IInsurance[]; // список страховой компании
   public CompaniesOptions = this.constantService.CompaniesOptions; // список страховой компании
   public CategoriesOptions = this.constantService.CategoriesOptions; // список категории страхования
-  public IService = new InsuranceService();
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
@@ -62,6 +61,7 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private catService: CatService,
     private constantService: ConstantsService,
+    private insuranceService: InsuranceService,
   ){
   }
 
@@ -91,13 +91,13 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
    * Запрашиваем цены страховых компаний
    */
   private getInsuranceOption(): void {
-      this.IService.getInsuranceList().pipe(
-         take(2)
-      ).subscribe(()res: IInsurance[]) => {
-         this.optionsInsurance = res;
-         //this.loading = false;
-         this.prepareService();
-      });
+    this.insuranceService.getInsuranceList().pipe(
+       take(1)
+    ).subscribe((res: IInsurance[]) => {
+       this.optionsInsurance = res;
+       //this.loading = false;
+       this.prepareService();
+    });
   }
 
   /**

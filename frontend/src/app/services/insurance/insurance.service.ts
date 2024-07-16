@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { IInsurance } from '@models/insurance.model';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class InsuranceService {
   /**
    * Возвращает список страховых компаний
    */
-  public getInsuranceList(): Observable<ICat[]> {
+  public getInsuranceList(): Observable<IInsurance[]> {
     return this.http.get<IInsurance[]>(`${this.insuranceApi}insurance/info`);
   }
 }
