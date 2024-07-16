@@ -32,8 +32,6 @@ export enum FormMap { // маппинг названия поля - значен
   selector: 'app-club',
   standalone: true,
   imports: [
-    NgIf,
-    NgFor,
     ReactiveFormsModule,
     CheckInfoComponent,
     ThrobberComponent,
@@ -53,16 +51,13 @@ export class ClubComponent implements OnInit, OnDestroy {
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
-  public clubs: IValueClub[];
+  public clubs: IValueClub[]; //список клубов
   public ownerStatuses = ['Новичок', 'Владелец', 'Заводчик'];
-
-  
 
   /**
    * Возвращает преобразованное значение формы для отображения заполненных данных
    */
   public get getResult() {
-    console.log(this.form.getRawValue())
     return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
   }
 
@@ -98,7 +93,7 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.constantService.getCatOptionsAll().pipe(
      take(1)
     ).subscribe(res => {
-      if (!(res.length !=0)) {
+      if (res.length ==0) {
         this.notEnoughCats = true;
         this.loading = false;
       } else {
@@ -112,7 +107,7 @@ export class ClubComponent implements OnInit, OnDestroy {
           this.notEnoughClubs = true;
           }
         })
-  
+
       }
     });
   }
@@ -194,7 +189,7 @@ export class ClubComponent implements OnInit, OnDestroy {
 
 
   /**
-   * Возвращает контрол формы
+   * Возвращает контроль формы
    * @param step
    * @param id
    */
