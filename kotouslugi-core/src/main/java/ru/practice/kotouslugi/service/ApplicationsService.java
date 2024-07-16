@@ -27,7 +27,7 @@ public class ApplicationsService {
 
     public Long addApplications(Applications applications) {
         try {
-            applications.setStatusExpectation("Ожидание");
+            applications.setstatus("Ожидание");
             applications = applicationsRepository.save(applications);
             return null;
         } catch (Exception e) {

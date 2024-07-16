@@ -18,4 +18,7 @@ public class Club {
     private String NAME;
     private Integer NUMBER;
     private Date DATE;
+    private String description;
+    @Column(name="imgurl")
+    private String imgUrl;
 }

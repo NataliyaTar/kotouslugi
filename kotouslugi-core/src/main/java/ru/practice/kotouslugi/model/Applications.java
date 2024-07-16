@@ -21,6 +21,9 @@ public class Applications {
     @GeneratedValue
     private Long id;
     private String status;
+    private String number;
+    private String email;
+    private String role;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
         name = "application_cat",
@@ -37,7 +40,7 @@ public class Applications {
     )
     private Set<Club> clubs = new HashSet<>();
 
-  public void setStatusExpectation(String status) {
-    this.status = status;
-  }
+    public void setstatus(String status) {
+      this.status = status;
+    }
 }
