@@ -6,5 +6,5 @@ import ru.practice.kotouslugi.model.Exam;
 import java.util.List;
 
 public interface ExamRepository extends CrudRepository<Exam, Long> {
-  List<Exam> findByIdCat(Long idCat);
+    List<Exam> findByIdCat(Long idCat);
 }

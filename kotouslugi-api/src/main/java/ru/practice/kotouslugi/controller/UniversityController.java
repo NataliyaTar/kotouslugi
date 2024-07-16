@@ -13,19 +13,19 @@ import java.util.List;
 @RequestMapping("/api/university")
 @Tag(name = "UniversityController", description = "Методы для работы с АПИ университетов")
 public class UniversityController extends BaseController {
-  private final UniversityService universityService;
+    private final UniversityService universityService;
 
-  public UniversityController(UniversityService universityService) {
-    this.universityService = universityService;
-  }
+    public UniversityController(UniversityService universityService) {
+      this.universityService = universityService;
+    }
 
-  @GetMapping("/eligible")
-  @ResponseBody
-  @Operation(summary = "Получить список университетов подходящих по сумме баллов для кота", tags = {"АПИ для экзаменов"}, responses = {
-    @ApiResponse(responseCode = "200", description = "ОК"),
-    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
-  )
-  public List<University> findUniversitiesByScore(@RequestParam Integer score) {
-    return universityService.findUniversitiesByScore(score);
-  }
+    @GetMapping("/eligible")
+    @ResponseBody
+    @Operation(summary = "Получить список университетов подходящих по сумме баллов для кота", tags = {"АПИ для экзаменов"}, responses = {
+        @ApiResponse(responseCode = "200", description = "ОК"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+    )
+    public List<University> findUniversitiesByScore(@RequestParam Integer score) {
+        return universityService.findUniversitiesByScore(score);
+    }
 }

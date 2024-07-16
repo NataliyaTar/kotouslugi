@@ -6,5 +6,5 @@ import ru.practice.kotouslugi.model.University;
 import java.util.List;
 
 public interface UniversityRepository extends CrudRepository<University, Long> {
-  List<University> findByUniversityScoreLessThanEqual(Integer score);
+    List<University> findByUniversityScoreLessThanEqual(Integer score);
 }

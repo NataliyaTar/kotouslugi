@@ -19,39 +19,39 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UniversityControllerTest {
-  private MockMvc mockMvc;
-  private UniversityService universityService;
+    private MockMvc mockMvc;
+    private UniversityService universityService;
 
-  @BeforeEach
-  void setUp() {
-    universityService = mock(UniversityService.class);
-    UniversityController controller = new UniversityController(universityService);
-    mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-  }
+    @BeforeEach
+    void setUp() {
+        universityService = mock(UniversityService.class);
+        UniversityController controller = new UniversityController(universityService);
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+    }
 
-  @Test
-  void shouldReturnUniversityListByExamAmount() throws Exception {
-    Integer score = 400;
+    @Test
+    void shouldReturnUniversityListByExamAmount() throws Exception {
+        Integer score = 400;
 
-    doReturn(
-      List.of(
-        University.builder()
-          .idUniversity(1L)
-          .universityName("МГУ имени М.В. Ломоносова")
-          .universityScore(400)
-          .build()
-      )
-    ).when(universityService).findUniversitiesByScore(score);
+        doReturn(
+            List.of(
+                University.builder()
+                        .idUniversity(1L)
+                        .universityName("МГУ имени М.В. Ломоносова")
+                        .universityScore(400)
+                        .build()
+            )
+        ).when(universityService).findUniversitiesByScore(score);
 
-    mockMvc.perform(get("/api/university/eligible")
-      .param("score", score.toString())
-      .contentType(MediaType.APPLICATION_JSON))
-      .andDo(print())
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$[0].idUniversity").value(1L))
-      .andExpect(jsonPath("$[0].universityName").value("МГУ имени М.В. Ломоносова"))
-      .andExpect(jsonPath("$[0].universityScore").value(400));
+        mockMvc.perform(get("/api/university/eligible")
+                        .param("score", score.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].idUniversity").value(1L))
+                .andExpect(jsonPath("$[0].universityName").value("МГУ имени М.В. Ломоносова"))
+                .andExpect(jsonPath("$[0].universityScore").value(400));
 
-    verify(universityService).findUniversitiesByScore(score);
-  }
+        verify(universityService).findUniversitiesByScore(score);
+    }
 }

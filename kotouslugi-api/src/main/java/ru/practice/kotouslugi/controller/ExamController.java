@@ -13,19 +13,19 @@ import java.util.List;
 @RequestMapping("/api/exam")
 @Tag(name = "ExamController", description = "Методы для работы с АПИ экзаменов пользователей")
 public class ExamController extends BaseController {
-  private final ExamService examService;
+    private final ExamService examService;
 
-  public ExamController(ExamService examService) {
-    this.examService = examService;
-  }
+    public ExamController(ExamService examService) {
+      this.examService = examService;
+    }
 
-  @GetMapping("/cat/{catId}")
-  @ResponseBody
-  @Operation(summary = "Получить список экзаменов для кота", tags = {"АПИ для экзаменов"}, responses = {
-    @ApiResponse(responseCode = "200", description = "OK"),
-    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
-  )
-  public List<Exam> findExamsByCatId(@PathVariable Long catId) {
-    return examService.findExamsByCatId(catId);
-  }
+    @GetMapping("/cat/{catId}")
+    @ResponseBody
+    @Operation(summary = "Получить список экзаменов для кота", tags = {"АПИ для экзаменов"}, responses = {
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+    )
+    public List<Exam> findExamsByCatId(@PathVariable Long catId) {
+        return examService.findExamsByCatId(catId);
+    }
 }

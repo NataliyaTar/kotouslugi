@@ -8,13 +8,13 @@ import java.util.List;
 
 @Service
 public class UniversityService {
-  private final UniversityRepository universityRepository;
+    private final UniversityRepository universityRepository;
 
-  public UniversityService(UniversityRepository universityRepository) {
-    this.universityRepository = universityRepository;
-  }
+    public UniversityService(UniversityRepository universityRepository) {
+        this.universityRepository = universityRepository;
+    }
 
-  public List<University> findUniversitiesByScore(Integer score) {
-    return universityRepository.findByUniversityScoreLessThanEqual(score);
-  }
+    public List<University> findUniversitiesByScore(Integer score) {
+        return universityRepository.findByUniversityScoreLessThanEqual(score);
+    }
 }

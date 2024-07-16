@@ -14,8 +14,8 @@ import jakarta.persistence.Table;
 @Builder
 @Table(name = "university")
 public class University {
-  @Id
-  private Long idUniversity;
-  private String universityName;
-  private Integer universityScore;
+    @Id
+    private Long idUniversity;
+    private String universityName;
+    private Integer universityScore;
 }
