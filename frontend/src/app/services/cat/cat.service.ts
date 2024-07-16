@@ -77,16 +77,4 @@ export class CatService {
     });
   }
 
-  /* Простите, нужно было тронуть ваши сервисы. Только добавила свои и ничего больше :)
-  /**
-   * Возвращает кличку кота по его идентификатору
-   * @param id - идентификатор кота
-
-  public getCatName(id: number): Observable<string> {
-    return this.http.get<ICat>(`${this.catApi}${id}`).pipe(
-      map(cat => cat.name)
-    );
-  }
-  */
-
 }

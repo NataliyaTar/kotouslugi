@@ -1,5 +1,5 @@
 export interface IUniversity {
-  idUniversity: number;
+  id: number;
   universityName: string;
   universityScore: number;
 }

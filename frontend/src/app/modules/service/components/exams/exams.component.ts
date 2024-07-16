@@ -8,7 +8,7 @@ import {IStep} from "@models/step.model";
 import {catchError, of, Subscription, take} from "rxjs";
 import {ServiceInfoService} from "@services/servise-info/service-info.service";
 import {ConstantsService} from "@services/constants/constants.service";
-import {JsonPipe, NgForOf, NgIf} from "@angular/common";
+import {JsonPipe} from "@angular/common";
 import {ExamService} from "@services/exam/exam.service";
 import {IExam} from "@models/exam.model";
 import {IUniversity} from "@models/university.model";
@@ -26,8 +26,8 @@ export enum FormMap { // маппинг названия поля - значен
     CheckInfoComponent,
     JsonPipe,
     ThrobberComponent,
-    NgForOf,
-    NgIf,
+    //NgForOf,
+    //NgIf,
   ],
   templateUrl: './exams.component.html',
   styleUrl: './exams.component.scss'

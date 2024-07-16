@@ -1,4 +1,3 @@
-<!--Файл трогаем аккуратно :/-->
 
 @if (loading) {
   <app-throbber></app-throbber>
@@ -13,12 +12,13 @@
           }
         </div>
         <select formControlName="cat" (change)="onCatSelect()">
-          @for (option of optionsCat; track $index) {
-            <option [value]="getItem('cat', $index)">{{option.text}}</option>
+          @for (option of optionsCat; let index = $index; track option.id) {
+            <option [value]="getItem('cat', index)">{{ option.text }}</option>
           }
         </select>
       </div>
     </div>
+
     <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
       <!-- второе окно -->
       <div class="field">
@@ -26,44 +26,43 @@
           <p class="label">Результаты К-ЕГЭ для <span class="cat-name-highlight">{{ selectedCatName }}</span></p>
         </div>
         <!--таблица егэ-->
-        <table class="ege-table" *ngIf="examScores.length > 0; else noExams">
-          <tbody>
-          <tr *ngFor="let exam of examScores">
-            <td class="subject-name">{{ exam.subjectName }}</td>
-            <td class="score">{{ exam.score }}</td>
-          </tr>
-          </tbody>
-        </table>
-        <!--ошибки экзаменов-->
-        <ng-template #noExams>
-          <p *ngIf="!errorMessageStepTwo"><span class="error"></span></p>
-          <p *ngIf="errorMessageStepTwo"><span class="error">{{ errorMessageStepTwo }}</span></p>
-        </ng-template>
+        @if (examScores.length > 0) {
+          <table>
+            <tbody>
+              @for (exam of examScores; track exam.examId) {
+                <tr>
+                  <td class="subject-name">{{ exam.subjectName }}</td>
+                  <td class="score">{{ exam.score }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p><span class="error">{{ errorMessageStepTwo || 'У этого кота нет результатов экзаменов :(' }}</span></p>
+        }
       </div>
-
-      </div>
+    </div>
 
     <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
-      <!-- третье окно -->
       <div class="field">
         <div>
           Сумма баллов К-ЕГЭ для <span class="cat-name-highlight">{{ selectedCatName }}</span> =
           <span class="total-score">{{ getTotalScore() }}</span>
         </div>
-        <!--таблица университетов-->
-        <table class="university-table" *ngIf="universities.length > 0; else noUniversities">
-          <tbody>
-          <tr *ngFor="let university of universities">
-            <td class="university-name">{{ university.universityName }}</td>
-            <td class="score">{{ university.universityScore }}</td>
-          </tr>
-          </tbody>
-        </table>
-        <!--ошибки университетов-->
-        <ng-template #noUniversities>
-          <p *ngIf="!errorMessageStepThree"><span class="error"></span></p>
-          <p *ngIf="errorMessageStepThree"><span class="error">{{ errorMessageStepThree }}</span></p>
-        </ng-template>
+        @if (universities.length > 0) {
+          <table>
+            <tbody>
+              @for (university of universities; track university.id) {
+                <tr>
+                  <td class="university-name">{{ university.universityName }}</td>
+                  <td class="score">{{ university.universityScore }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p><span class="error">{{ errorMessageStepThree || 'Нет подходящих университетов для данного кота :(' }}</span></p>
+        }
       </div>
     </div>
   </div>
