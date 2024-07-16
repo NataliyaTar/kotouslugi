@@ -189,4 +189,8 @@ export class InsuranceCatComponent  implements OnInit, OnDestroy {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
 
+  public getSumm(): string {
+    return `${JSON.parse(this.form.get('1.company').value).cash * this.form.get('1.duration').value}`;
+  }
+
 }

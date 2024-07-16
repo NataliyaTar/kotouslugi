@@ -87,9 +87,9 @@
       <div>
         <p class="label">Длительность страховки (в месяцах)</p>
         @if (getControl(1, 'duration').errors && getControl(1, 'duration').touched) {
-        @if (getControl(1, 'duration').errors?.['required']) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
+          @if (getControl(1, 'duration').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
         }
       </div>
       <input formControlName="duration" placeholder="12"
@@ -98,17 +98,8 @@
     <div class="field">
       <div>
         <p class="label">Стоимость страховки</p>
-        @if (getControl(1, 'cash').errors && getControl(1, 'cash').touched) {
-        @if (getControl(1, 'cash').errors?.['required']) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
-        }
+        {{getSumm()}}
       </div>
-      <select formControlName="cash" (invalid)="getControl(1, 'company').invalid">
-        @for (company of CompaniesOptions; track $index) {
-        <option [value]="getItem('company', $index)">{{company.insuranceName}}</option>
-        }
-      </select>
     </div>
   </div>
   @if (active === 2) {
