@@ -57,7 +57,6 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
-
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (3,
         'insurance',
@@ -70,6 +69,12 @@ values (4,
         'student.png',
         'Результаты К-ЕГЭ',
         'Узнай баллы по К-ЕГЭ и выбери подходящий для поступления Кото-ВУЗ вместе с котоуслугами!');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (5,
+        'vaccine',
+        'sick.webp',
+        'Вакцинация',
+        'Забота о здоровье - вакцинация кошачьего дома!');
 
 -- category
 INSERT INTO category
@@ -92,6 +97,8 @@ INSERT INTO service_category
 values (3, 1);
 INSERT INTO service_category
 values (4, 3);
+INSERT INTO service_category
+values (5, 1);
 
 -- insurance
 INSERT INTO insurance(id, insurance_name, cash)
@@ -119,3 +126,11 @@ INSERT INTO University (ID_University, University_Name, University_Score) VALUES
 INSERT INTO University (ID_University, University_Name, University_Score) VALUES (9, 'Мяуксфордский Университет', 320);
 INSERT INTO University (ID_University, University_Name, University_Score) VALUES (10, 'Институт Бархатных Лапок', 310);
 INSERT INTO University (ID_University, University_Name, University_Score) VALUES (11, 'Муррский Университет Инноваций', 355);
+
+-- vaccine
+INSERT INTO vaccine (name) VALUES
+                             ('Против бешенства'),
+                             ('Против калицивироза'),
+                             ('Против панлейкопении'),
+                             ('Против бордетеллеза'),
+                             ('Против хламидиоза');
