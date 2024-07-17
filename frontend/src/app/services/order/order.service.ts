@@ -62,7 +62,6 @@ export class OrderService {
 
     Object.assign(res, {fields: JSON.stringify(fields)});
 
-    console.log(res);
     return this.http.post(`${this.orderApi}create`, res);
   }
 
