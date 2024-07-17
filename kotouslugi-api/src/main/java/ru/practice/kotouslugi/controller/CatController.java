@@ -24,7 +24,7 @@ import java.util.List;
 public class CatController extends BaseController {
     private final CatService catService;
 
-  public CatController(CatService catService) {
+    public CatController(CatService catService) {
     this.catService = catService;
   }
 

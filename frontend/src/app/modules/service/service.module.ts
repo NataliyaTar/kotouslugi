@@ -6,6 +6,7 @@ import { VetComponent } from './components/vet/vet.component';
 import { InsuranceCatComponent } from './components/insurance-cat/insurance-cat.component';
 import { ExamsComponent} from "./components/exams/exams.component";
 import { VaccineComponent } from './components/vaccine/vaccine.component';
+import {ClubComponent} from './components/club/club.component'
 
 /**
  * Роутинг для услуг
@@ -54,6 +55,14 @@ const routes: Routes = [
           idService: 'vaccine'
         },
         component: VaccineComponent
+      },
+      {
+        path: 'club',
+        pathMatch: 'full',
+        data:{
+          idService: 'club'
+        },
+        component: ClubComponent
       }
     ]
   }

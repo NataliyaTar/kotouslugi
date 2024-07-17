@@ -1,0 +1,142 @@
+@if (loading) {
+    <app-throbber></app-throbber>
+  } @else if (notEnoughCats) {
+    <div class="not-have-cat col-2 col-lg-12">
+      <img src="../../../assets/png/cats/sad.png" class="image">
+      <h3>Упс...<br>У вас недостаточно зарегистрированных котиков для использования услуги</h3>
+      <p class="text">
+        Перейдите к <a [routerLink]="'/add-cat'">добавлению котика</a> или выберите <a [routerLink]="'/'">другую услугу</a>
+      </p>
+    </div>
+  } @else if (notEnoughClubs) {
+    <div class="not-have-cat col-2 col-lg-12">
+      <img src="../../../assets/png/cats/sad.png" class="image">
+      <h3>Упс...<br>К сожалению, нет доступных клубов для вступления</h3>
+      <p class="text">
+        Выберите <a [routerLink]="'/'">другую услугу</a>
+      </p>
+    </div>
+  } @else {
+    <div class="fields-wrapper" [formGroup]="form">
+      <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+        <div class="field">
+          <div>
+            <p class="label">Выберите кота</p>
+            @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+          </div>
+          <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+            @for (option of optionsCatF; track $index) {
+              <option [value]="getItem('cat', $index)">{{option.text}}</option>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">Серия и номер паспорта</p>
+            @if (getControl(0, 'passport').errors && getControl(0, 'passport').touched) {
+              @if (getControl(0, 'passport').errors?.['required']) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+              @if (getControl(0, 'passport').errors?.['pattern']) {
+                <p class="error">Введите значение в виде «0000 000000»</p>
+              }
+            }
+          </div>
+          <input formControlName="passport" placeholder="0000 000000" (invalid)="getControl(0, 'passport').invalid">
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">ФИО хозяина</p>
+            @if (getControl(0, 'ownerName').errors && getControl(0, 'ownerName').touched) {
+              @if (getControl(0, 'ownerName').errors?.['required']) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+            }
+          </div>
+          <input formControlName="ownerName" placeholder="Иванов Иван Иванович" (invalid)="getControl(0, 'ownerName').invalid">
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">Телефон</p>
+            @if (getControl(0, 'phone').errors && getControl(0, 'phone').touched) {
+              @if (getControl(0, 'phone').errors?.['required']) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+              @if (getControl(0, 'phone').errors?.['pattern']) {
+                <p class="error">Введите значение в виде «81234567890»</p>
+              }
+            }
+          </div>
+          <input formControlName="phone" placeholder="89999999999" (invalid)="getControl(0, 'phone').invalid">
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">Email</p>
+            @if (getControl(0, 'email').errors && getControl(0, 'email').touched) {
+              @if (getControl(0, 'email').errors?.['required']) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+              @if (getControl(0, 'email').errors?.['pattern']) {
+                <p class="error">Введите значение в виде «somemail&#64;example.ru»</p>
+              }
+            }
+          </div>
+          <input formControlName="email" placeholder="somemail@example.ru" (invalid)="getControl(0, 'email').invalid">
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">Название питомника</p>
+            @if (getControl(0, 'kennelName').errors && getControl(0, 'kennelName').touched) {
+              @if (getControl(0, 'kennelName').errors?.['required']) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+            }
+          </div>
+          <input formControlName="kennelName" placeholder="Лучики" (invalid)="getControl(0, 'kennelName').invalid">
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">Статус</p>
+            @if (getControl(0, 'status').errors && getControl(0, 'status').touched) {
+              @if (getControl(0, 'status').errors?.['required']) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+            }
+          </div>
+          <select formControlName="status" (invalid)="getControl(0, 'status').invalid">
+            @for (status of ownerStatuses; track $index) {
+              <option>{{status}}</option>
+            }
+          </select>
+        </div>
+      </div>
+        <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+          <div class="field">
+            <div>
+
+              <p class="label">Выберите клуб</p>
+              @if (getControl(1, 'club').errors?.['required'] && getControl(1, 'club').touched) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+            </div>
+            <select formControlName="club" (invalid)="getControl(1, 'club').invalid">
+              @for (club of clubs; track $index) {
+                <option [value]="getClub($index)">{{club.text}}</option>
+              }
+            </select>
+          </div>
+      </div>
+      <div class="club-info" [hidden]="active !== 1">
+
+        <div class="club-details">
+          <h2>{{ getSelectedClub().text }}</h2>
+          <p>{{ getSelectedClub().description}}</p>
+        </div>
+      </div>
+      @if (active === 2) {
+        <app-check-info [data]="getResult"></app-check-info>
+      }
+    </div>
+  }

@@ -4,6 +4,8 @@ import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
 import { IValue } from '@models/common.model';
 import { IInsurance, TCash } from '@models/insurance.model';
+import { IValueClub } from '@models/club.model';
+import { ClubService } from '@services/club/club.service';
 
 @Injectable({
   providedIn: 'root'
@@ -82,45 +84,44 @@ export class ConstantsService {
     }
   ];
 
-   // варианты компаний
-    public CompaniesOptions: IInsurance[] = [
-      {
-        id: 0,
-        insuranceName: 'МурЧудо Страхование',
-        cash: TCash.first
-      },
-      {
-        id: 1,
-        insuranceName: 'Пушистая Защита',
-        cash: TCash.second
-      },
-      {
-        id: 2,
-        insuranceName: 'Лапки в Безопасности',
-        cash: TCash.third
-      }
-    ];
+ // варианты компаний
+  public CompaniesOptions: IInsurance[] = [
+    {
+      id: 0,
+      insuranceName: 'МурЧудо Страхование',
+      cash: TCash.first
+    },
+    {
+      id: 1,
+      insuranceName: 'Пушистая Защита',
+      cash: TCash.second
+    },
+    {
+      id: 2,
+      insuranceName: 'Лапки в Безопасности',
+      cash: TCash.third
+    }
+  ];
 
-   // варианты категорий страховок
-    public CategoriesOptions: IValue[] = [
-      {
-        id: 0,
-        text: 'По болезни'
-      },
-      {
-        id: 1,
-        text: 'Травмы'
-      },
-      {
-        id: 2,
-        text: 'Ущерб третьим лицам'
-      }
-    ];
-
-
+ // варианты категорий страховок
+  public CategoriesOptions: IValue[] = [
+    {
+      id: 0,
+      text: 'По болезни'
+    },
+    {
+      id: 1,
+      text: 'Травмы'
+    },
+    {
+      id: 2,
+      text: 'Ущерб третьим лицам'
+    }
+  ];
 
   constructor(
     private catService: CatService,
+    private clubService: ClubService
   ) { }
 
   /**
@@ -160,6 +161,23 @@ export class ConstantsService {
           return {
             id: item.id,
             text: item.name
+          }
+        }));
+      })
+    )
+  }
+
+  public getAllClubs():  Observable<IValueClub[]> {
+    return this.clubService.getClubList().pipe(
+      take(1)
+    ).pipe(
+      mergeMap((res) => {
+        return of(res.map((item) => {
+          return {
+            id: item.id,
+            text: item.name,
+            description: item.description,
+            img: item.img
           }
         }));
       })

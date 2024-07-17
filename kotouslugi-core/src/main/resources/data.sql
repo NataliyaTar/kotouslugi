@@ -75,6 +75,12 @@ values (5,
         'sick.webp',
         'Вакцинация',
         'Забота о здоровье - вакцинация кошачьего дома!');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (6,
+        'club',
+        'club.png',
+        'Кошачий клуб',
+        'Устали от бесконечной работы и гонки за мышами? Вступайте в кошачий клуб');
 
 -- category
 INSERT INTO category
@@ -99,6 +105,8 @@ INSERT INTO service_category
 values (4, 3);
 INSERT INTO service_category
 values (5, 1);
+INSERT INTO service_category
+values (6, 2);
 
 -- insurance
 INSERT INTO insurance(id, insurance_name, cash)
@@ -134,3 +142,19 @@ INSERT INTO vaccine (name) VALUES
                              ('Против панлейкопении'),
                              ('Против бордетеллеза'),
                              ('Против хламидиоза');
+
+-- club
+INSERT INTO Clubs (id, name, number, date, description, imgUrl)
+values (0,
+        'Клуб милых пушистиков',
+        240336,
+        '2022-12-31',
+        'Присоединяйтесь к нашему клубу "Милых пушистиков" и погрузитесь в мир ласковых и обожаемых домашних котиков и кошечек. ',
+        'сlub-0.png');
+INSERT INTO Clubs (id, name, number, date, description, imgUrl)
+values (1,
+        'Пушистые лапки',
+        922853,
+        '2023-10-11',
+        'Делитесь историями о своих мурлыках, получайте советы опытных котовладельцев, посещайте мастер-классы и участвуйте в благотворительных акциях!',
+        'сlub-1.png');
