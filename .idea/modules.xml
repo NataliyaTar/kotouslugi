@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/kotouslugi-api/kotouslugi-api.iml" filepath="$PROJECT_DIR$/kotouslugi-api/kotouslugi-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kotouslugi-core/kotouslugi-core.iml" filepath="$PROJECT_DIR$/kotouslugi-core/kotouslugi-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kotouslugi-report-aggregate/kotouslugi-report-aggregate.iml" filepath="$PROJECT_DIR$/kotouslugi-report-aggregate/kotouslugi-report-aggregate.iml" />
+    </modules>
+  </component>
+</project>

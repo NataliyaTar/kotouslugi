@@ -2,8 +2,8 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { EBreedMap, ESexMap, ICat, TBreed, TSex } from '@models/cat.model';
+import {map, Observable, of} from 'rxjs';
+import {EBreedMap, ESexMap, ICat, IValueCat, TBreed, TSex} from '@models/cat.model';
 
 @Injectable({
   providedIn: 'root'

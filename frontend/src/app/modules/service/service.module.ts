@@ -4,6 +4,7 @@ import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
 import { InsuranceCatComponent } from './components/insurance-cat/insurance-cat.component';
+import { ExamsComponent} from "./components/exams/exams.component";
 
 /**
  * Роутинг для услуг
@@ -29,7 +30,6 @@ const routes: Routes = [
         },
         component: VetComponent
       },
-
       {
         path: 'insurance',
         pathMatch: 'full',
@@ -38,8 +38,14 @@ const routes: Routes = [
         },
         component: InsuranceCatComponent
       },
-
-      // ToDo: your router for service
+      {
+        path: 'exams',
+        pathMatch: 'full',
+        data: {
+          idService: 'exams'
+        },
+        component: ExamsComponent
+      }
     ]
   }
 ];
