@@ -47,6 +47,12 @@ values (1,
         'Подходи ответственно к своему здоровью. Здоровый ты - здоровая страна');
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (2,
+        'spa',
+        'relax.png',
+        'SPA-процедуры',
+        'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
         'club',
         'club.png',
         'Кошачий клуб',
@@ -67,3 +73,5 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+INSERT INTO service_category
+values (3, 2);

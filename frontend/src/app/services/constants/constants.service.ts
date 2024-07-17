@@ -3,6 +3,8 @@ import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex
 import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
 import { IValue } from '@models/common.model';
+import { IValueClub } from '@models/club.model';
+import { ClubService } from '@services/club/club.service';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +85,7 @@ export class ConstantsService {
 
   constructor(
     private catService: CatService,
+    private clubService: ClubService
   ) { }
 
   /**
@@ -122,6 +125,23 @@ export class ConstantsService {
           return {
             id: item.id,
             text: item.name
+          }
+        }));
+      })
+    )
+  }
+
+  public getAllClubs():  Observable<IValueClub[]> {
+    return this.clubService.getClubList().pipe(
+      take(1)
+    ).pipe(
+      mergeMap((res) => {
+        return of(res.map((item) => {
+          return {
+            id: item.id,
+            text: item.name,
+            descriprion: item.descriprion,
+            img: item.img
           }
         }));
       })

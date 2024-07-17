@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
+import {ClubComponent} from './components/club/club.component'
 
 /**
  * Роутинг для услуг
@@ -28,7 +29,14 @@ const routes: Routes = [
         },
         component: VetComponent
       },
-      // ToDo: your router for service
+      {
+        path: 'club',
+        pathMatch: 'full',
+        data:{
+          idService: 'club'
+        },
+        component: ClubComponent
+      }
     ]
   }
 ];
