@@ -32,6 +32,23 @@ values (1,
         'female',
         'maine_coon');*/
 
+-- club
+INSERT INTO Clubs (id, name, number, date, description, imgUrl)
+values (0,
+        'Клуб милых пушистиков',
+        240336,
+        '2022-12-31',
+        'Присоединяйтесь к нашему клубу "Милых пушистиков" и погрузитесь в мир ласковых и обожаемых домашних котиков и кошечек. ',
+        'сlub-0.png');
+
+INSERT INTO Clubs (id, name, number, date, description, imgUrl)
+values (1,
+        'Пушистые лапки',
+        922853,
+        '2023-10-11',
+        'Делитесь историями о своих мурлыках, получайте советы опытных котовладельцев, посещайте мастер-классы и участвуйте в благотворительных акциях!',
+        'сlub-1.png');
+
 -- service
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (0,
