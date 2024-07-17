@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ClubComponent } from './club.component';
 
-describe('JoinClubComponent', () => {
+describe('NewFamilyComponent', () => {
   let component: ClubComponent;
   let fixture: ComponentFixture<ClubComponent>;
 

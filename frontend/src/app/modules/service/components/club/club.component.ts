@@ -51,8 +51,10 @@ export class ClubComponent implements OnInit, OnDestroy {
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
-  public clubs: IValueClub[]; //список клубов
+  public clubs: IValueClub[];
   public ownerStatuses = ['Новичок', 'Владелец', 'Заводчик'];
+
+
 
   /**
    * Возвращает преобразованное значение формы для отображения заполненных данных
@@ -67,6 +69,11 @@ export class ClubComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private constantService: ConstantsService,
   ) {
+  }
+
+  public getSelectedClub(): IValueClub {
+    const selectedClub = this.getControl(1, 'club').value;
+    return selectedClub ? JSON.parse(selectedClub) : null;
   }
 
   public ngOnInit(): void {
@@ -93,7 +100,7 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.constantService.getCatOptionsAll().pipe(
      take(1)
     ).subscribe(res => {
-      if (res.length ==0) {
+      if (!(res.length !=0)) {
         this.notEnoughCats = true;
         this.loading = false;
       } else {
@@ -169,10 +176,10 @@ export class ClubComponent implements OnInit, OnDestroy {
       ({
         cat: [JSON.stringify(this.optionsCatF[0]), [Validators.required]],
         passport: ['', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]],
-        ownerName: ['', [Validators.required]],
-        phone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        ownerName: ['', [Validators.required, Validators.pattern(/^[А-Я][а-я]+[\s][А-Я][а-я]+[\s][А-Я][а-я]+$/)]],
+        phone: ['', [Validators.required, Validators.pattern(/^[8][\d]{10}$/)]],
         email: ['', [Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]],
-        kennelName: ['', [Validators.required]],
+        kennelName: [''],
         status: [this.ownerStatuses[0], [Validators.required]],
       }),
       1: this.fb.group({
@@ -189,7 +196,7 @@ export class ClubComponent implements OnInit, OnDestroy {
 
 
   /**
-   * Возвращает контроль формы
+   * Возвращает контрол формы
    * @param step
    * @param id
    */

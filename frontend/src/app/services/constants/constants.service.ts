@@ -140,7 +140,7 @@ export class ConstantsService {
           return {
             id: item.id,
             text: item.name,
-            descriprion: item.descriprion,
+            description: item.description,
             img: item.img
           }
         }));
