@@ -17,14 +17,8 @@ values (2,
         'Хотите завести котёнка?',
         'Услуга «Укотоение» поможет подобрать кото-приют и котёнка',
         'hugs.png');
-INSERT INTO banner (id, bg, title, text, imgurl)
-values (3,
-        'linear-gradient(86deg, #EDF2FE 0%, #D7E7FF 100%)',
-        'Как избавится от перекати-поле в доме?',
-        'Услуга «Груминг» поможет подобрать необходимый уход за кошечкой',
-        'cinema.png');
 
-/*--
+/*-- cat
 INSERT INTO cat (id, name, age, sex, breed)
 values (0,
         'Феликс',
@@ -36,8 +30,8 @@ values (1,
         'Муся',
         '1',
         'female',
-        'maine_coon');
---*/
+        'maine_coon');*/
+
 -- service
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (0,
@@ -57,12 +51,7 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
-INSERT INTO service(id, mnemonic, icon, title, description)
-values (3,
-        'grooming',
-        'wash.webp',
-        'Груминг',
-        'Устали от бесконечной линьки? Пора начать ухаживать за собой');
+
 -- category
 INSERT INTO category
 values (0, 'Семья и дети');
@@ -70,8 +59,6 @@ INSERT INTO category
 values (1, 'Медицина');
 INSERT INTO category
 values (2, 'Отдых и развлечение');
-INSERT INTO category
-values (3, 'Уход');
 
 -- service_to_category
 INSERT INTO service_category
@@ -80,5 +67,3 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
-INSERT INTO service_category
-values (3, 3);
