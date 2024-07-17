@@ -17,14 +17,14 @@ import jakarta.persistence.Table;
 @AllArgsConstructor
 public class Grooming {
 
-  @Id
-  @GeneratedValue
-  private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-  private String cat;
-  private String phoneNumber;
-  private String email;
-  private String groomer;
-  private String date;
-  private String time;
+    private String cat;
+    private String phoneNumber;
+    private String email;
+    private String groomer;
+    private String date;
+    private String time;
 }

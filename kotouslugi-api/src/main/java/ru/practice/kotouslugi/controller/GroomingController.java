@@ -17,19 +17,19 @@ import ru.practice.kotouslugi.service.GroomingService;
 @Tag(name = "GroomingController", description = "Метод для добавления записи на груминг")
 public class GroomingController extends BaseController {
 
-  private final GroomingService groomingService;
+    private final GroomingService groomingService;
 
-  public GroomingController(GroomingService groomingService) {
-    this.groomingService = groomingService;
-  }
+    public GroomingController(GroomingService groomingService) {
+      this.groomingService = groomingService;
+    }
 
-  @PostMapping(value = "/add", produces = "application/json")
-  @ResponseBody
-  @Operation(summary = "Добавить запись на груминг", tags = {"Кошачье АПИ"}, responses = {
-    @ApiResponse(responseCode = "200", description = "OK"),
-    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")
-  })
-  public ResponseEntity<Long> addGrooming(@RequestBody Grooming grooming) {
-    return wrapper((s) -> groomingService.addGrooming(grooming));
-  }
+    @PostMapping(value = "/add", produces = "application/json")
+    @ResponseBody
+    @Operation(summary = "Добавить запись на груминг", tags = {"Кошачье АПИ"}, responses = {
+      @ApiResponse(responseCode = "200", description = "OK"),
+      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")
+    })
+    public ResponseEntity<Long> addGrooming(@RequestBody Grooming grooming) {
+      return wrapper((s) -> groomingService.addGrooming(grooming));
+    }
 }
