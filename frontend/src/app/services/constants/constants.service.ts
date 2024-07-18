@@ -6,6 +6,7 @@ import { IValue } from '@models/common.model';
 import { IInsurance, TCash } from '@models/insurance.model';
 import { IValueClub } from '@models/club.model';
 import { ClubService } from '@services/club/club.service';
+import { IValueName } from '@models/common.model';
 
 @Injectable({
   providedIn: 'root'
@@ -116,6 +117,30 @@ export class ConstantsService {
     {
       id: 2,
       text: 'Ущерб третьим лицам'
+    }
+  ];
+
+  // варианты мастеров
+  public groomerOptions: IValueName[] = [
+    {
+      id: 0,
+      text: 'Марина'
+    },
+    {
+      id: 1,
+      text: 'Федор'
+    },
+    {
+      id: 2,
+      text: 'Михаил'
+    },
+    {
+      id: 3,
+      text: 'Анастасия'
+    },
+    {
+      id: 4,
+      text: 'Вероника'
     }
   ];
 

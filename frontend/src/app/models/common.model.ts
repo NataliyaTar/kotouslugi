@@ -8,3 +8,8 @@ export interface IValue {
   id: number;
   text: string;
 }
+
+export class IValueName {
+  id: number;
+  text: string;
+}
