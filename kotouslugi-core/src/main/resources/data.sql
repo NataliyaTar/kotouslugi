@@ -23,6 +23,12 @@ values (3,
         'Узнайте результаты К-ЕГЭ!',
         'Новая услуга «Результаты К-ЕГЭ» отобразит текущие баллы по экзаменам и поможет с выбором подходящего Кото-Вуза',
         'read.png');
+INSERT INTO banner (id, bg, title, text, imgurl)
+values (4,
+        'linear-gradient(86deg, #EDF2FE 0%, #D7E7FF 100%)',
+        'Как избавится от перекати-поле в доме?',
+        'Услуга «Груминг» поможет подобрать необходимый уход за кошечкой',
+        'cinema.png');
 
 /*-- cat
 INSERT INTO cat (id, name, age, sex, breed)
@@ -81,6 +87,12 @@ values (6,
         'club.png',
         'Кошачий клуб',
         'Устали от бесконечной работы и гонки за мышами? Вступайте в кошачий клуб');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (7,
+        'grooming',
+        'wash.webp',
+        'Груминг',
+        'Устали от бесконечной линьки? Пора начать ухаживать за собой');
 
 -- category
 INSERT INTO category
@@ -91,6 +103,8 @@ INSERT INTO category
 values (2, 'Отдых и развлечение');
 INSERT INTO category
 values (3, 'Образование');
+INSERT INTO category
+values (4, 'Уход');
 
 -- service_to_category
 INSERT INTO service_category
@@ -107,6 +121,8 @@ INSERT INTO service_category
 values (5, 1);
 INSERT INTO service_category
 values (6, 2);
+INSERT INTO service_category
+values (7, 4);
 
 -- insurance
 INSERT INTO insurance(id, insurance_name, cash)
