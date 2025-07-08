@@ -69,7 +69,6 @@ values (2, 'Отдых и развлечение');
 -- наша категория отдых
 INSERT INTO category
 values (3, 'Путешествия');
-
 -- service_to_category
 INSERT INTO service_category
 values (0, 0);
