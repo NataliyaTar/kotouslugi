@@ -1,6 +1,5 @@
 package ru.practice.kotouslugi.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.ForeignPasswordRepository;
 import ru.practice.kotouslugi.model.FP.ForeignPassword;
@@ -17,12 +16,22 @@ public class ForeignPasswordService {
   }
 
   public ForeignPassword addParam(PersonalData personalData) {
+    /// билдится запись
     ForeignPassword foreignPassword = ForeignPassword.builder()
-      .personalData(personalData)
-      .metadata(Metadata.builder().build())       // Автоинициализация metadata
-      .processingStatus(ProcessingStatus.builder().build())  // Автоинициализация processingStatus
-      .build();
+        .personalData(personalData)
+        .metadata(Metadata.builder().build())
+        .processingStatus(ProcessingStatus.builder().build())
+        .build();
+
+    /// сохраняется в БД
     foreignPasswordRepository.save(foreignPassword);
+
+    ///  проверка на то, сохранилось ли в БД
+    if (foreignPasswordRepository.existsById(foreignPassword.getId())) {
+      System.out.println("создалось в БД");
+
+    }
+
     return foreignPassword;
   }
 }

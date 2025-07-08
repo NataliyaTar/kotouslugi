@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class PersonalData implements Serializable {
   ///PersonalData это компонент ForeingPassword, который содержит данные из формы заполненной пользователем.///
   private String name;
-  private String firstName;
+  private String surname;
   private String fathName;
   private String sex;
   private LocalDate dateOfBirth;
