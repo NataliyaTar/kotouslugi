@@ -16,11 +16,12 @@ export interface IHotel {
 }
 
 export interface IBookingPayload {
-  id_cat: number;
-  id_hotel: number;
-  record_start: string;
-  record_finish: string;
+  catId: number;
+  hotelId: number;
+  recordStart: string;
+  recordFinish: string;
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -34,12 +35,12 @@ export class HotelService {
     return this.http.get<{ cats: ICat[], hotels: IHotel[] }>(`${this.baseUrl}options`);
   }
 
-  checkSpace(id_hotel: number, record_start: string, record_finish: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.baseUrl}checkSpace`, {
+  checkSpace(hotelId: number, startDate: string, endDate: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.baseUrl}check-space`, {
       params: {
-        id_hotel: id_hotel.toString(),
-        record_start,
-        record_finish
+        hotelId: hotelId.toString(),
+        startDate,
+        endDate
       }
     });
   }

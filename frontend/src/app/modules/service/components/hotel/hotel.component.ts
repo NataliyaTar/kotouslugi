@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
-import { HotelService } from '@services/hotel/hotel.service';
+import {HotelService, IBookingPayload} from '@services/hotel/hotel.service';
 
 @Component({
   selector: 'app-hotel',
@@ -82,14 +82,20 @@ export class HotelComponent implements OnInit {
     }
 
     const formData = this.form.getRawValue();
-    const payload = {
-      id_cat: formData.cat,
-      id_hotel: formData.hotel,
-      record_start: formData.startDate,
-      record_finish: formData.endDate
+
+    function toLocalDateTime(dateString: string): string {
+      return `${dateString}T00:00:00`;
+    }
+
+    const payload: IBookingPayload = {
+      catId: formData.cat,
+      hotelId: formData.hotel,
+      recordStart: toLocalDateTime(formData.startDate),
+      recordFinish: toLocalDateTime(formData.endDate)
     };
 
-    this.hotelService.checkSpace(payload.id_hotel, payload.record_start, payload.record_finish).subscribe((available: boolean) => {
+
+    this.hotelService.checkSpace(payload.hotelId, payload.recordStart, payload.recordFinish).subscribe((available: boolean) => {
       if (!available) {
         this.errorMessage = 'В выбранный отель нет свободных мест на эти даты';
         this.successMessage = '';
@@ -101,8 +107,15 @@ export class HotelComponent implements OnInit {
         this.errorMessage = '';
         this.active = 1;
         this.form.reset();
+      }, error => {
+        this.errorMessage = 'Ошибка при записи на передержку';
+        this.successMessage = '';
       });
+    }, error => {
+      this.errorMessage = 'Ошибка проверки свободных мест';
+      this.successMessage = '';
     });
   }
+
 
 }
