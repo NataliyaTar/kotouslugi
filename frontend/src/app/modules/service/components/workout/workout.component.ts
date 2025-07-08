@@ -11,6 +11,19 @@ import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
+export enum FormMap { // маппинг названия поля - значение
+  cat  = 'Кличка',
+  fitness_club = 'Фитнес зал',
+  membership_type = 'Тип абонемента',
+  trainer_name = 'ФИО тренера',
+  price = 'Стоимость абонемента',
+  session_start = 'Начало занятия',
+  session_end = 'Конец занятия',
+  end_date = 'Дата окончания действия абонемента',
+  created_at = 'Дата и время создания записи',
+  updated_at = 'Дата и время последнего обновления'
+}
+
 @Component({
   selector: 'app-workout',
   standalone: true,
