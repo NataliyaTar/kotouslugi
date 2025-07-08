@@ -1,0 +1,62 @@
+<div *ngIf="loading">
+  <app-throbber></app-throbber>
+</div>
+
+<div *ngIf="!loading && notEnoughCats">
+  <div class="not-have-cat col-2 col-lg-12">
+    <img src="../../../assets/png/cats/sad.png" class="image" alt="Нет котиков">
+    <h3>Упс...<br>У вас недостаточно зарегистрированных котиков для использования услуги</h3>
+    <p class="text">
+      Перейдите к <a routerLink="/add-cat">добавлению котика</a> или выберите <a routerLink="/">другую услугу</a>
+    </p>
+  </div>
+</div>
+
+<div *ngIf="!loading && !notEnoughCats">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="cat">Выберите котика</label>
+      <select id="cat" formControlName="cat">
+        <option *ngFor="let cat of cats" [value]="cat.id">{{ cat.name }}</option>
+      </select>
+      <div *ngIf="form.controls['cat'].invalid && form.controls['cat'].touched" class="error">
+        Поле обязательно для заполнения
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="hotel">Выберите отель</label>
+      <select id="hotel" formControlName="hotel">
+        <option *ngFor="let hotel of hotels" [value]="hotel.id">{{ hotel.name }}</option>
+      </select>
+      <div *ngIf="form.controls['hotel'].invalid && form.controls['hotel'].touched" class="error">
+        Поле обязательно для заполнения
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="start">Дата начала передержки</label>
+      <input id="start" type="date" formControlName="startDate" />
+      <div *ngIf="form.controls['startDate'].invalid && form.controls['startDate'].touched" class="error">
+        Укажите корректную дату начала
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="end">Дата окончания передержки</label>
+      <input id="end" type="date" formControlName="endDate" />
+      <div *ngIf="form.controls['endDate'].invalid && form.controls['endDate'].touched" class="error">
+        Укажите корректную дату окончания
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Записаться на передержку</button>
+  </form>
+
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+</div>
