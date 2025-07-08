@@ -1,0 +1,24 @@
+@if (loading) {
+<app-throbber></app-throbber>
+} @else {
+<div class="fields-wrapper" [formGroup]="form">
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <div class="field">
+      <div>
+        <p class="label">Выберите кота</p>
+        @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="cat">
+        @for (option of optionsCat; track $index) {
+        <option [value]="getItem('cat', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+
+  </div>
+</div>
+}

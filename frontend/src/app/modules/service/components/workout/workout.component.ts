@@ -37,4 +37,74 @@ export enum FormMap { // маппинг названия поля - значен
   styleUrl: './workout.component.scss'
 })
 
-export class WorkoutComponent{}
+export class WorkoutComponent implements OnInit {
+  public loading = true;
+  public form: UntypedFormGroup;
+  public optionsCat: IValueCat[] = [];
+  public active: number = 0; // Только первый шаг
+
+  private idService: string; // мнемоника услуги
+  private steps: IStep[]; // шаги формы
+  private subscriptions: Subscription[] = [];
+
+  public membershipTypes = [
+      { id: 1, name: 'Йога' },
+      { id: 2, name: 'Бокс' },
+      { id: 3, name: 'Аэробика' }
+    ];
+
+    public trainers = [
+      { id: 1, name: 'Иванов И.И.' },
+      { id: 2, name: 'Петров П.П.' },
+      { id: 3, name: 'Сидоров С.С.' }
+    ];
+  constructor(
+    private fb: FormBuilder,
+    private constantService: ConstantsService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadCatOptions();
+  }
+
+  private loadCatOptions(): void {
+    this.constantService.getCatOptionsAll().pipe(
+      take(1)
+    ).subscribe({
+      next: (cats) => {
+        this.optionsCat = cats;
+        this.initForm();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки котов:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+
+
+  private initForm(): void {
+    this.form = this.fb.group({
+      0: this.fb.group({
+        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]]
+      }),
+      1: this.fb.group({
+              membership_type: ['', [Validators.required]],
+              trainer_name: ['', [Validators.required]]
+            })
+    });
+  }
+
+  public getControl(step: number, id: string): FormControl {
+    return this.form.get(`${step}.${id}`) as FormControl;
+  }
+
+  public getItem(type: 'cat', index: number): string {
+    if (type === 'cat') {
+      return JSON.stringify(this.optionsCat[index]);
+    }
+    return '';
+  }
+}
