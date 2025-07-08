@@ -53,7 +53,7 @@ values (2,
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (3,
         'workout',
-        'busketbol.png',
+        'fitness.png',
         'Запись в фитнес-клуб',
         'Тренируйтесь с удовольствием - ваше здоровье начинается здесь!');
 
