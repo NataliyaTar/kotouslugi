@@ -51,6 +51,12 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'workout',
+        'busketbol.png',
+        'Запись в спортзал',
+        'Описание услуги');
 
 -- category
 INSERT INTO category
