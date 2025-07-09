@@ -20,6 +20,8 @@ public class PasswordService {
 
   private final RestTemplate restTemplate;
 
+
+  /// Настройка сервиса
   public PasswordService(StatementForPassportRepository statementForPassportRepository,
                          FeedbackRepository feedbackRepository,
                          MetricsRepository metricsRepository,
@@ -30,28 +32,30 @@ public class PasswordService {
     this.restTemplate = restTemplate;
   }
 
+
+  /// Основные функции сервиса
   public StatementForPassport addStatementForPassport(StatementForPassport statementForPassport) {
-    /// Добавляем метрики к созданному заявлению и сохранение метрики в БД
+    // Добавляем метрики к созданному заявлению и сохранение метрики в БД
     Metrics metrics = Metrics.builder().build();
     metricsRepository.save(metrics);
 
 
-    /// Ставим статус "обрабатывается" и добавляем заявление в БД
+    // Ставим статус "обрабатывается" и добавляем заявление в БД
     statementForPassport.setStatus(StatementStatus.IN_PROCESSING);
     statementForPassportRepository.save(statementForPassport);
 
-    /// Отправляем в МВД
+    // Отправляем в МВД
     StatementForPassport mvd_answer = sent_to_mvd(statementForPassport);
     if (mvd_answer != null) {
-      /// Поставили статус SENT и сохранили в БД
+      // Поставили статус SENT и сохранили в БД
       statementForPassport.setMvdProcessingStatus(MvdProcessingStatus.SENT);
       statementForPassportRepository.save(statementForPassport);
-      /// Сохранили в БД полученный от МВД статус в само заявление
+      // Сохранили в БД полученный от МВД статус в само заявление
       statementForPassport.setMvdProcessingStatus(mvd_answer.getMvdProcessingStatus());
       statementForPassportRepository.save(statementForPassport);
     }
 
-    /// Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД"
+    // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД"
     if (statementForPassport.getMvdProcessingStatus() == MvdProcessingStatus.REJECTED) {
       statementForPassport.setStatus(StatementStatus.REJECTED_IN_MVD);
       statementForPassportRepository.save(statementForPassport);
@@ -60,13 +64,15 @@ public class PasswordService {
     return statementForPassport;
   }
 
-  public StatementForPassport sent_to_mvd(StatementForPassport statement) {
-    String url = "http://localhost:8080/api/mvd/verify-passport";
-    return restTemplate.postForObject(url, statement, StatementForPassport.class);
-  }
 
   public Feedback addFeedback(Feedback feedback) {
     feedbackRepository.save(feedback);
     return feedback;
+  }
+
+  /// Ручки к другим сервисам
+  public StatementForPassport sent_to_mvd(StatementForPassport statement) {
+    String url = "http://localhost:8080/api/mvd/verify-passport";
+    return restTemplate.postForObject(url, statement, StatementForPassport.class);
   }
 }
