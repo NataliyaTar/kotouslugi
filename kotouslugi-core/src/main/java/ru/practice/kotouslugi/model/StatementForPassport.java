@@ -59,4 +59,9 @@ public class StatementForPassport {
   @Column(name = "status")
   private Boolean status;
 
+  @OneToOne(mappedBy = "statementForPassport", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private Metrics metrics;
+
+  @OneToOne(mappedBy = "statementForPassport", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private Feedback feedback;
 }
