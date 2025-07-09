@@ -22,8 +22,4 @@ public class Feedback {
 
   @Column(name = "comment", length = 255)
   private String comment;
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "statement_id", referencedColumnName = "id")
-  private StatementForPassport statementForPassport;
 }
