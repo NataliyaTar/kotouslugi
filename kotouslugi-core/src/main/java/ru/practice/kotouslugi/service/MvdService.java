@@ -10,10 +10,12 @@ import java.util.Random;
 public class MvdService {
   public StatementForPassport verify_in_mvd(StatementForPassport statementForPassport) throws InterruptedException {
     Random random = new Random();
-    int delay = 10000 + random.nextInt(2000); // Задержка от 1 до 3 секунд
+    int delay = 10000 + random.nextInt(2000);
     Thread.sleep(delay);
 
-    statementForPassport.setMvdProcessingStatus(MvdProcessingStatus.READY);
+    double randomValue = Math.random();
+    MvdProcessingStatus status = (randomValue < 0.7) ? MvdProcessingStatus.READY : MvdProcessingStatus.REJECTED;
+    statementForPassport.setMvdProcessingStatus(status);
 
     return statementForPassport;
   }
