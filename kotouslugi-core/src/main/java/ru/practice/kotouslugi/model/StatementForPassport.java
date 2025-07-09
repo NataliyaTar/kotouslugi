@@ -56,12 +56,4 @@ public class StatementForPassport {
   @Lob
   @Column(name = "photo")
   private byte[] photo;
-
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "metrics_id", referencedColumnName = "id")
-  private Metrics metrics;
-
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "feedback_id", referencedColumnName = "id")
-  private Feedback feedback;
 }

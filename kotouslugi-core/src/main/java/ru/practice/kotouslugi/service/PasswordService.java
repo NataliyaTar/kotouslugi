@@ -3,9 +3,11 @@ package ru.practice.kotouslugi.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.practice.kotouslugi.dao.FeedbackRepository;
+import ru.practice.kotouslugi.dao.MainEntityRepository;
 import ru.practice.kotouslugi.dao.MetricsRepository;
 import ru.practice.kotouslugi.dao.StatementForPassportRepository;
 import ru.practice.kotouslugi.model.Feedback;
+import ru.practice.kotouslugi.model.MainEntity;
 import ru.practice.kotouslugi.model.Metrics;
 import ru.practice.kotouslugi.model.StatementForPassport;
 import ru.practice.kotouslugi.model.enums.MvdProcessingStatus;
@@ -19,6 +21,7 @@ public class PasswordService {
   private final StatementForPassportRepository statementForPassportRepository;
   private final FeedbackRepository feedbackRepository;
   private final MetricsRepository metricsRepository;
+  private final MainEntityRepository mainEntityRepository;
 
   private final RestTemplate restTemplate;
 
@@ -27,25 +30,36 @@ public class PasswordService {
   public PasswordService(StatementForPassportRepository statementForPassportRepository,
                          FeedbackRepository feedbackRepository,
                          MetricsRepository metricsRepository,
+                         MainEntityRepository mainEntityRepository,
                          RestTemplate restTemplate) {
     this.statementForPassportRepository = statementForPassportRepository;
     this.feedbackRepository = feedbackRepository;
     this.metricsRepository = metricsRepository;
+    this.mainEntityRepository = mainEntityRepository;
     this.restTemplate = restTemplate;
   }
 
 
   /// Основные функции сервиса
-  public StatementForPassport addStatementForPassport(StatementForPassport statementForPassport) {
-    // Добавляем метрики к созданному заявлению и сохранение метрики в БД
+  public MainEntity addStatementForPassport(StatementForPassport statementForPassport) {
+    // Сохраняем данные из формы в БД.
+    statementForPassportRepository.save(statementForPassport);
+
+    // Создаём главную сущность и сразу добавляем в неё данные из формы(StatementForPassport).
+    MainEntity mainEntity = MainEntity.builder().build();
+    mainEntity.setStatement(statementForPassport);
+    mainEntityRepository.save(mainEntity);
+
+    // Добавляем метрики к main сущности и сохранение метрики в БД
     Metrics metrics = Metrics.builder().build();
     metrics.setDateStart(LocalDateTime.now());
     metricsRepository.save(metrics);
-    statementForPassport.setMetrics(metrics);
+    mainEntity.setMetrics(metrics);
+    mainEntityRepository.save(mainEntity);
 
     // Ставим статус "обрабатывается" и добавляем заявление в БД
-    statementForPassport.getMetrics().setStatus(StatementStatus.IN_PROCESSING);
-    statementForPassportRepository.save(statementForPassport);
+    metrics.setStatus(StatementStatus.IN_PROCESSING);
+    metricsRepository.save(metrics);
 
     // Отправляем в МВД
     StatementForPassport mvd_answer = sent_to_mvd(statementForPassport);
@@ -60,15 +74,12 @@ public class PasswordService {
 
     // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД". Больше заявка не обрабатывается
     if (statementForPassport.getMvdProcessingStatus() == MvdProcessingStatus.REJECTED) {
-      statementForPassport.getMetrics().setStatus(StatementStatus.REJECTED_IN_MVD);
-      statementForPassportRepository.save(statementForPassport);
-      statementForPassport.getMetrics().setDateEnd(LocalDateTime.now());
-      statementForPassport.getMetrics().setStatus(StatementStatus.REJECTED_IN_MVD);
-      statementForPassportRepository.save(statementForPassport);
-
+      metrics.setStatus(StatementStatus.REJECTED_IN_MVD);
+      metrics.setDateEnd(LocalDateTime.now());
+      metricsRepository.save(metrics);
     }
 
-    return statementForPassport;
+    return mainEntity;
   }
 
 

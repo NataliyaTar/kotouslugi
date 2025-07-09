@@ -10,8 +10,7 @@ import lombok.*;
 @Entity
 @Builder
 @Table(name = "main_entity")
-public class EntityLink {
-
+public class MainEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
@@ -22,10 +21,10 @@ public class EntityLink {
   private StatementForPassport statement;
 
   @OneToOne
-  @JoinColumn(name = "feedback_id", referencedColumnName = "id") // feedback
-  private Feedback feedback;
-
-  @OneToOne
   @JoinColumn(name = "metrics_id", referencedColumnName = "id") // metrics
   private Metrics metrics;
+
+  @OneToOne
+  @JoinColumn(name = "feedback_id", referencedColumnName = "id") // feedback
+  private Feedback feedback;
 }

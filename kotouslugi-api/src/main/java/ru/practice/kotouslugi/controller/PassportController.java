@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.Feedback;
+import ru.practice.kotouslugi.model.MainEntity;
 import ru.practice.kotouslugi.model.StatementForPassport;
 import ru.practice.kotouslugi.service.PasswordService;
 
@@ -28,7 +29,7 @@ public class PassportController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     }
   )
-  public StatementForPassport addStatementForPassport(@RequestBody StatementForPassport statementForPassport) {
+  public MainEntity addStatementForPassport(@RequestBody StatementForPassport statementForPassport) {
     return foreignPasswordService.addStatementForPassport(statementForPassport);
   }
 
