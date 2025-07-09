@@ -7,6 +7,7 @@ import ru.practice.kotouslugi.dao.StatementForPassportRepository;
 import ru.practice.kotouslugi.model.Feedback;
 import ru.practice.kotouslugi.model.StatementForPassport;
 import ru.practice.kotouslugi.model.enums.MvdProcessingStatus;
+import ru.practice.kotouslugi.model.enums.StatementStatus;
 
 @Service
 public class PasswordService {
@@ -23,10 +24,26 @@ public class PasswordService {
   }
 
   public StatementForPassport addStatementForPassport(StatementForPassport statementForPassport) {
+    /// Ставим статус "обрабатывается" и добавляем заявление в БД
+    statementForPassport.setStatus(StatementStatus.IN_PROCESSING);
     statementForPassportRepository.save(statementForPassport);
+    /// Отправляем в МВД
     StatementForPassport mvd_answer = sent_to_mvd(statementForPassport);
-    statementForPassportRepository.save(mvd_answer);
-    return mvd_answer;
+    if (mvd_answer != null) {
+      /// Поставили статус SENT и сохранили в БД
+      statementForPassport.setMvdProcessingStatus(MvdProcessingStatus.SENT);
+      statementForPassportRepository.save(statementForPassport);
+      /// Сохранили в БД полученный от МВД статус
+      statementForPassport.setMvdProcessingStatus(mvd_answer.getMvdProcessingStatus());
+      statementForPassportRepository.save(statementForPassport);
+    }
+
+    /// Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД"
+    if (statementForPassport.getMvdProcessingStatus() == MvdProcessingStatus.REJECTED) {
+      statementForPassport.setStatus(StatementStatus.REJECTED_IN_MVD);
+    }
+
+    return statementForPassport;
   }
 
   public StatementForPassport sent_to_mvd(StatementForPassport statement) {
