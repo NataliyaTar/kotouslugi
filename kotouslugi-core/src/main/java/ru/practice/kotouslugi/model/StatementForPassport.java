@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import ru.practice.kotouslugi.model.enums.MvdProcessingStatus;
+import ru.practice.kotouslugi.model.enums.StatementStatus;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -55,9 +56,6 @@ public class StatementForPassport {
   @Lob
   @Column(name = "photo")
   private byte[] photo;
-
-  @Column(name = "status")
-  private Boolean status;
 
   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "metrics_id", referencedColumnName = "id")
