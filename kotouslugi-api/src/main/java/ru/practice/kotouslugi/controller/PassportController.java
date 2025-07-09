@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.Feedback;
 import ru.practice.kotouslugi.model.MainEntity;
 import ru.practice.kotouslugi.model.StatementForPassport;
+import ru.practice.kotouslugi.request.BankRequest;
+import ru.practice.kotouslugi.request.FeedbackRequest;
 import ru.practice.kotouslugi.service.PasswordService;
 
 @RestController
@@ -45,9 +47,10 @@ public class PassportController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     }
   )
-  public StatementForPassport payment_duty(@RequestBody StatementForPassport statementForPassport) {
-    return foreignPasswordService.payment_duty(statementForPassport);
+  public MainEntity payment_duty(@RequestBody BankRequest request) {
+    return foreignPasswordService.payment_duty(request.getId());
   }
+
 
   @PostMapping(value = "/add-feedback", produces = "application/json")
   @ResponseBody
@@ -60,7 +63,7 @@ public class PassportController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     }
   )
-  public Feedback addFeedback(@RequestBody Feedback feedback) {
-    return foreignPasswordService.addFeedback(feedback);
+  public MainEntity addFeedback(@RequestBody FeedbackRequest feedbackRequest) {
+    return foreignPasswordService.addFeedback(feedbackRequest);
   }
 }

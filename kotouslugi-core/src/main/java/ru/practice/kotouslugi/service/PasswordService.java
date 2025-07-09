@@ -1,5 +1,6 @@
 package ru.practice.kotouslugi.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.practice.kotouslugi.dao.FeedbackRepository;
@@ -11,9 +12,11 @@ import ru.practice.kotouslugi.model.MainEntity;
 import ru.practice.kotouslugi.model.Metrics;
 import ru.practice.kotouslugi.model.StatementForPassport;
 import ru.practice.kotouslugi.model.enums.StatementStatus;
+import ru.practice.kotouslugi.request.FeedbackRequest;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class PasswordService {
@@ -89,20 +92,42 @@ public class PasswordService {
   }
 
 
-  public StatementForPassport payment_duty(StatementForPassport statementForPassport) {
-    StatementForPassport bank_answer = sent_to_bank(statementForPassport);
-    statementForPassport.setPoshlina(bank_answer.getPoshlina());
-    statementForPassportRepository.save(statementForPassport);
-    return statementForPassport;
+  public MainEntity payment_duty(Long id) {
+    // Отправляем в банк и получаем ответ
+    StatementStatus bank_answer = sent_to_bank("что-то отправляем");
+
+    // Получаем сущность с проверкой на существование
+    MainEntity mainEntity = mainEntityRepository.findById(id)
+      .orElseThrow(() -> new EntityNotFoundException("MainEntity not found with id: " + id));
+
+
+    // Устанавливаем статус
+    mainEntity.getMetrics().setStatus(bank_answer);
+    mainEntityRepository.save(mainEntity);
+
+    return mainEntity;
   }
 
 
 
 
 
-  public Feedback addFeedback(Feedback feedback) {
+  public MainEntity addFeedback(FeedbackRequest feedbackRequest) {
+    // Получаем сущность с проверкой на существование
+    MainEntity mainEntity = mainEntityRepository.findById(feedbackRequest.getId())
+      .orElseThrow(() -> new EntityNotFoundException("MainEntity not found with id: " + feedbackRequest.getId()));
+
+    // Создаём сущность дл комментариев и сохраняем ее в БД
+    Feedback feedback = Feedback.builder().build();
+    feedback.setRating(feedbackRequest.getGrade());
+    feedback.setComment(feedbackRequest.getReview());
     feedbackRepository.save(feedback);
-    return feedback;
+
+    // Сохраняем комментарий в главной сущности и обновляем главную сущность в БД
+    mainEntity.setFeedback(feedback);
+    mainEntityRepository.save(mainEntity);
+
+    return mainEntity;
   }
 
 
@@ -113,8 +138,8 @@ public class PasswordService {
   }
 
 
-  public StatementForPassport sent_to_bank(StatementForPassport statement) {
+  public StatementStatus sent_to_bank(String message) {
     String url = "http://localhost:8080/api/bank/payment_duty";
-    return restTemplate.postForObject(url, statement, StatementForPassport.class);
+    return restTemplate.postForObject(url, message, StatementStatus.class);
   }
 }
