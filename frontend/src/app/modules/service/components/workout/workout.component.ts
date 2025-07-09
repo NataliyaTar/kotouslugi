@@ -10,18 +10,11 @@ import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
+import {IValueFitness} from "@models/fitness.model"
 
 export enum FormMap { // маппинг названия поля - значение
   cat  = 'Кличка',
   fitness_club = 'Фитнес зал',
-  membership_type = 'Тип абонемента',
-  trainer_name = 'ФИО тренера',
-  price = 'Стоимость абонемента',
-  session_start = 'Начало занятия',
-  session_end = 'Конец занятия',
-  end_date = 'Дата окончания действия абонемента',
-  created_at = 'Дата и время создания записи',
-  updated_at = 'Дата и время последнего обновления'
 }
 
 @Component({
@@ -53,6 +46,8 @@ export class WorkoutComponent implements OnInit, OnDestroy{
     private route: ActivatedRoute,
     private serviceInfo: ServiceInfoService
   ) {}
+
+  public optionsFitness: IValueFitness[] = [];
 
   ngOnInit(): void {
     this.getCatOption();
@@ -99,36 +94,39 @@ export class WorkoutComponent implements OnInit, OnDestroy{
             this.active = res?.[this.idService] || 0;
           })
         );
-
-        this.initForm();
+        this.constantService.getFitnessOptionsAll().pipe(take(1)).subscribe(fitness => {
+              this.optionsFitness = fitness;
+              this.initForm();
+        });
       });
     }
 
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]]
+        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
+        fitness_club: [this.optionsFitness[0]?.id || null, [Validators.required]]
       }),
       1: this.fb.group({
-              membership_type: ['', [Validators.required]],
-              trainer_name: ['', [Validators.required]]
-            })
+        membership_type: ['', [Validators.required]],
+        trainer_name: ['', [Validators.required]]
+      })
     });
-  this.serviceInfo.servicesForms$.next({
-    [this.idService]: this.form
-  });
-  this.loading = false;
-
+    this.serviceInfo.servicesForms$.next({
+      [this.idService]: this.form
+    });
+    this.loading = false;
   }
 
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
 
-  public getItem(type: 'cat', index: number): string {
+  public getItem(type: 'cat' | 'fitness', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
     }
-    return '';
+    // Для fitness просто возвращаем ID, так как это число
+    return this.optionsFitness[index]?.id.toString() || '';
   }
 }
