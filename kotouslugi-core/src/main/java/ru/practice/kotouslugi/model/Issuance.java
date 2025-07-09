@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,5 +24,5 @@ public class Issuance {
   private String place;
 
   @Column(name = "date")
-  private LocalDate issuanceDate;
+  private LocalDateTime issuanceDate;
 }

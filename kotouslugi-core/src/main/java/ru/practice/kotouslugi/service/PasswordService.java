@@ -3,16 +3,11 @@ package ru.practice.kotouslugi.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.practice.kotouslugi.dao.FeedbackRepository;
-import ru.practice.kotouslugi.dao.MainEntityRepository;
-import ru.practice.kotouslugi.dao.MetricsRepository;
-import ru.practice.kotouslugi.dao.StatementForPassportRepository;
-import ru.practice.kotouslugi.model.Feedback;
-import ru.practice.kotouslugi.model.MainEntity;
-import ru.practice.kotouslugi.model.Metrics;
-import ru.practice.kotouslugi.model.StatementForPassport;
+import ru.practice.kotouslugi.dao.*;
+import ru.practice.kotouslugi.model.*;
 import ru.practice.kotouslugi.model.enums.StatementStatus;
 import ru.practice.kotouslugi.request.FeedbackRequest;
+import ru.practice.kotouslugi.request.IssuanceRequest;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -24,6 +19,7 @@ public class PasswordService {
   private final FeedbackRepository feedbackRepository;
   private final MetricsRepository metricsRepository;
   private final MainEntityRepository mainEntityRepository;
+  private final IssuanceRepository issuanceRepository;
 
   private final RestTemplate restTemplate;
 
@@ -33,11 +29,13 @@ public class PasswordService {
                          FeedbackRepository feedbackRepository,
                          MetricsRepository metricsRepository,
                          MainEntityRepository mainEntityRepository,
+                         IssuanceRepository issuanceRepository,
                          RestTemplate restTemplate) {
     this.statementForPassportRepository = statementForPassportRepository;
     this.feedbackRepository = feedbackRepository;
     this.metricsRepository = metricsRepository;
     this.mainEntityRepository = mainEntityRepository;
+    this.issuanceRepository = issuanceRepository;
     this.restTemplate = restTemplate;
   }
 
@@ -141,6 +139,25 @@ public class PasswordService {
 
     // Сохраняем комментарий в главной сущности и обновляем главную сущность в БД
     mainEntity.setFeedback(feedback);
+    mainEntityRepository.save(mainEntity);
+
+    return mainEntity;
+  }
+
+
+  public MainEntity addIssuance(IssuanceRequest issuanceRequest) {
+    // Получаем сущность с проверкой на существование
+    MainEntity mainEntity = mainEntityRepository.findById(issuanceRequest.getId())
+      .orElseThrow(() -> new EntityNotFoundException("MainEntity not found with id: " + issuanceRequest.getId()));
+
+    // Создаём сущность для записи в МВД, заполняем её и сохраняем сущность в БД.
+    Issuance issuance = Issuance.builder().build();
+    issuance.setIssuanceDate(issuanceRequest.getIssuanceDate());
+    issuance.setPlace(issuanceRequest.getPlace());
+    issuanceRepository.save(issuance);
+
+    // Сохраняем запись в МВД в главной сущности и обновляем главную сущность в БД
+    mainEntity.setIssuance(issuance);
     mainEntityRepository.save(mainEntity);
 
     return mainEntity;

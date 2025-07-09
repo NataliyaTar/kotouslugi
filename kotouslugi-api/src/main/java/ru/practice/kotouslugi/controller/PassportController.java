@@ -7,6 +7,7 @@ import ru.practice.kotouslugi.model.MainEntity;
 import ru.practice.kotouslugi.model.StatementForPassport;
 import ru.practice.kotouslugi.request.BankRequest;
 import ru.practice.kotouslugi.request.FeedbackRequest;
+import ru.practice.kotouslugi.request.IssuanceRequest;
 import ru.practice.kotouslugi.service.PasswordService;
 
 @RestController
@@ -64,5 +65,22 @@ public class PassportController extends BaseController {
   )
   public MainEntity addFeedback(@RequestBody FeedbackRequest feedbackRequest) {
     return foreignPasswordService.addFeedback(feedbackRequest);
+  }
+
+
+
+  @PostMapping(value = "/add-issuance", produces = "application/json")
+  @ResponseBody
+  @Operation(
+    summary = "Запись в МВД",
+    description = "",
+    tags = {"Загранпаспорт"},
+    responses = {// дописать остальные статусы
+      @ApiResponse(responseCode = "200", description = ""),
+      @ApiResponse(responseCode = "500", description = "")
+    }
+  )
+  public MainEntity addIssuance(@RequestBody IssuanceRequest issuanceRequest) {
+    return foreignPasswordService.addIssuance(issuanceRequest);
   }
 }
