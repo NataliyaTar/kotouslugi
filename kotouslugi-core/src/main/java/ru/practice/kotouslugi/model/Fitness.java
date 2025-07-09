@@ -28,7 +28,7 @@ public class Fitness {
   /**
    * Уникальный идентификатор фитнес-клуба
    */
-  private int id;
+  private Long id;
 
   /** Название фитнес-клуба */
   private String fitness_club;
