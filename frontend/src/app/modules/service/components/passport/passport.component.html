@@ -1,0 +1,133 @@
+<!--Временный файл-->
+
+@if (loading) {
+<app-throbber></app-throbber>
+} @else if (notEnoughCats) {
+<div class="not-have-cat col-2 col-lg-12">
+  <img src="../../../assets/png/cats/sad.png" class="image">
+  <h3>Упс...<br>У вас недостаточно зарегистрированных котиков для использования услуги</h3>
+  <p class="text">
+    Перейдите к <a
+    [routerLink]="'/add-cat'">добавлению котика</a> или выберите <a
+    [routerLink]="'/'">другую услугу</a>
+  </p>
+</div>
+} @else {
+<div class="fields-wrapper" [formGroup]="form">
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <div class="field">
+      <div>
+        <p class="label">Выберите жениха</p>
+        @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+        @for (option of optionsCatM; track $index) {
+        <option [value]="getItem('male', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Серия и номер паспорта</p>
+        @if (getControl(0, 'passport').errors && getControl(0, 'passport').touched) {
+        @if (getControl(0, 'passport').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(0, 'passport').errors?.['pattern']) {
+        <p class="error">Введите значение в виде «0000 000000»</p>
+        }
+        }
+      </div>
+      <input formControlName="passport" placeholder="0000 000000"
+             (invalid)="getControl(0, 'passport').invalid">
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+    <div class="field">
+      <div>
+        <p class="label">Выберите невесту</p>
+        @if (getControl(1, 'cat').errors?.['required'] && getControl(1, 'cat').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="cat" (invalid)="getControl(1, 'cat').invalid">
+        @for (option of optionsCatF; track $index) {
+        <option [value]="getItem('female', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Серия и номер паспорта</p>
+        @if (getControl(1, 'passport').errors && getControl(1, 'passport').touched) {
+        @if (getControl(1, 'passport').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(1, 'passport').errors?.['pattern']) {
+        <p class="error">Введите значение в виде «0000 000000»</p>
+        }
+        }
+      </div>
+      <input formControlName="passport" placeholder="0000 000000"
+             (invalid)="getControl(1, 'passport').invalid">
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+    <div class="field">
+      <div>
+        <p class="label">Адрес места бракосочетания</p>
+        @if (getControl(2, 'place')?.errors && getControl(2, 'place')?.touched) {
+        @if (getControl(2, 'place').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(2, 'place').errors?.['pattern']) {
+        <p class="error">Допустимые символы: буквы русского алфавита и цифры</p>
+        }
+        }
+      </div>
+      <input formControlName="place" (invalid)="getControl(2, 'place').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Дата</p>
+        @if (getControl(2, 'date').errors && getControl(2, 'date').touched) {
+        @if (getControl(2, 'date').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(2, 'date').errors?.['minDate']) {
+        <p class="error">Выберите дату в будущем</p>
+        }
+        }
+      </div>
+      <input formControlName="date" type="date" (invalid)="getControl(2, 'date').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Время</p>
+        @if (getControl(2, 'time').errors?.['required'] && getControl(2, 'time').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <input formControlName="time" type="time" list="time_list" (invalid)="getControl(2, 'time').invalid">
+      <datalist id="time_list">
+        <option value="09:00">
+        <option value="10:00">
+        <option value="11:00">
+        <option value="12:00">
+        <option value="13:00">
+        <option value="14:00">
+        <option value="15:00">
+        <option value="16:00">
+        <option value="17:00">
+        <option value="18:00">
+      </datalist>
+    </div>
+  </div>
+
+  @if (active === 3) {
+  <app-check-info [data]="getResult"></app-check-info>
+  }
+</div>
+}
