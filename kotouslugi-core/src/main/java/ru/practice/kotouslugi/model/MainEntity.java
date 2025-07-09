@@ -17,14 +17,18 @@ public class MainEntity {
   private Long id;
 
   @OneToOne
-  @JoinColumn(name = "statement_id", referencedColumnName = "id") //  statement_for_passport
+  @JoinColumn(name = "statement_id", referencedColumnName = "id")
   private StatementForPassport statement;
 
   @OneToOne
-  @JoinColumn(name = "metrics_id", referencedColumnName = "id") // metrics
+  @JoinColumn(name = "metrics_id", referencedColumnName = "id")
   private Metrics metrics;
 
   @OneToOne
-  @JoinColumn(name = "feedback_id", referencedColumnName = "id") // feedback
+  @JoinColumn(name = "feedback_id", referencedColumnName = "id")
   private Feedback feedback;
+
+  @OneToOne
+  @JoinColumn(name = "issuance_id", referencedColumnName = "id")
+  private Issuance issuance;
 }
