@@ -164,7 +164,7 @@ public get getResult() {
    * @private
    */
   private dateValidatorBirth(control: FormControl) {
-    if !(new Date(control.value) > new Date()) {
+    if (new Date(control.value) !> new Date()) {
       return {minDate: true};
     }
 
