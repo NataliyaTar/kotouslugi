@@ -93,6 +93,8 @@ public class PasswordService {
   }
 
 
+
+
   public MainEntity payment_duty(Long id) {
     // Получаем сущность с проверкой на существование
     MainEntity mainEntity = mainEntityRepository.findById(id)
@@ -102,12 +104,19 @@ public class PasswordService {
     // Ставим статус "отправлено в банк". Отправляем в банк --> получаем ответ --> ставим статус, который прислал банк --> сохраняем в БД
     mainEntity.getMetrics().setStatus(StatementStatus.SENT_TO_BANK);
     StatementStatus bank_answer = sent_to_bank("что-то отправляем");
+
+    if (bank_answer == null) {
+      // Поставили статус "ошибка в банке" и сохранили в БД. Это финальный статус.
+      mainEntity.getMetrics().setStatus(StatementStatus.ERROR_IN_BANK);
+      mainEntity.getMetrics().setDateEnd(LocalDateTime.now());
+      mainEntityRepository.save(mainEntity);
+    }
+
     mainEntity.getMetrics().setStatus(bank_answer);
     mainEntityRepository.save(mainEntity);
 
     return mainEntity;
   }
-
 
 
 
@@ -129,6 +138,8 @@ public class PasswordService {
 
     return mainEntity;
   }
+
+
 
 
   /// Ручки к другим сервисам

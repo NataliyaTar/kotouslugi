@@ -32,7 +32,7 @@ public class BankController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     })
 
-  public StatementStatus payment_duty(@RequestBody String message) {
+  public StatementStatus payment_duty(@RequestBody String message) throws InterruptedException {
     return bankService.payment_duty(message);
   };
 }

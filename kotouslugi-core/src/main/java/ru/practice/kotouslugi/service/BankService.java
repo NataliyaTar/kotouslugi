@@ -8,10 +8,14 @@ import java.util.Random;
 
 @Service
 public class BankService {
-  public StatementStatus payment_duty(String message) {
+  public StatementStatus payment_duty(String message) throws InterruptedException {
+    Random random = new Random();
+    int delay = 1000 + random.nextInt(2000);
+    Thread.sleep(delay);
+
+
     int price_of_duty = 500;
 
-    Random random = new Random();
     int userMoney = random.nextInt(400,1001);
 
     StatementStatus bank_status;
