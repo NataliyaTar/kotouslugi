@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { EBreedMap, ESexMap, ICat, TBreed, TSex } from '@models/cat.model';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,16 @@ export class CatService {
   public getBreedMap(breedId: TBreed): EBreedMap {
     return EBreedMap[breedId];
   }
+
+  /**
+     * Возвращает значение возраста в человеческом виде
+     * @param breedId
+
+    public getBreedMap(breedId: TBreed): EBreedMap {
+      return EBreedMap[breedId];
+    }
+  */
+
 
   /**
    * Сохраняет кота в БД
@@ -76,5 +87,4 @@ export class CatService {
       }
     });
   }
-
 }

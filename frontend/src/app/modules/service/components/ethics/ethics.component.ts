@@ -1,8 +1,6 @@
-// Файл не трогаем
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
-import { IValueCat } from '@models/cat.model';
+import { IValueCat, ICat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
@@ -14,34 +12,44 @@ import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
 export enum FormMap {
-  cat  = 'Кличка',
+  // 0
+  cat  = 'Имя кошечки',
+  course = 'Тип курса',
+  date = 'Дата',
+  time = 'Время',
+
+  // 1
+  teacher = "Учитель",
+  teacherInfo = "Об учителе",
+
+  // 2
+  owner = 'Имя владельца',
   telephone = 'Телефон для связи',
   email = 'Email для связи',
-  anamnesis = 'Жалобы',
-  doctor = 'Специалист',
-  date = 'Дата',
-  time = 'Время'
 }
 
+
 @Component({
-  selector: 'app-vet',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    CheckInfoComponent,
-    JsonPipe,
-    ThrobberComponent,
-  ],
-  templateUrl: './vet.component.html',
-  styleUrl: './vet.component.scss'
+  selector: 'app-ethics',
+    standalone: true,
+    imports: [
+      ReactiveFormsModule,
+      CheckInfoComponent,
+      JsonPipe,
+      ThrobberComponent,
+    ],
+  templateUrl: './ethics.component.html',
+  styleUrls: ['./ethics.component.scss']
 })
-export class VetComponent implements OnInit, OnDestroy {
+
+export class EthicsComponent implements OnInit, OnDestroy {
 
   public loading = true; // загружена ли информация для страницы
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
-  public doctorOptions = this.constantService.doctorOptions; // список специальностей докторов
+  public teacherOptions = this.constantService.teacherOptions; // список учителей
+  public courseOptions = this.constantService.courseOptions; // список курсов
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
@@ -54,6 +62,10 @@ export class VetComponent implements OnInit, OnDestroy {
     return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
   }
 
+  resetFields(): void {
+    this.form.reset();
+  }
+
   constructor(
     private fb: FormBuilder,
     private serviceInfo: ServiceInfoService,
@@ -62,6 +74,7 @@ export class VetComponent implements OnInit, OnDestroy {
     private constantService: ConstantsService,
   ) {
   }
+
 
   public ngOnInit(): void {
     this.getCatOption();
@@ -120,17 +133,21 @@ export class VetComponent implements OnInit, OnDestroy {
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
-        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['', [Validators.email]]
-      }),
-      1: this.fb.group({
-        anamnesis: ['', [Validators.required, Validators.max(256)]]
-      }),
-      2: this.fb.group({
-        doctor: [JSON.stringify(this.doctorOptions[0]), [Validators.required]],
+        cat: [JSON.stringify(this.optionsCat[0])],
+        course: ['', [Validators.required]],
         date: ['', [Validators.required, this.dateValidator]],
         time: ['', [Validators.required]]
+
+      }),
+      1: this.fb.group({
+        teacher: ['', [Validators.required, Validators.max(256)]],
+        teacherInfo: ['', [Validators.max(256)]],
+
+      }),
+      2: this.fb.group({
+        owner: ["", [Validators.required]],
+        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        email: ['', [Validators.email]]
       })
     });
 
@@ -159,20 +176,24 @@ export class VetComponent implements OnInit, OnDestroy {
    * @param type
    * @param index
    */
-  public getItem(type: 'cat' | 'doc', index: number): string {
+  public getItem(type: 'cat' | 'tea' | 'cou', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
     }
-    return JSON.stringify(this.doctorOptions[index]);
+    if (type === 'cou') {
+        return JSON.stringify(this.courseOptions[index]);
+    }
+    return JSON.stringify(this.teacherOptions[index]);
   }
 
   /**
-   * Возвращает контрол формы
-   * @param step
-   * @param id
-   */
-  public getControl(step: number, id: string): FormControl {
-    return this.form.get(`${step}.${id}`) as FormControl;
-  }
-
+      * Возвращает контрол формы
+      * @param step
+      * @param id
+      */
+     public getControl(step: number, id: string): FormControl {
+       return this.form.get(`${step}.${id}`) as FormControl;
+     }
 }
+
+

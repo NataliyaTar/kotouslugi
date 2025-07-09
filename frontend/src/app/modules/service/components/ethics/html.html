@@ -1,0 +1,124 @@
+<div class="fields-wrapper" [formGroup]="form">
+  <!-- Шаг 0 -->
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <!-- Выбор кота -->
+    <div class="field">
+      <div>
+        <p class="label">Выберите кота</p>
+        <div *ngIf="getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched">
+          <p class="error">Поле обязательно для заполнения</p>
+        </div>
+      </div>
+      <select formControlName="cat">
+        @for (option of optionsCat; track $index) {
+          <option [value]="getItem('cat', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Тип курса -->
+    div class="field">
+    <div>
+      <p class="label">Учитель</p>
+      <div *ngIf="getControl(0, 'course').errors?.['required'] && getControl(0, 'course').touched">
+        <p class="error">Поле обязательно для заполнения</p>
+      </div>
+    </div>
+    <select formControlName="teacher">
+      @for (option of courseOptions; track $index) {
+        <option [value]="getItem('tea', $index)">{{option.text}}</option>
+      }
+    </select>
+
+    <!-- Дата -->
+    <div class="field">
+      <div>
+        <p class="label">Дата</p>
+        <div *ngIf="getControl(1, 'date').errors && getControl(1, 'date').touched">
+          <p class="error" *ngIf="getControl(1, 'date').errors?.['required']">Поле обязательно для заполнения</p>
+          <p class="error" *ngIf="getControl(1, 'date').errors?.['minDate']">Некорректная дата</p>
+        </div>
+      </div>
+      <input type="date" formControlName="date" placeholder="Выберите дату" />
+    </div>
+
+    <!-- Время -->
+    <div class="field">
+      <div>
+        <p class="label">Время</p>
+        <div *ngIf="getControl(1, 'time').errors?.['required'] && getControl(1, 'time').touched">
+          <p class="error">Поле обязательно для заполнения</p>
+        </div>
+      </div>
+      <input type="time" formControlName="time" />
+    </div>
+  </div>
+
+  <!-- Шаг 1 -->
+  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+    <!-- Учитель (выпадающий список) -->
+    <div class="field">
+      <div>
+        <p class="label">Учитель</p>
+        <div *ngIf="getControl(1, 'teacher').errors?.['required'] && getControl(1, 'teacher').touched">
+          <p class="error">Поле обязательно для заполнения</p>
+        </div>
+      </div>
+      <select formControlName="teacher">
+        @for (option of teacherOptions; track $index) {
+        <option [value]="getItem('tea', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <div class="field">
+        <div>
+          <p class="label">Об учителе: </p>
+        </div>
+        <textarea formControlName="teacherInfo" (invalid)="getControl(1, 'teacherInfo').invalid"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Шаг 2 -->
+  <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+    <!-- Имя владельца  -->
+    <div class="field">
+      <div>
+        <p class="label">Имя владельца</p>
+        <div *ngIf="getControl(2, 'owner').errors?.['required'] && getControl(2, 'owner').touched">
+          <p class="error">Поле обязательно для заполнения</p>
+        </div>
+      </div>
+      <input formControlName="owner" placeholder="Введите имя владельца" />
+    </div>
+
+    <!-- Телефон -->
+    <div class="field">
+      <div>
+        <p class="label">Телефон для связи</p>
+        <div *ngIf="getControl(2, 'telephone').errors && getControl(2, 'telephone').touched">
+          <p class="error" *ngIf="getControl(2, 'telephone').errors?.['required']">Поле обязательно для заполнения</p>
+          <p class="error" *ngIf="getControl(2, 'telephone').errors?.['pattern']">Введите 11 цифр</p>
+        </div>
+      </div>
+      <input formControlName="telephone" placeholder="12345678901" />
+    </div>
+
+    <!-- Email -->
+    <div class="field">
+      <div>
+        <p class="label">Email для связи</p>
+        <div *ngIf="getControl(2, 'email').errors && getControl(2, 'email').touched">
+          <p class="error" *ngIf="getControl(2, 'email').errors?.['email']">Некорректный email</p>
+        </div>
+      </div>
+      <input type="email" formControlName="email" placeholder="youremail@.ru" />
+    </div>
+  </div>
+
+  if (active === 3) {
+    <app-check-info [data]="getResult"></app-check-info>
+  }
+</div>

@@ -81,6 +81,43 @@ export class ConstantsService {
     }
   ];
 
+ // варианты учителей
+  public teacherOptions: IValue[] = [
+    {
+      id: 0,
+      text: 'Строгокотикова Е.В.'
+    },
+    {
+      id: 1,
+        text: 'Котолюбов А.Н.'
+    },
+    {
+      id: 2,
+      text: 'Укольчиков П.А.'
+    },
+    {
+      id: 3,
+      text: 'Пузиков Д.И'
+    },
+  ];
+
+
+  public courseOptions: IValue[] = [
+    {
+      id: 0,
+      text: 'Приручение к лотку'
+    },
+    {
+      id: 1,
+        text: 'Основы этикета'
+    },
+    {
+      id: 2,
+      text: 'Социализация'
+    },
+  ];
+
+
   constructor(
     private catService: CatService,
   ) { }
