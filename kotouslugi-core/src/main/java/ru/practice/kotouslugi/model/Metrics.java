@@ -27,8 +27,4 @@ public class Metrics {
 
   @Column(name = "date_end")
   private LocalDateTime dateEnd;
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "statement_id", referencedColumnName = "id")
-  private StatementForPassport statementForPassport;
 }
