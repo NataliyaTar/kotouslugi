@@ -10,7 +10,7 @@ import java.util.Random;
 public class MvdService {
   public StatementForPassport verify_in_mvd(StatementForPassport statementForPassport) throws InterruptedException {
     Random random = new Random();
-    int delay = 10000 + random.nextInt(2000);
+    int delay = 1000 + random.nextInt(2000);
     Thread.sleep(delay);
 
     double randomValue = Math.random();

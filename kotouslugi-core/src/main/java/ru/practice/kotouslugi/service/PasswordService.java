@@ -11,6 +11,8 @@ import ru.practice.kotouslugi.model.StatementForPassport;
 import ru.practice.kotouslugi.model.enums.MvdProcessingStatus;
 import ru.practice.kotouslugi.model.enums.StatementStatus;
 
+import java.time.LocalDateTime;
+
 @Service
 public class PasswordService {
   /// Репозитории
@@ -37,11 +39,12 @@ public class PasswordService {
   public StatementForPassport addStatementForPassport(StatementForPassport statementForPassport) {
     // Добавляем метрики к созданному заявлению и сохранение метрики в БД
     Metrics metrics = Metrics.builder().build();
+    metrics.setDateStart(LocalDateTime.now());
     metricsRepository.save(metrics);
     statementForPassport.setMetrics(metrics);
 
     // Ставим статус "обрабатывается" и добавляем заявление в БД
-    statementForPassport.setStatus(StatementStatus.IN_PROCESSING);
+    statementForPassport.getMetrics().setStatus(StatementStatus.IN_PROCESSING);
     statementForPassportRepository.save(statementForPassport);
 
     // Отправляем в МВД
@@ -55,14 +58,31 @@ public class PasswordService {
       statementForPassportRepository.save(statementForPassport);
     }
 
-    // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД"
+    // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД". Больше заявка не обрабатывается
     if (statementForPassport.getMvdProcessingStatus() == MvdProcessingStatus.REJECTED) {
-      statementForPassport.setStatus(StatementStatus.REJECTED_IN_MVD);
+      statementForPassport.getMetrics().setStatus(StatementStatus.REJECTED_IN_MVD);
       statementForPassportRepository.save(statementForPassport);
+      statementForPassport.getMetrics().setDateEnd(LocalDateTime.now());
+      statementForPassport.getMetrics().setStatus(StatementStatus.REJECTED_IN_MVD);
+      statementForPassportRepository.save(statementForPassport);
+
     }
 
     return statementForPassport;
   }
+
+
+  public StatementForPassport payment_duty(StatementForPassport statementForPassport) {
+    StatementForPassport bank_answer = sent_to_bank(statementForPassport);
+    statementForPassport.setPoshlina(bank_answer.getPoshlina());
+    statementForPassportRepository.save(statementForPassport);
+
+    return statementForPassport;
+  }
+
+
+
+
 
   public Feedback addFeedback(Feedback feedback) {
     feedbackRepository.save(feedback);
@@ -73,6 +93,12 @@ public class PasswordService {
   /// Ручки к другим сервисам
   public StatementForPassport sent_to_mvd(StatementForPassport statement) {
     String url = "http://localhost:8080/api/mvd/verify-passport";
+    return restTemplate.postForObject(url, statement, StatementForPassport.class);
+  }
+
+
+  public StatementForPassport sent_to_bank(StatementForPassport statement) {
+    String url = "http://localhost:8080/api/bank/payment_duty";
     return restTemplate.postForObject(url, statement, StatementForPassport.class);
   }
 }

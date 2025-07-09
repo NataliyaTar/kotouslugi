@@ -57,9 +57,6 @@ public class StatementForPassport {
   @Column(name = "photo")
   private byte[] photo;
 
-  @Column(name = "status")
-  private StatementStatus status;
-
   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "metrics_id", referencedColumnName = "id")
   private Metrics metrics;

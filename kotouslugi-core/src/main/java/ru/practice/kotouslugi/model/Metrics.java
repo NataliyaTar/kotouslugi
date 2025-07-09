@@ -2,6 +2,7 @@ package ru.practice.kotouslugi.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.practice.kotouslugi.model.enums.StatementStatus;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +21,7 @@ public class Metrics {
   private Long id;
 
   @Column(name = "status")
-  private Boolean status;
+  private StatementStatus status;
 
   @Column(name = "date_start")
   private LocalDateTime dateStart;

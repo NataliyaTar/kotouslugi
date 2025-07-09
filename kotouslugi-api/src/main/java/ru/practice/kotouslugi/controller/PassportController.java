@@ -28,10 +28,10 @@ public class PassportController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     }
   )
-
   public StatementForPassport addStatementForPassport(@RequestBody StatementForPassport statementForPassport) {
     return foreignPasswordService.addStatementForPassport(statementForPassport);
   }
+
 
   @PostMapping(value = "/payment-of-duty", produces = "application/json")
   @ResponseBody
@@ -44,9 +44,8 @@ public class PassportController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     }
   )
-
-  public Feedback a(@RequestBody Feedback feedback) {
-    return foreignPasswordService.addFeedback(feedback);
+  public StatementForPassport payment_duty(@RequestBody StatementForPassport statementForPassport) {
+    return foreignPasswordService.payment_duty(statementForPassport);
   }
 
   @PostMapping(value = "/add-feedback", produces = "application/json")
@@ -60,7 +59,6 @@ public class PassportController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     }
   )
-
   public Feedback addFeedback(@RequestBody Feedback feedback) {
     return foreignPasswordService.addFeedback(feedback);
   }
