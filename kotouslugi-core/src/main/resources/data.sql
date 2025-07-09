@@ -76,3 +76,13 @@ INSERT INTO service_category
 values (2, 2);
 INSERT INTO service_category
 values (3, 3);
+
+-- "Свободные места", инициализация спортзалов
+INSERT INTO fitness(ID, FITNESS_CLUB, MEMBERSHIP_TYPE, PRICE)
+    VALUES(1, 'Большой котовий фитнес-клуб', 0, 2000.15);
+
+INSERT INTO fitness(ID, FITNESS_CLUB, MEMBERSHIP_TYPE, PRICE)
+    VALUES(2, 'Классный теннисный корт', 1, 1543.45);
+
+INSERT INTO fitness(ID, FITNESS_CLUB, MEMBERSHIP_TYPE, PRICE)
+    VALUES(3, 'Когтеточка', 2, 1423.44);
