@@ -1,4 +1,4 @@
-// Файл не трогаем
+// Доделать второй и третий этап
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
@@ -15,11 +15,12 @@ import { ThrobberComponent } from '@components/throbber/throbber.component';
 
 export enum FormMap {
 cat  = 'Кличка',
-telephone = 'Телефон для связи',
-email = 'Email для связи',
+sex = 'Пол',
+place_born = 'Место рождения',
+reg_adress = 'Адрес регистарции',
+children = 'Наличие котят',
 anamnesis = 'Жалобы',
-doctor = 'Специалист',
-date = 'Дата',
+date_of_birth = 'Дата рождения',
 time = 'Время'
 }
 
@@ -32,16 +33,17 @@ CheckInfoComponent,
 JsonPipe,
 ThrobberComponent,
 ],
-templateUrl: '../vet/vet.component.html',
-styleUrl: '../vet/vet.component.scss'
+templateUrl: './passport.component.html',
+styleUrl: './passport.component.scss'
 })
 export class PassportComponent implements OnInit, OnDestroy {
 
 public loading = true; // загружена ли информация для страницы
 public form: UntypedFormGroup; // форма
+public sexOptions = this.constantService.sexOptions; // список полов
+public childOptions = this.constantService.childOptions; // есть дети или нет
 public active: number; // активный шаг формы
 public optionsCat: IValueCat[]; // список котов
-public doctorOptions = this.constantService.doctorOptions; // список специальностей докторов
 
 private idService: string; // мнемоника услуги
 private steps: IStep[]; // шаги формы
@@ -121,14 +123,16 @@ public get getResult() {
     this.form = this.fb.group({
       0: this.fb.group({
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
-        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['', [Validators.email]]
+        sex: [JSON.stringify(this.sexOptions[0]), [Validators.required]],
+        date_of_birth: ['', [Validators.required, this.dateValidatorBirth]],
+        place_born: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]+$/)]],
+        reg_adress: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]+$/)]],
+        children: [JSON.stringify(this.childOptions[0]), [Validators.required]]
       }),
       1: this.fb.group({
         anamnesis: ['', [Validators.required, Validators.max(256)]]
       }),
       2: this.fb.group({
-        doctor: [JSON.stringify(this.doctorOptions[0]), [Validators.required]],
         date: ['', [Validators.required, this.dateValidator]],
         time: ['', [Validators.required]]
       })
@@ -154,17 +158,31 @@ public get getResult() {
     return false;
   }
 
+/**
+   * Кастомная валидация для даты рождения
+   * @param control
+   * @private
+   */
+  private dateValidatorBirth(control: FormControl) {
+    if !(new Date(control.value) > new Date()) {
+      return {minDate: true};
+    }
+
+    return false;
+  }
   /**
    * Возвращает json в виде строки
    * @param type
    * @param index
    */
-  public getItem(type: 'cat' | 'doc', index: number): string {
+  public getItem(type: 'cat' | 'sex' | 'children', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
     }
-
-    return JSON.stringify(this.doctorOptions[index]);
+    if (type === 'sex') {
+      return JSON.stringify(this.sexOptions[index]);
+    }
+    return JSON.stringify(this.childOptions[index]);
   }
 
   /**

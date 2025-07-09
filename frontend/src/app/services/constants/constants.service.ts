@@ -21,6 +21,18 @@ export class ConstantsService {
     }
   ];
 
+    // варианты есть ребенок или нет
+  public childOptions: IValue[] = [
+    {
+      id: 0,
+      text: 'Есть'
+    },
+    {
+      id: 1,
+      text: 'Нет'
+    }
+  ];
+
   // варианты пород
   public breedOptions: IValueBreed[] = [
     {
