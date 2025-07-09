@@ -1,93 +1,78 @@
-<!--Временный файл-->
+<!--Файл не трогаем-->
 
 @if (loading) {
 <app-throbber></app-throbber>
-} @else if (notEnoughCats) {
-<div class="not-have-cat col-2 col-lg-12">
-  <img src="../../../assets/png/cats/sad.png" class="image">
-  <h3>Упс...<br>У вас недостаточно зарегистрированных котиков для использования услуги</h3>
-  <p class="text">
-    Перейдите к <a
-    [routerLink]="'/add-cat'">добавлению котика</a> или выберите <a
-    [routerLink]="'/'">другую услугу</a>
-  </p>
-</div>
 } @else {
 <div class="fields-wrapper" [formGroup]="form">
   <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
     <div class="field">
       <div>
-        <p class="label">Выберите жениха</p>
+        <p class="label">Выберите кота</p>
         @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
       <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
-        @for (option of optionsCatM; track $index) {
-        <option [value]="getItem('male', $index)">{{option.text}}</option>
+        @for (option of optionsCat; track $index) {
+        <option [value]="getItem('cat', $index)">{{option.text}}</option>
         }
       </select>
     </div>
     <div class="field">
       <div>
-        <p class="label">Серия и номер паспорта</p>
-        @if (getControl(0, 'passport').errors && getControl(0, 'passport').touched) {
-        @if (getControl(0, 'passport').errors?.['required']) {
+        <p class="label">Телефон для связи</p>
+        @if (getControl(0, 'telephone').errors && getControl(0, 'telephone').touched) {
+        @if (getControl(0, 'telephone').errors?.['required']) {
         <p class="error">Поле обязательно для заполнения</p>
         }
-        @if (getControl(0, 'passport').errors?.['pattern']) {
-        <p class="error">Введите значение в виде «0000 000000»</p>
+        @if (getControl(0, 'telephone').errors?.['pattern']) {
+        <p class="error">Введите 11 цифр</p>
         }
         }
       </div>
-      <input formControlName="passport" placeholder="0000 000000"
-             (invalid)="getControl(0, 'passport').invalid">
+      <input formControlName="telephone" placeholder="12345678901"
+             (invalid)="getControl(0, 'telephone').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Email для связи</p>
+        @if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
+        <p class="error">Введите 11 цифр</p>
+        }
+      </div>
+      <input formControlName="email" type="email" placeholder="abc@dfg.ru"
+             (invalid)="getControl(0, 'email').invalid">
     </div>
   </div>
   <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
     <div class="field">
       <div>
-        <p class="label">Выберите невесту</p>
-        @if (getControl(1, 'cat').errors?.['required'] && getControl(1, 'cat').touched) {
+        <p class="label">Жалобы</p>
+        @if (getControl(1, 'anamnesis').errors && getControl(1, 'anamnesis').touched) {
+        @if (getControl(1, 'anamnesis').errors?.['required']) {
         <p class="error">Поле обязательно для заполнения</p>
         }
-      </div>
-      <select formControlName="cat" (invalid)="getControl(1, 'cat').invalid">
-        @for (option of optionsCatF; track $index) {
-        <option [value]="getItem('female', $index)">{{option.text}}</option>
-        }
-      </select>
-    </div>
-    <div class="field">
-      <div>
-        <p class="label">Серия и номер паспорта</p>
-        @if (getControl(1, 'passport').errors && getControl(1, 'passport').touched) {
-        @if (getControl(1, 'passport').errors?.['required']) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
-        @if (getControl(1, 'passport').errors?.['pattern']) {
-        <p class="error">Введите значение в виде «0000 000000»</p>
+        @if (getControl(1, 'anamnesis').errors?.['max'] && getControl(1, 'anamnesis').touched) {
+        <p class="error">Недопустимое количество символов</p>
         }
         }
       </div>
-      <input formControlName="passport" placeholder="0000 000000"
-             (invalid)="getControl(1, 'passport').invalid">
+      <textarea formControlName="anamnesis" (invalid)="getControl(1, 'anamnesis').invalid"></textarea>
     </div>
   </div>
   <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
     <div class="field">
       <div>
-        <p class="label">Адрес места бракосочетания</p>
-        @if (getControl(2, 'place')?.errors && getControl(2, 'place')?.touched) {
-        @if (getControl(2, 'place').errors?.['required']) {
+        <p class="label">Специалист</p>
+        @if (getControl(2, 'doctor')?.errors?.['required'] && getControl(2, 'doctor')?.touched) {
         <p class="error">Поле обязательно для заполнения</p>
         }
-        @if (getControl(2, 'place').errors?.['pattern']) {
-        <p class="error">Допустимые символы: буквы русского алфавита и цифры</p>
-        }
-        }
       </div>
-      <input formControlName="place" (invalid)="getControl(2, 'place').invalid">
+      <select formControlName="doctor" (invalid)="getControl(2, 'doctor').invalid">
+        @for (doc of doctorOptions; track $index) {
+        <option [value]="getItem('doc', $index)">{{doc.text}}</option>
+        }
+      </select>
     </div>
     <div class="field">
       <div>

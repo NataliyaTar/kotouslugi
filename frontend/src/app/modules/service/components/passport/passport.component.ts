@@ -1,49 +1,47 @@
-//Временный файл
+// Файл не трогаем
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-FormBuilder, FormControl,
-ReactiveFormsModule,
-UntypedFormGroup,
-Validators
-} from '@angular/forms';
-import { ServiceInfoService } from '@services/servise-info/service-info.service';
+import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
+import { IValueCat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ServiceInfoService } from '@services/servise-info/service-info.service';
+import { ActivatedRoute } from '@angular/router';
+import { CatService } from '@services/cat/cat.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
-import { IValueCat, TSex } from '@models/cat.model';
 import { IStep } from '@models/step.model';
+import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
-export enum FormMap { // маппинг названия поля - значение
+export enum FormMap {
 cat  = 'Кличка',
-passport = 'Паспорт',
-place = 'Адрес места бракосочетания',
+telephone = 'Телефон для связи',
+email = 'Email для связи',
+anamnesis = 'Жалобы',
+doctor = 'Специалист',
 date = 'Дата',
 time = 'Время'
 }
 
 @Component({
-selector: 'app-born',
+selector: 'app-vet',
 standalone: true,
 imports: [
 ReactiveFormsModule,
 CheckInfoComponent,
+JsonPipe,
 ThrobberComponent,
-RouterModule,
 ],
-templateUrl: '../new-family/new-family.component.html',
-styleUrl: '../new-family/new-family.component.scss'
+templateUrl: '../vet/vet.component.html',
+styleUrl: '../vet/vet.component.scss'
 })
 export class PassportComponent implements OnInit, OnDestroy {
 
 public loading = true; // загружена ли информация для страницы
-public notEnoughCats = false;
 public form: UntypedFormGroup; // форма
 public active: number; // активный шаг формы
-public optionsCatM: IValueCat[]; // список котов
-public optionsCatF: IValueCat[]; // список кошек
+public optionsCat: IValueCat[]; // список котов
+public doctorOptions = this.constantService.doctorOptions; // список специальностей докторов
 
 private idService: string; // мнемоника услуги
 private steps: IStep[]; // шаги формы
@@ -60,12 +58,13 @@ public get getResult() {
     private fb: FormBuilder,
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
+    private catService: CatService,
     private constantService: ConstantsService,
   ) {
   }
 
   public ngOnInit(): void {
-    this.getCatsOptions();
+    this.getCatOption();
   }
 
   public ngOnDestroy() {
@@ -75,21 +74,15 @@ public get getResult() {
   }
 
   /**
-   * Проверяем есть ли возможность использовать форму.
-   * Запрашиваем отсортированных котов по полу
+   * Запрашиваем отформатированный список котов
    */
-  public getCatsOptions(): void {
-    this.constantService.getCatOptionsBySex().pipe(
-     take(1)
-    ).subscribe(res => {
-      if (!(res.male.length && res.female.length)) {
-        this.notEnoughCats = true;
-        this.loading = false;
-      } else {
-        this.optionsCatM = res.male;
-        this.optionsCatF = res.female;
-        this.prepareService();
-      }
+  private getCatOption(): void {
+    this.constantService.getCatOptionsAll().pipe(
+      take(1)
+    ).subscribe((res: IValueCat[]) => {
+      this.optionsCat = res;
+
+      this.prepareService();
     });
   }
 
@@ -103,6 +96,7 @@ public get getResult() {
     ).subscribe(res => {
       this.idService = res['idService'];
 
+      // запрашиваем шаги формы
       this.serviceInfo.getSteps(this.idService).pipe(
         take(1)
       ).subscribe(res => {
@@ -126,21 +120,20 @@ public get getResult() {
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: [JSON.stringify(this.optionsCatM[0]), [Validators.required]],
-        passport: ['', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]]
+        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
+        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        email: ['', [Validators.email]]
       }),
       1: this.fb.group({
-        cat: [JSON.stringify(this.optionsCatF[0]), [Validators.required]],
-        passport: ['', [Validators.required, Validators.pattern(/^([\d]{4} [\d]{6})$/)]]
+        anamnesis: ['', [Validators.required, Validators.max(256)]]
       }),
       2: this.fb.group({
-        place: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]+$/)]],
+        doctor: [JSON.stringify(this.doctorOptions[0]), [Validators.required]],
         date: ['', [Validators.required, this.dateValidator]],
         time: ['', [Validators.required]]
       })
     });
 
-    // сеттим значение формы в сервис
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
     });
@@ -163,14 +156,15 @@ public get getResult() {
 
   /**
    * Возвращает json в виде строки
+   * @param type
    * @param index
    */
-  public getItem(sex: TSex, index: number): string {
-    if (sex === 'male') {
-      return JSON.stringify(this.optionsCatM[index]);
-    } else {
-      return JSON.stringify(this.optionsCatF[index]);
+  public getItem(type: 'cat' | 'doc', index: number): string {
+    if (type === 'cat') {
+      return JSON.stringify(this.optionsCat[index]);
     }
+
+    return JSON.stringify(this.doctorOptions[index]);
   }
 
   /**
