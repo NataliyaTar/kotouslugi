@@ -10,10 +10,10 @@ import ru.practice.kotouslugi.model.Feedback;
 import ru.practice.kotouslugi.model.MainEntity;
 import ru.practice.kotouslugi.model.Metrics;
 import ru.practice.kotouslugi.model.StatementForPassport;
-import ru.practice.kotouslugi.model.enums.MvdProcessingStatus;
 import ru.practice.kotouslugi.model.enums.StatementStatus;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 public class PasswordService {
@@ -57,25 +57,31 @@ public class PasswordService {
     mainEntity.setMetrics(metrics);
     mainEntityRepository.save(mainEntity);
 
-    // Ставим статус "обрабатывается" и добавляем заявление в БД
-    metrics.setStatus(StatementStatus.IN_PROCESSING);
+    // Ставим статус "заявление создано" и добавляем заявление в БД
+    metrics.setStatus(StatementStatus.CREATED);
     metricsRepository.save(metrics);
 
-    // Отправляем в МВД
-    StatementForPassport mvd_answer = sent_to_mvd(statementForPassport);
-    if (mvd_answer != null) {
-      // Поставили статус SENT и сохранили в БД
-      statementForPassport.setMvdProcessingStatus(MvdProcessingStatus.SENT);
-      statementForPassportRepository.save(statementForPassport);
-      // Сохранили в БД полученный от МВД статус в само заявление
-      statementForPassport.setMvdProcessingStatus(mvd_answer.getMvdProcessingStatus());
-      statementForPassportRepository.save(statementForPassport);
+    // Отправляем в МВД и устанавливаем статус "направленно в мвд".
+    metrics.setStatus(StatementStatus.SENT_TO_MVD);
+    metricsRepository.save(metrics);
+    StatementStatus mvd_answer = sent_to_mvd("что-то отправляем в мвд");
+    if (mvd_answer == null) {
+      // Поставили статус "отправлено в МВД" и сохранили в БД. Это финальный статус.
+      metrics.setStatus(StatementStatus.ERROR_IN_MVD);
+      metrics.setDateEnd(LocalDateTime.now());
+      metricsRepository.save(metrics);
     }
 
     // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД". Больше заявка не обрабатывается
-    if (statementForPassport.getMvdProcessingStatus() == MvdProcessingStatus.REJECTED) {
+    if (Objects.equals(mvd_answer, StatementStatus.REJECTED_IN_MVD)) {
       metrics.setStatus(StatementStatus.REJECTED_IN_MVD);
       metrics.setDateEnd(LocalDateTime.now());
+      metricsRepository.save(metrics);
+    }
+
+    // Если в МВД не отклонили, то устанавливаем финальный статус "готово в МВД".
+    if (Objects.equals(mvd_answer, StatementStatus.READY_IN_MVD)) {
+      metrics.setStatus(StatementStatus.READY_IN_MVD);
       metricsRepository.save(metrics);
     }
 
@@ -87,7 +93,6 @@ public class PasswordService {
     StatementForPassport bank_answer = sent_to_bank(statementForPassport);
     statementForPassport.setPoshlina(bank_answer.getPoshlina());
     statementForPassportRepository.save(statementForPassport);
-
     return statementForPassport;
   }
 
@@ -102,9 +107,9 @@ public class PasswordService {
 
 
   /// Ручки к другим сервисам
-  public StatementForPassport sent_to_mvd(StatementForPassport statement) {
+  public StatementStatus sent_to_mvd(String message) {
     String url = "http://localhost:8080/api/mvd/verify-passport";
-    return restTemplate.postForObject(url, statement, StatementForPassport.class);
+    return restTemplate.postForObject(url, message, StatementStatus.class);
   }
 
 
