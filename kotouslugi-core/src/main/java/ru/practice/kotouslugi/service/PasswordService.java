@@ -16,7 +16,6 @@ import ru.practice.kotouslugi.request.FeedbackRequest;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class PasswordService {
@@ -60,29 +59,31 @@ public class PasswordService {
     mainEntity.setMetrics(metrics);
     mainEntityRepository.save(mainEntity);
 
-    // Ставим статус "заявление создано" и добавляем заявление в БД
+    // Ставим статус "заявление создано" и обновляем метрики в БД
     metrics.setStatus(StatementStatus.CREATED);
     metricsRepository.save(metrics);
 
-    // Отправляем в МВД и устанавливаем статус "направленно в мвд".
+    // Устанавливаем статус "направленно в мвд" и отправляем в МВД.
     metrics.setStatus(StatementStatus.SENT_TO_MVD);
     metricsRepository.save(metrics);
     StatementStatus mvd_answer = sent_to_mvd("что-то отправляем в мвд");
+
+    // Если ответа от МВД не пришло выставляем соответствующий статус.
     if (mvd_answer == null) {
-      // Поставили статус "отправлено в МВД" и сохранили в БД. Это финальный статус.
+      // Поставили статус "ошибка в МВД" и сохранили в БД. Это финальный статус.
       metrics.setStatus(StatementStatus.ERROR_IN_MVD);
       metrics.setDateEnd(LocalDateTime.now());
       metricsRepository.save(metrics);
     }
 
-    // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД". Больше заявка не обрабатывается
+    // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД". Это финальный статус.
     if (Objects.equals(mvd_answer, StatementStatus.REJECTED_IN_MVD)) {
       metrics.setStatus(StatementStatus.REJECTED_IN_MVD);
       metrics.setDateEnd(LocalDateTime.now());
       metricsRepository.save(metrics);
     }
 
-    // Если в МВД не отклонили, то устанавливаем финальный статус "готово в МВД".
+    // Если в МВД не отклонили, то устанавливаем статус "готово в МВД".
     if (Objects.equals(mvd_answer, StatementStatus.READY_IN_MVD)) {
       metrics.setStatus(StatementStatus.READY_IN_MVD);
       metricsRepository.save(metrics);
@@ -93,15 +94,14 @@ public class PasswordService {
 
 
   public MainEntity payment_duty(Long id) {
-    // Отправляем в банк и получаем ответ
-    StatementStatus bank_answer = sent_to_bank("что-то отправляем");
-
     // Получаем сущность с проверкой на существование
     MainEntity mainEntity = mainEntityRepository.findById(id)
       .orElseThrow(() -> new EntityNotFoundException("MainEntity not found with id: " + id));
 
 
-    // Устанавливаем статус
+    // Ставим статус "отправлено в банк". Отправляем в банк --> получаем ответ --> ставим статус, который прислал банк --> сохраняем в БД
+    mainEntity.getMetrics().setStatus(StatementStatus.SENT_TO_BANK);
+    StatementStatus bank_answer = sent_to_bank("что-то отправляем");
     mainEntity.getMetrics().setStatus(bank_answer);
     mainEntityRepository.save(mainEntity);
 
@@ -117,7 +117,7 @@ public class PasswordService {
     MainEntity mainEntity = mainEntityRepository.findById(feedbackRequest.getId())
       .orElseThrow(() -> new EntityNotFoundException("MainEntity not found with id: " + feedbackRequest.getId()));
 
-    // Создаём сущность дл комментариев и сохраняем ее в БД
+    // Создаём сущность для комментариев, заполняем её и сохраняем сущность в БД.
     Feedback feedback = Feedback.builder().build();
     feedback.setRating(feedbackRequest.getGrade());
     feedback.setComment(feedbackRequest.getReview());
