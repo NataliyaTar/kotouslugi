@@ -27,13 +27,14 @@ public class PasswordService {
     /// Ставим статус "обрабатывается" и добавляем заявление в БД
     statementForPassport.setStatus(StatementStatus.IN_PROCESSING);
     statementForPassportRepository.save(statementForPassport);
+
     /// Отправляем в МВД
     StatementForPassport mvd_answer = sent_to_mvd(statementForPassport);
     if (mvd_answer != null) {
       /// Поставили статус SENT и сохранили в БД
       statementForPassport.setMvdProcessingStatus(MvdProcessingStatus.SENT);
       statementForPassportRepository.save(statementForPassport);
-      /// Сохранили в БД полученный от МВД статус
+      /// Сохранили в БД полученный от МВД статус в само заявление
       statementForPassport.setMvdProcessingStatus(mvd_answer.getMvdProcessingStatus());
       statementForPassportRepository.save(statementForPassport);
     }
@@ -41,6 +42,7 @@ public class PasswordService {
     /// Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД"
     if (statementForPassport.getMvdProcessingStatus() == MvdProcessingStatus.REJECTED) {
       statementForPassport.setStatus(StatementStatus.REJECTED_IN_MVD);
+      statementForPassportRepository.save(statementForPassport);
     }
 
     return statementForPassport;
