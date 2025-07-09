@@ -37,7 +37,7 @@ export enum FormMap { // маппинг названия поля - значен
   styleUrl: './workout.component.scss'
 })
 
-export class WorkoutComponent implements OnInit {
+export class WorkoutComponent implements OnInit, OnDestroy{
   public loading = true;
   public form: UntypedFormGroup;
   public optionsCat: IValueCat[] = [];
@@ -47,43 +47,62 @@ export class WorkoutComponent implements OnInit {
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
 
-  public membershipTypes = [
-      { id: 1, name: 'Йога' },
-      { id: 2, name: 'Бокс' },
-      { id: 3, name: 'Аэробика' }
-    ];
-
-    public trainers = [
-      { id: 1, name: 'Иванов И.И.' },
-      { id: 2, name: 'Петров П.П.' },
-      { id: 3, name: 'Сидоров С.С.' }
-    ];
   constructor(
     private fb: FormBuilder,
-    private constantService: ConstantsService
+    private constantService: ConstantsService,
+    private route: ActivatedRoute,
+    private serviceInfo: ServiceInfoService
   ) {}
 
   ngOnInit(): void {
-    this.loadCatOptions();
+    this.getCatOption();
   }
 
-  private loadCatOptions(): void {
-    this.constantService.getCatOptionsAll().pipe(
-      take(1)
-    ).subscribe({
-      next: (cats) => {
-        this.optionsCat = cats;
+  public ngOnDestroy() {
+      this.subscriptions.forEach(item => {
+        item.unsubscribe();
+      })
+    }
+
+  /**
+     * Запрашиваем отформатированный список котов
+     */
+    private getCatOption(): void {
+      this.constantService.getCatOptionsAll().pipe(
+        take(1)
+      ).subscribe((res: IValueCat[]) => {
+        this.optionsCat = res;
+
+        this.prepareService();
+      });
+    }
+
+  /**
+     * Получаем мнемонику формы, запрашиваем шаги формы
+     * @private
+     */
+    private prepareService(): void {
+      this.route.data.pipe(
+        take(1)
+      ).subscribe(res => {
+        this.idService = res['idService'];
+
+        // запрашиваем шаги формы
+        this.serviceInfo.getSteps(this.idService).pipe(
+          take(1)
+        ).subscribe(res => {
+          this.steps = res;
+        });
+
+        this.subscriptions.push(
+          this.serviceInfo.activeStep.subscribe(res => {
+            this.active = res?.[this.idService] || 0;
+          })
+        );
+
         this.initForm();
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Ошибка загрузки котов:', err);
-        this.loading = false;
-      }
-    });
-  }
-
-
+      });
+    }
 
   private initForm(): void {
     this.form = this.fb.group({
@@ -95,6 +114,11 @@ export class WorkoutComponent implements OnInit {
               trainer_name: ['', [Validators.required]]
             })
     });
+  this.serviceInfo.servicesForms$.next({
+    [this.idService]: this.form
+  });
+  this.loading = false;
+
   }
 
   public getControl(step: number, id: string): FormControl {
