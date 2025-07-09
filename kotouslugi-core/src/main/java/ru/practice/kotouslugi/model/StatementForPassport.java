@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import ru.practice.kotouslugi.model.enums.MvdProcessingStatus;
+import ru.practice.kotouslugi.model.enums.StatementStatus;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -57,7 +58,7 @@ public class StatementForPassport {
   private byte[] photo;
 
   @Column(name = "status")
-  private Boolean status;
+  private StatementStatus status;
 
   @OneToOne(mappedBy = "statementForPassport", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private Metrics metrics;
