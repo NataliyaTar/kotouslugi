@@ -13,7 +13,7 @@ import ru.practice.kotouslugi.service.MvdService;
 
 @RestController
 @RequestMapping("/api/mvd")
-@Tag(name = "MVD Emulator API", description = "API для эмуляции взаимодействия с МВД")
+@Tag(name = "MVD API", description = "API для взаимодействия с МВД")
 public class MvdController extends BaseController {
   private final MvdService mvdService;
 
@@ -24,11 +24,11 @@ public class MvdController extends BaseController {
 
   @PostMapping("/verify-passport")
   @Operation(summary = "Проверка данных заграничного паспорта",
-    description = "Эмулирует проверку данных паспорта через МВД",
+    description = "Проверяет и выставляет новый статус в МВД",
     responses = {
-      @ApiResponse(responseCode = "200", description = "Проверка успешно завершена"),
-      @ApiResponse(responseCode = "400", description = "Неверные входные данные"),
-      @ApiResponse(responseCode = "500", description = "Ошибка при обработке запроса")
+      @ApiResponse(responseCode = "200", description = ""),
+      @ApiResponse(responseCode = "400", description = ""),
+      @ApiResponse(responseCode = "500", description = "")
     })
 
   public StatementForPassport verifyForeignPassport(@RequestBody StatementForPassport statementForPassport) throws InterruptedException {

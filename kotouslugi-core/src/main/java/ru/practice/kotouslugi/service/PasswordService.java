@@ -3,27 +3,39 @@ package ru.practice.kotouslugi.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.practice.kotouslugi.dao.FeedbackRepository;
+import ru.practice.kotouslugi.dao.MetricsRepository;
 import ru.practice.kotouslugi.dao.StatementForPassportRepository;
 import ru.practice.kotouslugi.model.Feedback;
+import ru.practice.kotouslugi.model.Metrics;
 import ru.practice.kotouslugi.model.StatementForPassport;
 import ru.practice.kotouslugi.model.enums.MvdProcessingStatus;
 import ru.practice.kotouslugi.model.enums.StatementStatus;
 
 @Service
 public class PasswordService {
+  /// Репозитории
   private final StatementForPassportRepository statementForPassportRepository;
   private final FeedbackRepository feedbackRepository;
+  private final MetricsRepository metricsRepository;
+
   private final RestTemplate restTemplate;
 
   public PasswordService(StatementForPassportRepository statementForPassportRepository,
                          FeedbackRepository feedbackRepository,
+                         MetricsRepository metricsRepository,
                          RestTemplate restTemplate) {
     this.statementForPassportRepository = statementForPassportRepository;
     this.feedbackRepository = feedbackRepository;
+    this.metricsRepository = metricsRepository;
     this.restTemplate = restTemplate;
   }
 
   public StatementForPassport addStatementForPassport(StatementForPassport statementForPassport) {
+    /// Добавляем метрики к созданному заявлению и сохранение метрики в БД
+    Metrics metrics = Metrics.builder().build();
+    metricsRepository.save(metrics);
+
+
     /// Ставим статус "обрабатывается" и добавляем заявление в БД
     statementForPassport.setStatus(StatementStatus.IN_PROCESSING);
     statementForPassportRepository.save(statementForPassport);
