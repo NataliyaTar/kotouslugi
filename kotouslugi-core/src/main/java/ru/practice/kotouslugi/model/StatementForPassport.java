@@ -45,5 +45,5 @@ public class StatementForPassport {
   private LocalDateTime timeReception;
 
   @Column(name = "poshlina")
-  private Boolean poshlina = false;
+  private Boolean poshlina = true;
 }
