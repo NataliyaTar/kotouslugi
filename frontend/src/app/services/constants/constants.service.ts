@@ -21,6 +21,34 @@ export class ConstantsService {
     }
   ];
 
+    // варианты есть ребенок или нет
+  public childOptions: IValue[] = [
+    {
+      id: 0,
+      text: 'Есть'
+    },
+    {
+      id: 1,
+      text: 'Нет'
+    }
+  ];
+
+  //Отделение МВД
+  public mvdOptions: IValue[] = [
+    {
+      id: 0,
+      text: 'г. Котовск ул. Кота Бориса, 25'
+    },
+    {
+      id: 1,
+      text: 'г. Котовск ул. Барсика Великолепного, 9'
+    },
+    {
+      id: 2,
+      text: 'г. Котовск ул. Вискасовская, 15'
+    }
+  ];
+
   // варианты пород
   public breedOptions: IValueBreed[] = [
     {

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practice.kotouslugi.model.StatementForPassport;
+import ru.practice.kotouslugi.model.enums.StatementStatus;
 import ru.practice.kotouslugi.service.BankService;
 
 @RestController
@@ -31,7 +32,7 @@ public class BankController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     })
 
-  public StatementForPassport payment_duty(@RequestBody StatementForPassport statementForPassport) {
-    return bankService.payment_duty(statementForPassport);
+  public StatementStatus payment_duty(@RequestBody String message) throws InterruptedException {
+    return bankService.payment_duty(message);
   };
 }

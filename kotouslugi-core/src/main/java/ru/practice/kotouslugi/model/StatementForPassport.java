@@ -5,8 +5,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import ru.practice.kotouslugi.model.enums.MvdProcessingStatus;
-import ru.practice.kotouslugi.model.enums.StatementStatus;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,14 +44,6 @@ public class StatementForPassport {
   @Column(name = "time_reception")
   private LocalDateTime timeReception;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "mvd_processing_status", length = 20)
-  private MvdProcessingStatus mvdProcessingStatus = MvdProcessingStatus.NOT_SENT;
-
   @Column(name = "poshlina")
   private Boolean poshlina = false;
-
-  @Lob
-  @Column(name = "photo")
-  private byte[] photo;
 }

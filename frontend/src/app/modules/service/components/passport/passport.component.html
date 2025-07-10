@@ -1,0 +1,140 @@
+<!--Доделать второй и третий этап-->
+
+@if (loading) {
+<app-throbber></app-throbber>
+} @else {
+<div class="fields-wrapper" [formGroup]="form">
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <div class="field">
+      <div>
+        <p class="label">Выберите кота</p>
+        @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+        @for (option of optionsCat; track $index) {
+        <option [value]="getItem('cat', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Пол</p>
+        @if (getControl(0, 'sex')?.errors?.['required'] && getControl(0, 'sex')?.touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="sex" (invalid)="getControl(0, 'sex').invalid">
+        @for (item of sexOptions; track $index) {
+        <option [value]="getItem('sex', $index)">{{item.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Укажите дату рождения</p>
+        @if (getControl(0, 'date_of_birth').errors && getControl(0, 'date_of_birth').touched) {
+        @if (getControl(0, 'date_of_birth').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(0, 'date_of_birth').errors?.['minDate']) {
+        <p class="error">Выберите корректную дату рождения</p>
+        }
+        }
+      </div>
+      <input formControlName="date_of_birth" type="date" (invalid)="getControl(0, 'date_of_birth').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Укажите место рождения</p>
+        @if (getControl(0, 'place_born')?.errors && getControl(0, 'place_born')?.touched) {
+        @if (getControl(0, 'place_born').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(0, 'place_born').errors?.['pattern']) {
+        <p class="error">Допустимые символы: буквы русского алфавита и цифры</p>
+        }
+        }
+      </div>
+      <input formControlName="place_born" placeholder="г. Воронеж" (invalid)="getControl(0, 'place_born').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Укажите адрес регистрации</p>
+        @if (getControl(0, 'reg_adress')?.errors && getControl(0, 'reg_adress')?.touched) {
+        @if (getControl(0, 'reg_adress').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(0, 'reg_adress').errors?.['pattern']) {
+        <p class="error">Допустимые символы: буквы русского алфавита и цифры</p>
+        }
+        }
+      </div>
+      <input formControlName="reg_adress" placeholder="г. Воронеж" (invalid)="getControl(0, 'reg_adress').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Наличие котят</p>
+        @if (getControl(0, 'children')?.errors?.['required'] && getControl(0, 'children')?.touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="children" (invalid)="getControl(0, 'children').invalid">
+        @for (child of childOptions; track $index) {
+        <option [value]="getItem('children', $index)">{{child.text}}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+    <div>
+      <span class="money">3000 руб.</span>
+      <p class="oplata">Выберите способ оплаты:</p>
+      <button type="button" class="icon-button" (click)="selectBank('bank_1')"><img [src]="'../../assets/svg/icons/sbp.svg'" alt="icon">Система мурчательных платежей</button>
+      <button type="button" class="icon-button" (click)="selectBank('bank_2')"><img [src]="'../../assets/svg/icons/logo_star.svg'" alt="icon">Мяу-банк</button>
+      <button type="button" class="icon-button" (click)="selectBank('bank_3')"><img [src]="'../../assets/svg/icons/logo_circle.svg'" alt="icon">РосЛапкаБанк</button>
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+    <div class="field">
+      <div>
+        <p class="label">Выберите пункт выдачи ЗагранКотПаспорта</p>
+        @if (getControl(2, 'mvd_place')?.errors?.['required'] && getControl(2, 'mvd_place')?.touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="mvd_place" (invalid)="getControl(2, 'mvd_place').invalid">
+        @for (mvd of mvdOptions; track $index) {
+        <option [value]="getItem('mvd_place', $index)">{{mvd.text}}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Время</p>
+        @if (getControl(2, 'time').errors?.['required'] && getControl(2, 'time').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <input formControlName="time" type="time" list="time_list" (invalid)="getControl(2, 'time').invalid">
+      <datalist id="time_list">
+        <option value="09:00">
+        <option value="10:00">
+        <option value="11:00">
+        <option value="12:00">
+        <option value="13:00">
+        <option value="14:00">
+        <option value="15:00">
+        <option value="16:00">
+        <option value="17:00">
+        <option value="18:00">
+      </datalist>
+    </div>
+  </div>
+
+  @if (active === 3) {
+  <app-check-info [data]="getResult"></app-check-info>
+  }
+</div>
+}

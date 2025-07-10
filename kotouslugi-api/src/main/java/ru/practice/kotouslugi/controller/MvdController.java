@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practice.kotouslugi.model.StatementForPassport;
+import ru.practice.kotouslugi.model.enums.StatementStatus;
 import ru.practice.kotouslugi.service.MvdService;
 
 @RestController
@@ -31,7 +32,7 @@ public class MvdController extends BaseController {
       @ApiResponse(responseCode = "500", description = "")
     })
 
-  public StatementForPassport verifyForeignPassport(@RequestBody StatementForPassport statementForPassport) throws InterruptedException {
-    return mvdService.verify_in_mvd(statementForPassport);
+  public StatementStatus verifyForeignPassport(@RequestBody String message) throws InterruptedException {
+    return mvdService.verify_in_mvd(message);
   };
 }

@@ -1,0 +1,43 @@
+.not-have-cat {
+  text-align: center;
+
+  .image {
+    max-width: 150px;
+    margin-bottom: 24px;
+  }
+
+  .text {
+    margin-top: 12px;
+  }
+}
+.money{
+   font-size: 48px;
+
+}
+.oplata{
+  font-size:24px;
+  margin-top:70px;
+}
+
+.icon-button {
+  display: inline-flex; /* Чтобы картинка и текст были рядом */
+  align-items: center;  /* Вертикальное выравнивание */
+  justify-content: center; /* Горизонтальное выравнивание по центру */
+  padding: 12px 20px;   /* Удобные отступы внутри кнопки */
+  background-color: #E8E8E8;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  gap: 10px;            /* Расстояние между изображением и текстом */
+  white-space: nowrap;  /* Запрещаем перенос текста на новую строку */
+  margin-top: 50px;
+  transition: all 0.3s ease; /* Плавные изменения при наведении */
+}
+
+.icon-button img {
+  vertical-align: middle;
+  height: 30px;         /* Сделаем чуть меньше для мобильных */
+  width: auto;
+}
