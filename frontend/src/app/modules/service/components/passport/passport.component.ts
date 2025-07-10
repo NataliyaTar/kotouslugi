@@ -21,7 +21,8 @@ reg_adress = 'Адрес регистарции',
 children = 'Наличие котят',
 selectedBank = 'Выбранный банк',
 date_of_birth = 'Дата рождения',
-time = 'Время'
+time = 'Время',
+mvd_place = 'Отделение МВД'
 }
 
 @Component({
@@ -42,6 +43,7 @@ public loading = true; // загружена ли информация для с
 public form: UntypedFormGroup; // форма
 public sexOptions = this.constantService.sexOptions; // список полов
 public childOptions = this.constantService.childOptions; // есть дети или нет
+public mvdOptions = this.constantService.mvdOptions; // отделение МВД
 public active: number; // активный шаг формы
 public optionsCat: IValueCat[]; // список котов
 
@@ -133,7 +135,7 @@ public get getResult() {
         selectedBank: ['', [Validators.required]]
       }),
       2: this.fb.group({
-        date: ['', [Validators.required, this.dateValidator]],
+        mvd_place: [JSON.stringify(this.mvdOptions[0]), [Validators.required]],
         time: ['', [Validators.required]]
       })
     });
@@ -175,14 +177,17 @@ public get getResult() {
    * @param type
    * @param index
    */
-  public getItem(type: 'cat' | 'sex' | 'children', index: number): string {
+  public getItem(type: 'cat' | 'sex' | 'children' | 'mvd_place', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
     }
     if (type === 'sex') {
       return JSON.stringify(this.sexOptions[index]);
     }
-    return JSON.stringify(this.childOptions[index]);
+    if (type === 'children'){
+      return JSON.stringify(this.childOptions[index]);
+    }
+    return JSON.stringify(this.mvdOptions[index]);
   }
 
   /**
