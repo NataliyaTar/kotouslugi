@@ -91,12 +91,10 @@
     <div>
       <span class="money">3000 руб.</span>
       <p class="oplata">Выберите способ оплаты:</p>
-      <button class="icon-button"><img [src]="'../../assets/svg/icons/sbp.svg'" alt="icon">Система мурчательных платежей</button>
-      <button class="icon-button"><img [src]="'../../assets/svg/icons/logo_star.svg'" alt="icon">Мяу-банк</button>
-      <button class="icon-button"><img [src]="'../../assets/svg/icons/logo_circle.svg'" alt="icon">РосЛапкаБанк</button>
+      <button type="button" class="icon-button" (click)="selectBank('bank_1')"><img [src]="'../../assets/svg/icons/sbp.svg'" alt="icon">Система мурчательных платежей</button>
+      <button type="button" class="icon-button" (click)="selectBank('bank_2')"><img [src]="'../../assets/svg/icons/logo_star.svg'" alt="icon">Мяу-банк</button>
+      <button type="button" class="icon-button" (click)="selectBank('bank_3')"><img [src]="'../../assets/svg/icons/logo_circle.svg'" alt="icon">РосЛапкаБанк</button>
     </div>
-
-
   </div>
   <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
     <div class="field">

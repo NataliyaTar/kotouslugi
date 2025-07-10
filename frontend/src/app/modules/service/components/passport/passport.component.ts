@@ -19,7 +19,7 @@ sex = 'Пол',
 place_born = 'Место рождения',
 reg_adress = 'Адрес регистарции',
 children = 'Наличие котят',
-anamnesis = 'Жалобы',
+selectedBank = 'Выбранный банк',
 date_of_birth = 'Дата рождения',
 time = 'Время'
 }
@@ -130,7 +130,7 @@ public get getResult() {
         children: [JSON.stringify(this.childOptions[0]), [Validators.required]]
       }),
       1: this.fb.group({
-        anamnesis: ['', [Validators.required, Validators.max(256)]]
+        selectedBank: ['', [Validators.required]]
       }),
       2: this.fb.group({
         date: ['', [Validators.required, this.dateValidator]],
@@ -194,4 +194,9 @@ public get getResult() {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
 
+  selectBank(bank: string): void {
+    const control = this.getControl(1, 'selectedBank');
+    control.setValue(bank);
+    control.markAsTouched();
+  }
 }
