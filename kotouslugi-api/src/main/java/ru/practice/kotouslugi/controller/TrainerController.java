@@ -63,7 +63,7 @@ public class TrainerController extends BaseController {
     }
     */
 
-  
+
     @GetMapping(value = "/get", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить тренера фитнес-клуба по идентификатору", tags = {"API фитнес-клубов"}, responses = {
