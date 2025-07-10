@@ -3,6 +3,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "ApiApplication",
+      "request": "launch",
+      "mainClass": "ru.practice.kotouslugi.ApiApplication",
+      "projectName": "kotouslugi-api"
+    },
+    {
       "name": "ng serve",
       "type": "chrome",
       "request": "launch",

@@ -1,13 +1,25 @@
-//Тут описываю сущность как она приходит с бека
-export interface IFitness {
+// Новая структура фитнес-клуба
+export interface IFitnessClub {
   id: number;
-  fitness_club: string;
-  membership_type: number;
+  name: string;
+  trainingTypes: TrainingType[];
+  memberships: IMembership[];
+  trainers: ICatTrainer[];
+}
+
+export type TrainingType = 'GROUP' | 'PERSONAL' | 'FREE';
+
+export interface IMembership {
+  id: number;
+  durationMonths: number;
   price: number;
 }
 
-export interface IValueFitness{
+export interface ICatTrainer {
   id: number;
-  text: string;
+  name: string;
+  age: string;
+  sex: string;
+  breed: string;
 }
 

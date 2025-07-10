@@ -1,26 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
-import { IValueCat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
-import { CatService } from '@services/cat/cat.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
-import {IValueFitness} from "@models/fitness.model"
-
-export enum FormMap { // маппинг названия поля - значение
-  cat  = 'Кличка',
-  fitness_club = 'Фитнес зал',
-}
+import { IFitnessClub, TrainingType, IMembership, ICatTrainer } from '@models/fitness.model';
+import { FitnessService } from '@services/fitness/fitness.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-workout',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     CheckInfoComponent,
     JsonPipe,
@@ -29,104 +25,72 @@ export enum FormMap { // маппинг названия поля - значен
   templateUrl: './workout.component.html',
   styleUrl: './workout.component.scss'
 })
-
-export class WorkoutComponent implements OnInit, OnDestroy{
+export class WorkoutComponent implements OnInit, OnDestroy {
   public loading = true;
   public form: UntypedFormGroup;
-  public optionsCat: IValueCat[] = [];
-  public active: number = 0; // Только первый шаг
+  public fitnessClubs: IFitnessClub[] = [];
+  public memberships: IMembership[] = [];
+  public trainers: ICatTrainer[] = [];
+  public trainingTypes: TrainingType[] = [];
 
-  private idService: string; // мнемоника услуги
-  private steps: IStep[]; // шаги формы
+  public selectedClub: IFitnessClub | null = null;
+  public selectedType: TrainingType | null = null;
+  public selectedMembership: IMembership | null = null;
+
+  public active: number = 0;
+  private idService: string;
+  private steps: IStep[];
   private subscriptions: Subscription[] = [];
 
   constructor(
     private fb: FormBuilder,
     private constantService: ConstantsService,
     private route: ActivatedRoute,
-    private serviceInfo: ServiceInfoService
+    private serviceInfo: ServiceInfoService,
+    private fitnessService: FitnessService
   ) {}
 
-  public optionsFitness: IValueFitness[] = [];
-
   ngOnInit(): void {
-    this.getCatOption();
+    this.fitnessService.getFitnessClubs().pipe(take(1)).subscribe((clubs) => {
+      this.fitnessClubs = clubs;
+      this.initForm();
+      this.loading = false;
+    });
   }
 
-  public ngOnDestroy() {
-      this.subscriptions.forEach(item => {
-        item.unsubscribe();
-      })
-    }
-
-  /**
-     * Запрашиваем отформатированный список котов
-     */
-    private getCatOption(): void {
-      this.constantService.getCatOptionsAll().pipe(
-        take(1)
-      ).subscribe((res: IValueCat[]) => {
-        this.optionsCat = res;
-
-        this.prepareService();
-      });
-    }
-
-  /**
-     * Получаем мнемонику формы, запрашиваем шаги формы
-     * @private
-     */
-    private prepareService(): void {
-      this.route.data.pipe(
-        take(1)
-      ).subscribe(res => {
-        this.idService = res['idService'];
-
-        // запрашиваем шаги формы
-        this.serviceInfo.getSteps(this.idService).pipe(
-          take(1)
-        ).subscribe(res => {
-          this.steps = res;
-        });
-
-        this.subscriptions.push(
-          this.serviceInfo.activeStep.subscribe(res => {
-            this.active = res?.[this.idService] || 0;
-          })
-        );
-        this.constantService.getFitnessOptionsAll().pipe(take(1)).subscribe(fitness => {
-              this.optionsFitness = fitness;
-              this.initForm();
-        });
-      });
-    }
+  ngOnDestroy() {
+    this.subscriptions.forEach(item => item.unsubscribe());
+  }
 
   private initForm(): void {
     this.form = this.fb.group({
-      0: this.fb.group({
-        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
-        fitness_club: [this.optionsFitness[0]?.id || null, [Validators.required]]
-      }),
-      1: this.fb.group({
-        membership_type: ['', [Validators.required]],
-        trainer_name: ['', [Validators.required]]
-      })
+      club: [null, Validators.required],
+      trainingType: [null, Validators.required],
+      membership: [null, Validators.required],
+      trainer: [null],
     });
-    this.serviceInfo.servicesForms$.next({
-      [this.idService]: this.form
+    this.form.get('club')?.valueChanges.subscribe((clubId: number) => {
+      this.selectedClub = this.fitnessClubs.find(c => c.id === +clubId) || null;
+      this.trainingTypes = this.selectedClub?.trainingTypes || [];
+      this.memberships = this.selectedClub?.memberships || [];
+      this.trainers = this.selectedClub?.trainers || [];
+      this.form.get('trainingType')?.reset();
+      this.form.get('membership')?.reset();
+      this.form.get('trainer')?.reset();
     });
-    this.loading = false;
+    this.form.get('trainingType')?.valueChanges.subscribe((type: TrainingType) => {
+      this.selectedType = type;
+      if (type === 'FREE') {
+        this.form.get('trainer')?.clearValidators();
+        this.form.get('trainer')?.reset();
+      } else {
+        this.form.get('trainer')?.setValidators(Validators.required);
+      }
+      this.form.get('trainer')?.updateValueAndValidity();
+    });
   }
 
-  public getControl(step: number, id: string): FormControl {
-    return this.form.get(`${step}.${id}`) as FormControl;
-  }
-
-  public getItem(type: 'cat' | 'fitness', index: number): string {
-    if (type === 'cat') {
-      return JSON.stringify(this.optionsCat[index]);
-    }
-    // Для fitness просто возвращаем ID, так как это число
-    return this.optionsFitness[index]?.id.toString() || '';
+  public getControl(id: string): FormControl {
+    return this.form.get(id) as FormControl;
   }
 }

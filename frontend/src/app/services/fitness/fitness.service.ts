@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IFitness } from '@models/fitness.model';
+import { IFitnessClub } from '@models/fitness.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,14 @@ export class FitnessService {
   /**
    * Получить список фитнес-клубов
    */
-  public getFitnessList(): Observable<IFitness[]> {
-    return this.http.get<IFitness[]>(`${this.fitnessApi}list`);
+  public getFitnessClubs(): Observable<IFitnessClub[]> {
+    return this.http.get<IFitnessClub[]>(`${this.fitnessApi}list`);
+  }
+
+  /**
+   * Получить фитнес-клуб по id
+   */
+  public getFitnessClub(id: number): Observable<IFitnessClub> {
+    return this.http.get<IFitnessClub>(`${this.fitnessApi}get?id=${id}`);
   }
 }

@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practice.kotouslugi.model.Cat;
-import ru.practice.kotouslugi.model.Fitness;
+import ru.practice.kotouslugi.model.FitnessClub;
 import ru.practice.kotouslugi.service.FitnessService;
 
 import java.util.List;
@@ -22,11 +21,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/fitness_club")
 @Tag(name = "FitnessController", description = "Методы для работы с API фитнес-клубов (работа со списком)")
-/** Контроллер, выполняющий работу со списком фитнес-клубов
- *
- * @author Роман Бурцев
- * @authon Свободные места
- * */
 public class FitnessController extends BaseController {
     private final FitnessService fitnessService;
 
@@ -38,7 +32,7 @@ public class FitnessController extends BaseController {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public List<Fitness> listFitness() { return fitnessService.listFitness(); }
+    public List<FitnessClub> listFitnessClubs() { return fitnessService.listFitnessClubs(); }
 
     @PostMapping(value = "/add", produces = "application/json")
     @ResponseBody
@@ -46,8 +40,8 @@ public class FitnessController extends BaseController {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public ResponseEntity<Long> addFitness(@RequestBody Fitness fitness) {
-        return wrapper((s) -> fitnessService.addFitness(fitness));
+    public ResponseEntity<Long> addFitnessClub(@RequestBody FitnessClub club) {
+        return wrapper((s) -> fitnessService.addFitnessClub(club));
     }
 
     @GetMapping(value = "/get", produces = "application/json")
@@ -56,16 +50,16 @@ public class FitnessController extends BaseController {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public ResponseEntity<Fitness> getFitness(@Parameter(name = "id", required = true) @RequestParam Long id) {
-      return wrapper((s) -> fitnessService.getFitness(id));
+    public ResponseEntity<FitnessClub> getFitnessClub(@Parameter(name = "id", required = true) @RequestParam Long id) {
+      return wrapper((s) -> fitnessService.getFitnessClub(id));
     }
 
-    @DeleteMapping(value = "deleteFitness", produces = "application/json")
+    @DeleteMapping(value = "deleteFitnessClub", produces = "application/json")
     @Operation(summary = "Удалить фитнес-клуб", tags = {"API фитнес-клубов"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public void deleteFitness(@RequestParam Long id) {
-    fitnessService.deleteFitness(id);
-  }
+    public void deleteFitnessClub(@RequestParam Long id) {
+        fitnessService.deleteFitnessClub(id);
+    }
 }

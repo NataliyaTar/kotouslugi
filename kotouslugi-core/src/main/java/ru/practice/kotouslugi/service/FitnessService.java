@@ -1,9 +1,8 @@
 package ru.practice.kotouslugi.service;
 
 import org.springframework.stereotype.Service;
-import ru.practice.kotouslugi.dao.FitnessRepository;
-import ru.practice.kotouslugi.model.Fitness;
-import ru.practice.kotouslugi.request.RequestId;
+import ru.practice.kotouslugi.dao.FitnessClubRepository;
+import ru.practice.kotouslugi.model.FitnessClub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,57 +12,42 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-/** Сервис для работы со списком фитнес-клубов
- *
- * @author Роман Бурцев
- * @author Свободные места
- */
 public class FitnessService {
-    private final FitnessRepository fitnessRepository;
+    private final FitnessClubRepository fitnessClubRepository;
     private static final Logger logger = LoggerFactory.getLogger(FitnessService.class);
 
-    public FitnessService(FitnessRepository fitnessRepository) {
-        this.fitnessRepository = fitnessRepository;
+    public FitnessService(FitnessClubRepository fitnessClubRepository) {
+        this.fitnessClubRepository = fitnessClubRepository;
     }
 
-    /** Получение списка всех фитнес-клубов
-     * @return - список фитнес-клубов
-     */
-    public List<Fitness> listFitness() {
-        List<Fitness> entityList = new LinkedList<>();
-        Iterable<Fitness> fitnessEntities = fitnessRepository.findAll();
-        fitnessEntities.forEach(entityList::add);
+    /** Получение списка всех фитнес-клубов с абонементами, тренерами и типами тренировок */
+    public List<FitnessClub> listFitnessClubs() {
+        List<FitnessClub> entityList = new LinkedList<>();
+        Iterable<FitnessClub> clubs = fitnessClubRepository.findAll();
+        clubs.forEach(entityList::add);
         return entityList;
     }
 
-    /** Получение фитнес-клуба по его id
-     *
-     * @param id - id фитнес-клуба
-     * @return искомый фитнес-клуб
-     */
-    public Fitness getFitness(Long id) {
-        Optional<Fitness> fitness = fitnessRepository.findById(id);
-        return fitness.orElse(null);
+    /** Получение фитнес-клуба по его id */
+    public FitnessClub getFitnessClub(Long id) {
+        Optional<FitnessClub> club = fitnessClubRepository.findById(id);
+        return club.orElse(null);
     }
 
-    /** Добавление фитнес-клуба
-     *
-     * @param fitness - объект с данными нового фитнес-клуба
-     * @return идентификатор созданной записи
-     */
-    public Long addFitness(Fitness fitness) {
+    /** Добавление фитнес-клуба */
+    public Long addFitnessClub(FitnessClub club) {
         try {
-            fitness = fitnessRepository.save(fitness);
-            logger.info(String.format("Добавлен фитнес-клуб №%d = %s ", fitness.getId(), fitness.getFitness_club()));
-            return fitness.getId();
+            club = fitnessClubRepository.save(club);
+            logger.info(String.format("Добавлен фитнес-клуб №%d = %s ", club.getId(), club.getName()));
+            return club.getId();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return null;
         }
     }
 
-    public void deleteFitness(Long id) {
-      Optional<Fitness> fitness = fitnessRepository.findById(id);
-      fitness.ifPresent(fitnessRepository::delete);
+    public void deleteFitnessClub(Long id) {
+        Optional<FitnessClub> club = fitnessClubRepository.findById(id);
+        club.ifPresent(fitnessClubRepository::delete);
     }
 }
