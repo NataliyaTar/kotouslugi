@@ -39,7 +39,7 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
         @if (getControl(0, 'date_of_birth').errors?.['minDate']) {
-        <p class="error">Выберите дату корректную дату рождения</p>
+        <p class="error">Выберите корректную дату рождения</p>
         }
         }
       </div>
@@ -88,20 +88,15 @@
     </div>
   </div>
   <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
-    <div class="field">
-      <div>
-        <p class="label">Жалобы</p>
-        @if (getControl(1, 'anamnesis').errors && getControl(1, 'anamnesis').touched) {
-        @if (getControl(1, 'anamnesis').errors?.['required']) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
-        @if (getControl(1, 'anamnesis').errors?.['max'] && getControl(1, 'anamnesis').touched) {
-        <p class="error">Недопустимое количество символов</p>
-        }
-        }
-      </div>
-      <textarea formControlName="anamnesis" (invalid)="getControl(1, 'anamnesis').invalid"></textarea>
+    <div>
+      <span class="money">3000 руб.</span>
+      <p class="oplata">Выберите способ оплаты:</p>
+      <button class="icon-button"><img [src]="'../../assets/svg/icons/sbp.svg'" alt="icon">Система мурчательных платежей</button>
+      <button class="icon-button"><img [src]="'../../assets/svg/icons/logo_star.svg'" alt="icon">Мяу-банк</button>
+      <button class="icon-button"><img [src]="'../../assets/svg/icons/logo_circle.svg'" alt="icon">РосЛапкаБанк</button>
     </div>
+
+
   </div>
   <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
     <div class="field">
