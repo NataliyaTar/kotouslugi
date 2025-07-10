@@ -3,7 +3,6 @@ package ru.practice.kotouslugi.service;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.FitnessRepository;
 import ru.practice.kotouslugi.model.Fitness;
-import ru.practice.kotouslugi.request.RequestId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +61,12 @@ public class FitnessService {
         }
     }
 
+    /**
+     * Удаление фитнес-клуба по заданному id
+     * @param id - идентификатор удаляемого фитнес-клуба
+     */
     public void deleteFitness(Long id) {
-      Optional<Fitness> fitness = fitnessRepository.findById(id);
-      fitness.ifPresent(fitnessRepository::delete);
+        Optional<Fitness> fitness = fitnessRepository.findById(id);
+        fitness.ifPresent(fitnessRepository::delete);
     }
 }
