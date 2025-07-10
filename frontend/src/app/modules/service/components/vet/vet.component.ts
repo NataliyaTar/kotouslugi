@@ -163,6 +163,7 @@ export class VetComponent implements OnInit, OnDestroy {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
     }
+
     return JSON.stringify(this.doctorOptions[index]);
   }
 

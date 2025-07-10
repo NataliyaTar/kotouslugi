@@ -40,15 +40,6 @@ export class CatService {
     return EBreedMap[breedId];
   }
 
-  /**
-     * Возвращает значение возраста в человеческом виде
-     * @param breedId
-
-    public getBreedMap(breedId: TBreed): EBreedMap {
-      return EBreedMap[breedId];
-    }
-  */
-
 
   /**
    * Сохраняет кота в БД

@@ -10,7 +10,7 @@
           <p class="label">Выберите кота</p>
           @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
             <p class="error">Поле обязательно для заполнения</p>
-          }*/
+          }
         </div>
         <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
           @for (option of optionsCat; track $index) {
