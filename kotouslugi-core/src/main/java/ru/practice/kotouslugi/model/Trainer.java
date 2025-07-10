@@ -40,19 +40,5 @@ public class Trainer {
     /** Фитнес-клуб, к которому относится тренер */
     @ManyToOne
     @JoinColumn(name = "fitness_club_id")
-    @JsonIgnore
     private Fitness fitness_club;
-
-    @Column(name = "fitness_club_id")
-    @JsonGetter("fitness_club_id")
-    public Long getFitnessClubId() {
-        return fitness_club.getId();
-    }
-
-    /*
-        Если не ввести новое поле @JsonGetter и не игнорировать @JsonIgnore fitness_club,
-        при запросе к API сервер выдаст для каждого тренера ОБЪЕКТ его фитнес-клуба
-
-        А хватит только id клуба. Наверное...
-    */
 }

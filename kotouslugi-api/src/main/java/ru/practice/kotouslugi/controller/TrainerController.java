@@ -40,16 +40,18 @@ public class TrainerController extends BaseController {
     )
     public List<Trainer> listTrainers() { return trainerService.listTrainers(); }
 
-    @GetMapping(value = "listByFitnessClubId", produces = "application/json")
+    @GetMapping(value = "/listByFitnessClubId", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список тренеров по ID фитнес-клуба", tags = {"API фитнес-клубов"}, responses = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public List<Trainer> listByFitnessClubId(@Parameter(name = "fitness_club_id", required = true) @RequestParam Long id) {
+    public List<Trainer> listByFitnessClubId(@Parameter(name = "id", required = true) @RequestParam Long id) {
         return trainerService.listTrainersByFitnessClubId(id);
     }
 
+    /* Когда-нибудь надо будет починить, но и без неё работает */
+    /*
     @PostMapping(value = "/add", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Добавить тренера фитнес-клуба", tags = {"API фитнес-клубов"}, responses = {
@@ -59,7 +61,9 @@ public class TrainerController extends BaseController {
     public ResponseEntity<Long> addTrainer(@RequestBody Trainer trainer) {
         return wrapper((s) -> trainerService.addTrainer(trainer));
     }
+    */
 
+  
     @GetMapping(value = "/get", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить тренера фитнес-клуба по идентификатору", tags = {"API фитнес-клубов"}, responses = {
