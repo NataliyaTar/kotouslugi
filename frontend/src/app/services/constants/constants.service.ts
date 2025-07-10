@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex } from '@models/cat.model';
 import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
+import { FitnessService } from '@services/fitness/fitness.service';
+import { IValueFitness } from '@models/fitness.model';
 import { IValue } from '@models/common.model';
 
 @Injectable({
@@ -83,6 +85,7 @@ export class ConstantsService {
 
   constructor(
     private catService: CatService,
+    private fitnessService: FitnessService
   ) { }
 
   /**
@@ -127,4 +130,23 @@ export class ConstantsService {
       })
     )
   }
+
+  /**
+   * Все фитнес-клубы (для dropdown) — формат: "название — цена ₽"
+   */
+  public getFitnessOptionsAll(): Observable<IValueFitness[]> {
+    return this.fitnessService.getFitnessList().pipe(
+      take(1)
+      ).pipe(
+        mergeMap((res) => {
+          return of (res.map((item) => {
+            return {
+              id: item.id,
+              text: `${item.fitness_club} — ${item.price.toFixed(2)} ₽`
+            }
+          }));
+        })
+      )
+    }
+
 }
