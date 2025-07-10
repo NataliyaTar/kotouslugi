@@ -142,7 +142,7 @@ export class ConstantsService {
           return of (res.map((item) => {
             return {
               id: item.id,
-              text: `${item.fitness_club} — ${item.price.toFixed(2)} ₽`
+              text: `${item.fitness_club} `
             }
           }));
         })
