@@ -89,6 +89,9 @@ public class PasswordService {
       metricsRepository.save(metrics);
     }
 
+    // Дергает ручку банка теперь тоже сам
+    payment_duty(mainEntity.getId());
+
     return mainEntity;
   }
 
@@ -120,6 +123,8 @@ public class PasswordService {
     }
 
     mainEntity.getMetrics().setStatus(bank_answer);
+    // Меняет статус в пошлине
+    mainEntity.getStatement().setPoshlina(true);
     mainEntityRepository.save(mainEntity);
 
     return mainEntity;
