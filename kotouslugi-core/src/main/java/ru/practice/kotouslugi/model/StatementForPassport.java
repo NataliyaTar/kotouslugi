@@ -46,8 +46,4 @@ public class StatementForPassport {
 
   @Column(name = "poshlina")
   private Boolean poshlina = false;
-
-  @Lob
-  @Column(name = "photo")
-  private byte[] photo;
 }
