@@ -18,3 +18,11 @@ export enum EStatus {
   ACCEPTED = 'Принята',
   DONE = 'Готова'
 }
+
+export interface IRequisition {
+  clubId: number;
+  trainingType: string;
+  membershipId: number;
+  trainerId?: number;
+  buyerId: number;
+}

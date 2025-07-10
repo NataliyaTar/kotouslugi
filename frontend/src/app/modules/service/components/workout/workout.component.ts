@@ -11,6 +11,10 @@ import { ThrobberComponent } from '@components/throbber/throbber.component';
 import { IFitnessClub, TrainingType, IMembership, ICatTrainer } from '@models/fitness.model';
 import { FitnessService } from '@services/fitness/fitness.service';
 import { CommonModule } from '@angular/common';
+import { CatService } from '@services/cat/cat.service';
+import { ICat } from '@models/cat.model';
+import { OrderService } from '@services/order/order.service';
+import { IRequisition } from '@models/order.model';
 
 @Component({
   selector: 'app-workout',
@@ -38,6 +42,10 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   public selectedMembership: IMembership | null = null;
 
   public active: number = 0;
+  public step: number = 1;
+  public buyerCats: ICat[] = [];
+  public selectedBuyer: ICat | null = null;
+  public confirmData: any = null;
   private idService: string;
   private steps: IStep[];
   private subscriptions: Subscription[] = [];
@@ -47,7 +55,9 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     private constantService: ConstantsService,
     private route: ActivatedRoute,
     private serviceInfo: ServiceInfoService,
-    private fitnessService: FitnessService
+    private fitnessService: FitnessService,
+    private catService: CatService,
+    private orderService: OrderService
   ) {}
 
   ngOnInit(): void {
@@ -62,12 +72,58 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(item => item.unsubscribe());
   }
 
+  public nextStep() {
+    if (this.step === 1) {
+      // Фильтруем котиков-покупателей (не тренеров выбранного клуба)
+      this.catService.getCatList().pipe(take(1)).subscribe((cats) => {
+        const trainerIds = this.trainers.map(t => t.id);
+        this.buyerCats = cats.filter(cat => !trainerIds.includes(cat.id));
+        this.step = 2;
+      });
+    } else if (this.step === 2) {
+      // Подтверждение
+      this.selectedBuyer = this.buyerCats.find(c => c.id === +this.form.get('buyer')?.value) || null;
+      this.confirmData = {
+        club: this.selectedClub?.name,
+        trainingType: this.selectedType,
+        membership: this.memberships.find(m => m.id === +this.form.get('membership')?.value),
+        trainer: this.trainers.find(t => t.id === +this.form.get('trainer')?.value),
+        buyer: this.selectedBuyer
+      };
+      this.step = 3;
+    }
+  }
+
+  public prevStep() {
+    if (this.step > 1) this.step--;
+  }
+
+  public saveRequisition() {
+    const payload: IRequisition = {
+      clubId: this.selectedClub?.id!,
+      trainingType: this.selectedType!,
+      membershipId: this.form.get('membership')?.value!,
+      trainerId: this.form.get('trainer')?.value || undefined,
+      buyerId: this.form.get('buyer')?.value!
+    };
+    this.orderService.createRequisition(payload).subscribe({
+      next: () => {
+        alert('Заявка успешно отправлена!');
+        // Можно сбросить форму или перейти на другую страницу
+      },
+      error: () => {
+        alert('Ошибка при отправке заявки');
+      }
+    });
+  }
+
   private initForm(): void {
     this.form = this.fb.group({
       club: [null, Validators.required],
       trainingType: [null, Validators.required],
       membership: [null, Validators.required],
       trainer: [null],
+      buyer: [null, Validators.required],
     });
     this.form.get('club')?.valueChanges.subscribe((clubId: number) => {
       this.selectedClub = this.fitnessClubs.find(c => c.id === +clubId) || null;

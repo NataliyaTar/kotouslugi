@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { EStatus, IOrder, TStatus } from '@models/order.model';
+import { EStatus, IOrder, TStatus, IRequisition } from '@models/order.model';
 
 @Injectable({
   providedIn: 'root'
@@ -65,4 +65,10 @@ export class OrderService {
     return this.http.post(`${this.orderApi}create`, res);
   }
 
+  public createRequisition(payload: IRequisition): Observable<any> {
+    return this.http.post<any>('api/requisition/create', {
+      mnemonic: 'workout',
+      fields: JSON.stringify(payload)
+    });
+  }
 }

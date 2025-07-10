@@ -2,66 +2,106 @@
 <app-throbber></app-throbber>
 } @else {
 <div class="fields-wrapper" [formGroup]="form">
-  <div class="field-wrapper">
-    <div class="field">
-      <div>
-        <p class="label">Выберите спортзал</p>
-        @if (getControl('club').errors?.['required'] && getControl('club').touched) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
+  <!-- Шаг 1: выбор услуги -->
+  <div *ngIf="step === 1">
+    <div class="field-wrapper">
+      <div class="field">
+        <div>
+          <p class="label">Выберите спортзал</p>
+          @if (getControl('club').errors?.['required'] && getControl('club').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="club">
+          <option [ngValue]="null">-- Выберите --</option>
+          @for (club of fitnessClubs; track club.id) {
+          <option [ngValue]="club.id">{{club.name}}</option>
+          }
+        </select>
       </div>
-      <select formControlName="club">
-        <option [ngValue]="null">-- Выберите --</option>
-        @for (club of fitnessClubs; track club.id) {
-        <option [ngValue]="club.id">{{club.name}}</option>
-        }
-      </select>
-    </div>
 
-    <div class="field" *ngIf="trainingTypes.length">
-      <div>
-        <p class="label">Тип тренировки</p>
-        @if (getControl('trainingType').errors?.['required'] && getControl('trainingType').touched) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
+      <div class="field" *ngIf="trainingTypes.length">
+        <div>
+          <p class="label">Тип тренировки</p>
+          @if (getControl('trainingType').errors?.['required'] && getControl('trainingType').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="trainingType">
+          <option [ngValue]="null">-- Выберите --</option>
+          @for (type of trainingTypes; track $index) {
+          <option [ngValue]="type">{{type === 'GROUP' ? 'Групповой' : type === 'PERSONAL' ? 'Персональный' : 'Свободный'}}</option>
+          }
+        </select>
       </div>
-      <select formControlName="trainingType">
-        <option [ngValue]="null">-- Выберите --</option>
-        @for (type of trainingTypes; track $index) {
-        <option [ngValue]="type">{{type === 'GROUP' ? 'Групповой' : type === 'PERSONAL' ? 'Персональный' : 'Свободный'}}</option>
-        }
-      </select>
-    </div>
 
-    <div class="field" *ngIf="memberships.length">
-      <div>
-        <p class="label">Абонемент</p>
-        @if (getControl('membership').errors?.['required'] && getControl('membership').touched) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
+      <div class="field" *ngIf="memberships.length">
+        <div>
+          <p class="label">Абонемент</p>
+          @if (getControl('membership').errors?.['required'] && getControl('membership').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="membership">
+          <option [ngValue]="null">-- Выберите --</option>
+          @for (m of memberships; track m.id) {
+          <option [ngValue]="m.id">{{m.durationMonths}} мес. — {{m.price}} руб.</option>
+          }
+        </select>
       </div>
-      <select formControlName="membership">
-        <option [ngValue]="null">-- Выберите --</option>
-        @for (m of memberships; track m.id) {
-        <option [ngValue]="m.id">{{m.durationMonths}} мес. — {{m.price}} руб.</option>
-        }
-      </select>
-    </div>
 
-    <div class="field" *ngIf="selectedType && selectedType !== 'FREE' && trainers.length">
-      <div>
-        <p class="label">Тренер</p>
-        @if (getControl('trainer').errors?.['required'] && getControl('trainer').touched) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
+      <div class="field" *ngIf="selectedType && selectedType !== 'FREE' && trainers.length">
+        <div>
+          <p class="label">Тренер</p>
+          @if (getControl('trainer').errors?.['required'] && getControl('trainer').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="trainer">
+          <option [ngValue]="null">-- Выберите --</option>
+          @for (t of trainers; track t.id) {
+          <option [ngValue]="t.id">{{t.name}} ({{t.breed}})</option>
+          }
+        </select>
       </div>
-      <select formControlName="trainer">
-        <option [ngValue]="null">-- Выберите --</option>
-        @for (t of trainers; track t.id) {
-        <option [ngValue]="t.id">{{t.name}} ({{t.breed}})</option>
-        }
-      </select>
     </div>
+    <button type="button" (click)="nextStep()" [disabled]="!form.get('club')?.valid || !form.get('trainingType')?.valid || !form.get('membership')?.valid || (selectedType !== 'FREE' && !form.get('trainer')?.valid)">Далее</button>
+  </div>
+
+  <!-- Шаг 2: выбор котика-покупателя -->
+  <div *ngIf="step === 2">
+    <div class="field-wrapper">
+      <div class="field">
+        <div>
+          <p class="label">Выберите котика-покупателя</p>
+          @if (getControl('buyer').errors?.['required'] && getControl('buyer').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="buyer">
+          <option [ngValue]="null">-- Выберите --</option>
+          @for (cat of buyerCats; track cat.id) {
+          <option [ngValue]="cat.id">{{cat.name}} ({{cat.breed}})</option>
+          }
+        </select>
+      </div>
+    </div>
+    <button type="button" (click)="prevStep()">Назад</button>
+    <button type="button" (click)="nextStep()" [disabled]="!form.get('buyer')?.valid">Далее</button>
+  </div>
+
+  <!-- Шаг 3: подтверждение -->
+  <div *ngIf="step === 3">
+    <div class="field-wrapper">
+      <h3>Подтверждение заявки</h3>
+      <p>Спортзал: {{confirmData.club}}</p>
+      <p>Тип тренировки: {{confirmData.trainingType === 'GROUP' ? 'Групповой' : confirmData.trainingType === 'PERSONAL' ? 'Персональный' : 'Свободный'}}</p>
+      <p>Абонемент: {{confirmData.membership?.durationMonths}} мес. — {{confirmData.membership?.price}} руб.</p>
+      <p *ngIf="confirmData.trainer">Тренер: {{confirmData.trainer.name}} ({{confirmData.trainer.breed}})</p>
+      <p>Покупатель: {{confirmData.buyer?.name}}</p>
+    </div>
+    <button type="button" (click)="prevStep()">Назад</button>
+    <button type="button" (click)="saveRequisition()">Сохранить</button>
   </div>
 </div>
 }
