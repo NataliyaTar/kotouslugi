@@ -186,7 +186,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       .get('1.membership_type')
       ?.valueChanges.subscribe((membershipType) => {
         const trainerCtrl = this.form.get('1.trainer_name');
-        if (membershipType === '2' || membershipType === '3') {
+        if (membershipType === 'Групповой' || membershipType === 'Персональный') {
           trainerCtrl?.setValidators(Validators.required);
         } else {
           trainerCtrl?.clearValidators();

@@ -35,21 +35,21 @@
     <div class="field">
       <p class="label">Выберите тип абонемента</p>
       <select formControlName="membership_type">
-        <option value="1">Свободный</option>
-        <option value="2">Групповой</option>
-        <option value="3">Персональный</option>
+        <option value="Свободный">Свободный</option>
+        <option value="Групповой">Групповой</option>
+        <option value="Персональный">Персональный</option>
       </select>
     </div>
 
     <div class="field">
       <p class="label">Выберите длительность абонемента</p>
       <select formControlName="duration">
-        <option value="3">3 месяца</option>
-        <option value="6">6 месяцев</option>
-        <option value="12">1 год</option>
+        <option value="3 месяца">3 месяца</option>
+        <option value="6 месяцев">6 месяцев</option>
+        <option value="12 месяцев">1 год</option>
       </select>
     </div>
-    <div *ngIf="getControl(1, 'membership_type').value === '2' || getControl(1, 'membership_type').value === '3'">
+    <div *ngIf="getControl(1, 'membership_type').value === 'Групповой' || getControl(1, 'membership_type').value === 'Персональный'">
       <div class="field">
         <p class="label">Выберите тренера</p>
         <select formControlName="trainer_name">
