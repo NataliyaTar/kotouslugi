@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practice.kotouslugi.model.Cat;
 import ru.practice.kotouslugi.model.Fitness;
 import ru.practice.kotouslugi.service.FitnessService;
 
@@ -60,7 +59,7 @@ public class FitnessController extends BaseController {
       return wrapper((s) -> fitnessService.getFitness(id));
     }
 
-    @DeleteMapping(value = "deleteFitness", produces = "application/json")
+    @DeleteMapping(value = "/delete", produces = "application/json")
     @Operation(summary = "Удалить фитнес-клуб", tags = {"API фитнес-клубов"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
