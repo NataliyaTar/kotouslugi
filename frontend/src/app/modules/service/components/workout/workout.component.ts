@@ -138,9 +138,18 @@ export class WorkoutComponent implements OnInit, OnDestroy{
       }),
       1: this.fb.group({
         membership_type: ['', Validators.required],
-        trainer_name: [''] // будет валидироваться позже
+        trainer_name: ['', Validators.required] // будет валидироваться позже
       })
     });
+    // динамическая валидация для trainer_name в зависимости от membership_type
+      this.form.get('1.membership_type')?.valueChanges.subscribe(value => {
+        if (value === '2' || value === '3') { // если "персональный" или "групповой"
+          this.form.get('1.trainer_name')?.setValidators(Validators.required);
+        } else {
+          this.form.get('1.trainer_name')?.clearValidators();
+        }
+        this.form.get('1.trainer_name')?.updateValueAndValidity();
+      });
 
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form

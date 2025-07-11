@@ -157,7 +157,7 @@ export class ConstantsService {
   public getTrainerGroupedByFitnessClub(): Observable<ITrainerGroupedByFitnessClub> {
     return this.trainerService.getAll().pipe(
       map((res: any[]) => {
-        console.log('Raw trainers:', res);
+
         const grouped: ITrainerGroupedByFitnessClub = {};
         res.forEach(trainer => {
           const key = trainer.fitness_club?.id;  // тут изменил
