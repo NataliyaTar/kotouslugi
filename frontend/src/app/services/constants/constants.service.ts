@@ -3,7 +3,7 @@ import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex
 import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
 import { FitnessService } from '@services/fitness/fitness.service';
-import { IValueFitness } from '@models/fitness.model';
+import { IFitness, IValueFitness } from '@models/fitness.model';
 import { IValue } from '@models/common.model';
 import { ITrainerGroupedByFitnessClub, ITrainerOption } from '@models/trainer.model';
 import { TrainerService } from '@services/trainer/trainer.service';
@@ -169,6 +169,12 @@ export class ConstantsService {
     );
   }
 
+  /**
+   * Возвращает полный список фитнес-клубов с ценами
+   */
+  public getFitnessRawList(): Observable<IFitness[]> {
+    return this.fitnessService.getFitnessList().pipe(take(1));
+  }
 
 
 }

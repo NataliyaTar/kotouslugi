@@ -10,7 +10,7 @@ import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
-import {IValueFitness} from "@models/fitness.model"
+import {IFitness, IValueFitness} from "@models/fitness.model"
 import { TrainerService } from '@services/trainer/trainer.service';
 import { ITrainerOption, ITrainerGroupedByFitnessClub } from '@models/trainer.model';
 import { NgIf, NgForOf } from '@angular/common';
@@ -18,6 +18,10 @@ import { NgIf, NgForOf } from '@angular/common';
 export enum FormMap { // маппинг названия поля - значение
   cat  = 'Кличка',
   fitness_club = 'Фитнес зал',
+  membership_type = 'Тип абонемента',
+  trainer_name = 'Тренер',
+  duration = 'Длительность абонемента',
+  price = 'Цена'
 }
 
 @Component({
@@ -53,28 +57,45 @@ export class WorkoutComponent implements OnInit, OnDestroy{
   ) {}
 
   public optionsFitness: IValueFitness[] = [];
+  public fitnessFullList: IFitness[] = [];
+
   public trainerOptions: ITrainerGroupedByFitnessClub = {};
   public currentTrainers: ITrainerOption[] = [];
 
   ngOnInit(): void {
     this.getCatOption();
+
     this.constantService.getTrainerGroupedByFitnessClub().pipe(take(1)).subscribe(res => {
       this.trainerOptions = res;
 
       this.constantService.getFitnessOptionsAll().pipe(take(1)).subscribe(fitness => {
         this.optionsFitness = fitness;
 
-        this.initForm();
+        this.constantService.getFitnessRawList().pipe(take(1)).subscribe((fullList) => {
+          this.fitnessFullList = fullList;
 
-        // Подписка после того, как есть trainerOptions и form
-        this.form.get('0.fitness_club')?.valueChanges.subscribe(fitnessId => {
-          const id = Number(fitnessId);
-          this.currentTrainers = this.trainerOptions[id] || [];
+
+          this.initForm();
+
+          // Подписка на изменение фитнес-клуба — цена и тренеры
+          this.form.get('0.fitness_club')?.valueChanges.subscribe((fitnessId) => {
+            const id = Number(fitnessId);
+            this.currentTrainers = this.trainerOptions[id] || [];
+
+            const selected = this.fitnessFullList.find(f => f.id === id);
+            const price = selected?.price ?? null;
+
+            this.form.get('1.price')?.setValue(price);
+          });
+
+          // Установка начального списка тренеров и цены
+          const initialId = Number(this.form.get('0.fitness_club')?.value);
+          this.currentTrainers = this.trainerOptions[initialId] || [];
+
+          const initialSelected = this.fitnessFullList.find(f => f.id === initialId);
+          const initialPrice = initialSelected?.price ?? null;
+          this.form.get('1.price')?.setValue(initialPrice);
         });
-
-        // Можно сразу установить начальный список тренеров
-        const initialId = Number(this.form.get('0.fitness_club')?.value);
-        this.currentTrainers = this.trainerOptions[initialId] || [];
       });
     });
   }
@@ -138,6 +159,8 @@ export class WorkoutComponent implements OnInit, OnDestroy{
       }),
       1: this.fb.group({
         membership_type: ['', Validators.required],
+        duration: ['', Validators.required],
+        price: [null],
         trainer_name: ['', Validators.required] // будет валидироваться позже
       })
     });
@@ -172,7 +195,9 @@ export class WorkoutComponent implements OnInit, OnDestroy{
     this.loading = false;
   }
 
-
+  public get getResult() {
+      return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
+    }
 
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
