@@ -222,13 +222,18 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
 
-  public getItem(type: 'cat' | 'fitness', index: number): string {
+  getItem(type: 'cat' | 'fitness' | 'trainer', index: number): string {
     if (type === 'cat') {
-      return JSON.stringify(this.optionsCat[index]);
+      return JSON.stringify(this.optionsCat[index]); // без `.value`
     }
     if (type === 'fitness') {
       return JSON.stringify(this.optionsFitness[index]);
     }
+    if (type === 'trainer') {
+      return JSON.stringify(this.currentTrainers[index]);
+    }
     return '';
   }
+
+
 }

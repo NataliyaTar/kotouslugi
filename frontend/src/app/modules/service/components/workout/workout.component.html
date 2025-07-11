@@ -53,8 +53,11 @@
       <div class="field">
         <p class="label">Выберите тренера</p>
         <select formControlName="trainer_name">
-          <option *ngFor="let trainer of currentTrainers" [value]="trainer.id">{{ trainer.text }}</option>
+          <option *ngFor="let trainer of currentTrainers; index as i" [value]="getItem('trainer', i)">
+            {{ trainer.text }}
+          </option>
         </select>
+
         <div *ngIf="getControl(1, 'trainer_name').invalid && getControl(1, 'trainer_name').touched">
           <small class="error">Выберите тренера</small>
         </div>
