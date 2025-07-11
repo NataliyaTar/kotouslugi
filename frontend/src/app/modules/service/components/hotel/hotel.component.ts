@@ -67,22 +67,9 @@ export class HotelComponent implements OnInit, OnDestroy {
     this.idService = this.route.snapshot.data['idService'];
 
     this.subs.push(
-      this.serviceInfo.getSteps(this.idService).pipe(take(1)).subscribe({
-        next: (steps) => {
-          this.steps = steps.length ? steps : [
-            { icon: 'pets.svg', title: 'Информация о котике', text: 'Заполните форму' },
-            { icon: 'checklist.svg', title: 'Проверка информации', text: 'Проверьте заявку' }
-          ];
-
-          this.loadCatsAndHotels();
-        },
-        error: (err) => {
-          this.steps = [
-            { icon: 'pets.svg', title: 'Информация о котике', text: 'Заполните форму' },
-            { icon: 'checklist.svg', title: 'Проверка информации', text: 'Проверьте заявку' }
-          ];
-          this.loadCatsAndHotels();
-        }
+      this.serviceInfo.getSteps(this.idService).pipe(take(1)).subscribe(steps => {
+        this.steps = steps;
+        this.loadCatsAndHotels();
       })
     );
 
@@ -127,15 +114,13 @@ export class HotelComponent implements OnInit, OnDestroy {
         startDate: ['', Validators.required],
         endDate: ['', Validators.required]
       }),
-      2: this.fb.group({}) // preview пустая
+      2: this.fb.group({})
     });
 
-    // Регистрируем форму в сервисе
     this.serviceInfo.servicesForms$.next({
       ...this.serviceInfo.servicesForms$.value,
       [this.idService]: this.form
     });
-
   }
 
   public getControl(step: number, name: string): FormControl {
@@ -151,10 +136,8 @@ export class HotelComponent implements OnInit, OnDestroy {
   }
 
   public isValidStep(): boolean {
-    if (!this.form) return false;
-    const stepControl = this.form.get(this.active.toString());
-    if (!stepControl) return false;
-    return stepControl.valid;
+    const stepControl = this.form?.get(this.active.toString());
+    return !!stepControl && stepControl.valid;
   }
 
   public next(): void {
