@@ -11,6 +11,7 @@ import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
+
 export enum FormMap {
   // 0
   cat  = 'Имя кошечки',
@@ -41,6 +42,7 @@ export enum FormMap {
   templateUrl: './ethics.component.html',
   styleUrls: ['./ethics.component.scss']
 })
+
 
 export class EthicsComponent implements OnInit, OnDestroy {
 
@@ -145,8 +147,8 @@ export class EthicsComponent implements OnInit, OnDestroy {
 
       }),
       2: this.fb.group({
-        owner: ["", [Validators.required]],
-        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        owner: ["", [Validators.required,  Validators.pattern(/^[А-Яа-яЁё]{1,48}$/)]],
+        telephone: ['', [Validators.required, Validators.pattern(/^8/), this.phoneValidator]],
         email: ['', [Validators.email]]
       })
     });
@@ -164,11 +166,28 @@ export class EthicsComponent implements OnInit, OnDestroy {
    * @private
    */
   private dateValidator(control: FormControl) {
-    if (new Date(control.value) < new Date()) {
-      return {minDate: true};
-    }
+    const d1 = new Date(control.value);
+    const d2 = new Date();
 
-    return false;
+    const sameYear = d1.getFullYear() === d2.getFullYear();
+    const sameMonth = d1.getMonth() === d2.getMonth();
+    const sameDay = d1.getDate() === d2.getDate();
+
+    if (sameYear && sameMonth && sameDay) {
+          return false; // даты совпадают — валидно
+    }
+    if (d1 < d2) {
+      return {minDate: true} // дата раньше текущей - не валидно
+    }
+    return false // дата позже текущей - валидно
+
+  }
+  private phoneValidator(control: FormControl) {
+    const phoneNumber = control.value
+    if (phoneNumber.length === 11) {
+      return false
+    }
+    return {phoneLen: true}
   }
 
   /**
