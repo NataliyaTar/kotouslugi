@@ -64,9 +64,7 @@ export class HotelComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('[HotelComponent] ngOnInit старт');
     this.idService = this.route.snapshot.data['idService'];
-    console.log('[HotelComponent] idService:', this.idService);
 
     this.subs.push(
       this.serviceInfo.getSteps(this.idService).pipe(take(1)).subscribe({
@@ -75,12 +73,10 @@ export class HotelComponent implements OnInit, OnDestroy {
             { icon: 'pets.svg', title: 'Информация о котике', text: 'Заполните форму' },
             { icon: 'checklist.svg', title: 'Проверка информации', text: 'Проверьте заявку' }
           ];
-          console.log('[HotelComponent] шаги загружены:', this.steps);
 
           this.loadCatsAndHotels();
         },
         error: (err) => {
-          console.error('Ошибка загрузки шагов:', err);
           this.steps = [
             { icon: 'pets.svg', title: 'Информация о котике', text: 'Заполните форму' },
             { icon: 'checklist.svg', title: 'Проверка информации', text: 'Проверьте заявку' }
@@ -93,7 +89,6 @@ export class HotelComponent implements OnInit, OnDestroy {
     this.subs.push(
       this.serviceInfo.activeStep.subscribe(m => {
         this.active = m?.[this.idService] ?? 0;
-        console.log('[HotelComponent] activeStep обновлён:', this.active);
       })
     );
   }
@@ -101,7 +96,6 @@ export class HotelComponent implements OnInit, OnDestroy {
   private loadCatsAndHotels() {
     this.hotelService.getCatsAndHotels().pipe(take(1)).subscribe({
       next: ({ cats, hotels }) => {
-        console.log('[HotelComponent] коты и отели получены:', { cats, hotels });
         if (!cats.length || !hotels.length) {
           this.notEnoughCats = true;
           this.loading = false;
@@ -124,7 +118,6 @@ export class HotelComponent implements OnInit, OnDestroy {
   }
 
   private initForm(): void {
-    console.log('[HotelComponent] инициализация формы');
     this.form = this.fb.group({
       0: this.fb.group({
         cat: [this.cats[0]?.id || '', Validators.required],
@@ -143,7 +136,6 @@ export class HotelComponent implements OnInit, OnDestroy {
       [this.idService]: this.form
     });
 
-    console.log('[HotelComponent] форма инициализирована:', this.form.getRawValue());
   }
 
   public getControl(step: number, name: string): FormControl {
