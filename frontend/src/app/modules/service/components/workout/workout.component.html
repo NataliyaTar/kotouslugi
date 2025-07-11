@@ -35,17 +35,21 @@
     <div class="field">
       <div>
         <p class="label">Выберите тип абонемента</p>
-
+        <select formControlName="membership_type">
+          <option value="1">Свободный</option>
+          <option value="2">Групповой</option>
+          <option value="3">Персональный</option>
+        </select>
       </div>
+    </div>
+    <div class="field">
       <div>
         <p class="label">Выберите длительность абонемента</p>
-
         <select formControlName="duration">
           <option value="3">3 месяца</option>
           <option value="6">6 месяцев</option>
           <option value="12">1 год</option>
         </select>
-
       </div>
     </div>
   </div>
