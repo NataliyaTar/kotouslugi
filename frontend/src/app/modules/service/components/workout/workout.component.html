@@ -2,14 +2,13 @@
 <app-throbber></app-throbber>
 } @else {
 <div class="fields-wrapper" [formGroup]="form">
+  <!-- Шаг 0 -->
   <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
     <div class="field">
-      <div>
-        <p class="label">Выберите кота</p>
-        @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
-      </div>
+      <p class="label">Выберите кота</p>
+      @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+      <p class="error">Поле обязательно для заполнения</p>
+      }
       <select formControlName="cat">
         @for (option of optionsCat; track $index) {
         <option [value]="getItem('cat', $index)">{{option.text}}</option>
@@ -18,12 +17,10 @@
     </div>
 
     <div class="field">
-      <div>
-        <p class="label">Выберите спортзал</p>
-        @if (getControl(0, 'fitness_club').errors?.['required'] && getControl(0, 'fitness_club').touched) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
-      </div>
+      <p class="label">Выберите спортзал</p>
+      @if (getControl(0, 'fitness_club').errors?.['required'] && getControl(0, 'fitness_club').touched) {
+      <p class="error">Поле обязательно для заполнения</p>
+      }
       <select formControlName="fitness_club">
         @for (option of optionsFitness; track $index) {
         <option [value]="option.id">{{option.text}}</option>
@@ -31,27 +28,35 @@
       </select>
     </div>
   </div>
+
+  <!-- Шаг 1 -->
   <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
     <div class="field">
-      <div>
-        <p class="label">Выберите тип абонемента</p>
-        <select formControlName="membership_type">
-          <option value="1">Свободный</option>
-          <option value="2">Групповой</option>
-          <option value="3">Персональный</option>
-        </select>
-      </div>
+      <p class="label">Выберите тип абонемента</p>
+      <select formControlName="membership_type">
+        <option value="1">Свободный</option>
+        <option value="2">Групповой</option>
+        <option value="3">Персональный</option>
+      </select>
     </div>
+
     <div class="field">
-      <div>
-        <p class="label">Выберите длительность абонемента</p>
-        <select formControlName="duration">
-          <option value="3">3 месяца</option>
-          <option value="6">6 месяцев</option>
-          <option value="12">1 год</option>
+      <p class="label">Выберите длительность абонемента</p>
+      <select formControlName="duration">
+        <option value="3">3 месяца</option>
+        <option value="6">6 месяцев</option>
+        <option value="12">1 год</option>
+      </select>
+    </div>
+    <div *ngIf="getControl(1, 'membership_type').value === '2' || getControl(1, 'membership_type').value === '3'">
+      <div class="field">
+        <p class="label">Выберите тренера</p>
+        <select formControlName="trainer_name">
+          <option *ngFor="let trainer of currentTrainers" [value]="trainer.id">{{ trainer.text }}</option>
         </select>
       </div>
     </div>
   </div>
+
 </div>
 }

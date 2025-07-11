@@ -11,7 +11,9 @@ export class TrainerService {
 
   constructor(private http: HttpClient) {}
 
-  public getByFitnessClubId(id: number): Observable<ITrainer[]> {
-    return this.http.get<ITrainer[]>(`${this.apiUrl}/listByFitnessClubId?id=${id}`);
-  }
+
+   public getAll(): Observable<ITrainer[]> {
+      return this.http.get<ITrainer[]>(`${this.apiUrl}/list`);
+    }
+
 }

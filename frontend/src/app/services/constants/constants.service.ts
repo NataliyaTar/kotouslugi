@@ -5,6 +5,10 @@ import { CatService } from '@services/cat/cat.service';
 import { FitnessService } from '@services/fitness/fitness.service';
 import { IValueFitness } from '@models/fitness.model';
 import { IValue } from '@models/common.model';
+import { ITrainerGroupedByFitnessClub, ITrainerOption } from '@models/trainer.model';
+import { TrainerService } from '@services/trainer/trainer.service';
+import { map } from 'rxjs/operators';
+import { ITrainer } from '@models/trainer.model';
 
 @Injectable({
   providedIn: 'root'
@@ -85,7 +89,8 @@ export class ConstantsService {
 
   constructor(
     private catService: CatService,
-    private fitnessService: FitnessService
+    private fitnessService: FitnessService,
+    private trainerService: TrainerService
   ) { }
 
   /**
@@ -148,5 +153,22 @@ export class ConstantsService {
         })
       )
     }
+  //Группируем тренеров по спортзалам
+  public getTrainerGroupedByFitnessClub(): Observable<ITrainerGroupedByFitnessClub> {
+    return this.trainerService.getAll().pipe(
+      map((res: any[]) => {
+        console.log('Raw trainers:', res);
+        const grouped: ITrainerGroupedByFitnessClub = {};
+        res.forEach(trainer => {
+          const key = trainer.fitness_club?.id;  // тут изменил
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push({ id: trainer.id, text: trainer.trainers_name });
+        });
+        return grouped;
+      })
+    );
+  }
+
+
 
 }
