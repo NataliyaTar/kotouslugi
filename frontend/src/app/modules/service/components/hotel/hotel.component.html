@@ -1,3 +1,5 @@
+<!-- hotel.component.html -->
+
 <div *ngIf="loading">
   <app-throbber></app-throbber>
 </div>
@@ -12,51 +14,51 @@
   </div>
 </div>
 
-<div *ngIf="!loading && !notEnoughCats">
-  <form [formGroup]="form" (ngSubmit)="submit()">
+<div *ngIf="!loading && !notEnoughCats" [formGroup]="form">
+  <!-- Шаг 0: выбор котика и отеля -->
+  <div *ngIf="active === 0" formGroupName="0" class="fields-wrapper">
     <div class="field">
       <label for="cat">Выберите котика</label>
       <select id="cat" formControlName="cat">
-        <option *ngFor="let cat of cats" [value]="cat.id">{{ cat.name }}</option>
+        <option *ngFor="let c of cats" [value]="c.id">{{ c.name }}</option>
       </select>
-      <div *ngIf="form.controls['cat'].invalid && form.controls['cat'].touched" class="error">
-        Поле обязательно для заполнения
+      <div *ngIf="getControl(0, 'cat').invalid && getControl(0, 'cat').touched" class="error">
+        Поле обязательно
       </div>
     </div>
 
     <div class="field">
       <label for="hotel">Выберите отель</label>
       <select id="hotel" formControlName="hotel">
-        <option *ngFor="let hotel of hotels" [value]="hotel.id">{{ hotel.name }}</option>
+        <option *ngFor="let h of hotels" [value]="h.id">{{ h.name }}</option>
       </select>
-      <div *ngIf="form.controls['hotel'].invalid && form.controls['hotel'].touched" class="error">
-        Поле обязательно для заполнения
+      <div *ngIf="getControl(0, 'hotel').invalid && getControl(0, 'hotel').touched" class="error">
+        Поле обязательно
       </div>
     </div>
+  </div>
 
+  <div *ngIf="active === 1" formGroupName="1" class="fields-wrapper">
     <div class="field">
-      <label for="start">Дата начала передержки</label>
-      <input id="start" type="date" formControlName="startDate" />
-      <div *ngIf="form.controls['startDate'].invalid && form.controls['startDate'].touched" class="error">
+      <label for="startDate">Дата начала передержки</label>
+      <input id="startDate" type="date" formControlName="startDate" />
+      <div *ngIf="getControl(1, 'startDate').invalid && getControl(1, 'startDate').touched" class="error">
         Укажите корректную дату начала
       </div>
     </div>
 
     <div class="field">
-      <label for="end">Дата окончания передержки</label>
-      <input id="end" type="date" formControlName="endDate" />
-      <div *ngIf="form.controls['endDate'].invalid && form.controls['endDate'].touched" class="error">
+      <label for="endDate">Дата окончания передержки</label>
+      <input id="endDate" type="date" formControlName="endDate" />
+      <div *ngIf="getControl(1, 'endDate').invalid && getControl(1, 'endDate').touched" class="error">
         Укажите корректную дату окончания
       </div>
     </div>
-
-    <button type="submit" [disabled]="form.invalid">Записаться на передержку</button>
-  </form>
-
-  <div *ngIf="successMessage" class="success-message">
-    {{ successMessage }}
   </div>
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
+
+  <div *ngIf="active === 2" class="fields-wrapper">
+    <app-check-info [data]="getResult"></app-check-info>
   </div>
+
+
 </div>
