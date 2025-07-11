@@ -14,5 +14,6 @@ export class StepsComponent {
 
   @Input() public steps: IStep[];
   @Input() public activeStep: number;
+  @Input() idService!: string;
 
 }
