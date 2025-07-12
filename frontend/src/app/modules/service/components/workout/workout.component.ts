@@ -30,6 +30,8 @@ export enum FormMap {
   trainer_name = 'Тренер',
   duration = 'Длительность абонемента',
   price = 'Цена',
+  telephone = 'Телефон для связи',
+  email = 'Email для связи',
 }
 
 @Component({
@@ -234,6 +236,4 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     }
     return '';
   }
-
-
 }
