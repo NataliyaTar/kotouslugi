@@ -179,6 +179,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         membership_type: ['', Validators.required],
         duration: ['', Validators.required],
         trainer_name: ['', Validators.required],
+        price: [null],
       }),
       2: this.fb.group({
         telephone: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
@@ -230,8 +231,14 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   }
 
   public get getResult() {
+    const rawData = this.form.getRawValue();
+
+    if (rawData[1]?.membership_type === 'Свободный') {
+      delete rawData[1].trainer_name;
+    }
+
     return this.serviceInfo.prepareDataForPreview(
-      this.form.getRawValue(),
+      rawData,
       this.steps,
       FormMap
     );
