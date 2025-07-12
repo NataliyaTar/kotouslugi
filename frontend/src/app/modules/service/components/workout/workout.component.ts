@@ -194,6 +194,19 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         trainerCtrl?.updateValueAndValidity();
       });
 
+    this.form
+      .get('1.membership_type')
+      ?.valueChanges.subscribe((membershipType) => {
+      const trainerCtrl = this.form.get('1.trainer_name');
+      if (membershipType === 'Групповой' || membershipType === 'Персональный') {
+        trainerCtrl?.setValidators(Validators.required);
+      } else {
+        trainerCtrl?.clearValidators();
+        trainerCtrl?.reset('');
+      }
+      trainerCtrl?.updateValueAndValidity();
+    });
+
     // сериализация выбранного тренера при изменении
     this.form.get('1.trainer_name')?.valueChanges.subscribe((value) => {
       if (value && typeof value !== 'string') {
