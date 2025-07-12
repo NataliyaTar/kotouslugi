@@ -25,7 +25,7 @@ import { EStatus, IOrder, TStatus } from '@models/order.model';
 
 export class FeedbacksComponent implements OnInit {
     public loading = true; // Загружены ли данные для страницы
-      public error = false; // Произошла ли ошибка реста
+    public error = false; // Произошла ли ошибка реста
     public rating: number;
     public comment: String;
     public orders: IOrder[]; // Список заявок
