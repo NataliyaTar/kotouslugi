@@ -176,14 +176,13 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         fitness_club: [JSON.stringify(defaultFitness), Validators.required],
       }),
       1: this.fb.group({
+        telephone: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+        email: ['', [Validators.email]],
+      }),
+      2: this.fb.group({
         membership_type: ['', Validators.required],
         duration: ['', Validators.required],
         trainer_name: ['', Validators.required],
-        price: [null],
-      }),
-      2: this.fb.group({
-        telephone: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
-        email: ['', [Validators.email]],
         price: [null],
       }),
     });
