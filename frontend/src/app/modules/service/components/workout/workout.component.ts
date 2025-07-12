@@ -30,6 +30,8 @@ export enum FormMap {
   trainer_name = 'Тренер',
   duration = 'Длительность абонемента',
   price = 'Цена',
+  telephone = 'Телефон для связи',
+  email = 'Email для связи',
 }
 
 @Component({
@@ -117,7 +119,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
                 const initialSelected = this.fitnessFullList.find(
                   (f) => f.id === initialFitnessId
                 );
-                this.form.get('1.price')?.setValue(initialSelected?.price);
+                this.form.get('2.price')?.setValue(initialSelected?.price);
               });
           });
       });
@@ -177,6 +179,11 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         membership_type: ['', Validators.required],
         duration: ['', Validators.required],
         trainer_name: ['', Validators.required],
+        price: [null],
+      }),
+      2: this.fb.group({
+        telephone: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+        email: ['', [Validators.email]],
         price: [null],
       }),
     });
@@ -253,6 +260,4 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     }
     return '';
   }
-
-
 }
