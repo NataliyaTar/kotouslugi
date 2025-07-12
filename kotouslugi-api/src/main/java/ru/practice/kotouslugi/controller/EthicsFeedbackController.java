@@ -1,10 +1,11 @@
 package ru.practice.kotouslugi.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.practice.kotouslugi.model.EthicsFeedback;
+import ru.practice.kotouslugi.request.EthicsFeedbackRequest;
 import ru.practice.kotouslugi.service.EthicsFeedbackService;
 
 @RestController
@@ -16,14 +17,18 @@ public class EthicsFeedbackController {
     this.ethicsFeedbackService = ethicsFeedbackService;
   }
 
-  @GetMapping("/add")
+  @PostMapping(value = "/add", produces = "application/json")
+  @Operation(summary = "Добавить отзыв", tags = {"АПИ отзывов"}, responses = {
+    @ApiResponse(responseCode = "200", description = "Ок"),
+    @ApiResponse(responseCode = "400", description = "Внутренняя ошибка")}
+  )
   public ResponseEntity<String> addFeedback(
-    @RequestParam int rating,
-    @RequestParam String comment
-  ) {
+    @RequestBody EthicsFeedbackRequest ethicsFeedbackRequest
+    ) {
     boolean isAdded = ethicsFeedbackService.addEthicsFeedback(
-      rating,
-      comment);
+      ethicsFeedbackRequest.getRating(),
+      ethicsFeedbackRequest.getComment()
+    );
     if (isAdded) {
       return ResponseEntity.ok("Отзыв добавлен!");
     } else {
