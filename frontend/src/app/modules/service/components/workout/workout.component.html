@@ -21,7 +21,7 @@
       @if (getControl(0, 'fitness_club').errors?.['required'] && getControl(0, 'fitness_club').touched) {
       <p class="error">Поле обязательно для заполнения</p>
       }
-      <select formControlName="fitness">
+      <select formControlName="fitness_club">
         @for (option of optionsFitness; track $index) {
         <option [value]="getItem('fitness', $index)">{{option.text}}</option>
         }
