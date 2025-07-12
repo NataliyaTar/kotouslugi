@@ -119,7 +119,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
                 const initialSelected = this.fitnessFullList.find(
                   (f) => f.id === initialFitnessId
                 );
-                this.form.get('1.price')?.setValue(initialSelected?.price);
+                this.form.get('2.price')?.setValue(initialSelected?.price);
               });
           });
       });
@@ -178,8 +178,12 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       1: this.fb.group({
         membership_type: ['', Validators.required],
         duration: ['', Validators.required],
-        price: [null],
         trainer_name: ['', Validators.required],
+      }),
+      2: this.fb.group({
+        telephone: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+        email: ['', [Validators.email]],
+        price: [null],
       }),
     });
 

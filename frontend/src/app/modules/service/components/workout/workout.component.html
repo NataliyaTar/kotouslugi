@@ -63,7 +63,34 @@
       </div>
     </div>
   </div>
-  @if (active === 2) {
+  <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+    <div class="field">
+      <div>
+        <p class="label">Телефон для связи</p>
+        @if (getControl(2, 'telephone').errors && getControl(2, 'telephone').touched) {
+        @if (getControl(2, 'telephone').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(2, 'telephone').errors?.['pattern']) {
+        <p class="error">Введите 11 цифр</p>
+        }
+        }
+      </div>
+      <input formControlName="telephone" placeholder="12345678901"
+             (invalid)="getControl(2, 'telephone').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Email для связи</p>
+        @if (getControl(2, 'email').errors?.['pattern'] && getControl(2, 'email').touched) {
+        <p class="error">Введите 11 цифр</p>
+        }
+      </div>
+      <input formControlName="email" type="email" placeholder="abc@dfg.ru"
+             (invalid)="getControl(2, 'email').invalid">
+    </div>
+  </div>
+  @if (active === 3) {
   <app-check-info [data]="getResult"></app-check-info>
   }
 </div>
