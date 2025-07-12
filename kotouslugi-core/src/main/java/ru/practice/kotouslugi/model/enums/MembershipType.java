@@ -1,5 +1,7 @@
 package ru.practice.kotouslugi.model.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Множество для указания типа абонемента (сущность Fitness)
  *
@@ -24,5 +26,10 @@ public enum MembershipType {
 
   MembershipType(String message) {
     this.message = message;
+  }
+
+  @JsonValue // Указывает, что это значение должно использоваться при сериализации
+  public String getMessage() {
+    return message;
   }
 }
