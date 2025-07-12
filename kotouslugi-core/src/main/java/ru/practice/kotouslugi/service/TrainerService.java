@@ -6,6 +6,7 @@ import ru.practice.kotouslugi.model.Trainer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.practice.kotouslugi.model.enums.MembershipType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +44,17 @@ public class TrainerService {
         trainerEntities.forEach(entityList::add);
         return entityList;
     }
+
+  /** Получение списка тренеров по ID фитнес-клуба и типу абонемента
+   * @param id - идентификатор фитнес-клуба
+   * @return - список фитнес-клубов
+   */
+  public List<Trainer> listTrainersByFitnessClubIdAndMembershipType(Long id, MembershipType mType) {
+    List<Trainer> entityList = new LinkedList<>();
+    Iterable<Trainer> trainerEntities = trainerRepository.getByFitnessClubIdAndMembershipType(id, mType);
+    trainerEntities.forEach(entityList::add);
+    return entityList;
+  }
 
   /** Получение тренера по его id
    *

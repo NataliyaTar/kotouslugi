@@ -89,13 +89,14 @@ INSERT INTO fitness(ID, FITNESS_CLUB, MEMBERSHIP_TYPE, PRICE)
     VALUES(3, 'Когтеточка', 2, 1423.44);
 
 -- "Свободные места" инициализация тренеров
-INSERT INTO fitness_trainers(id, trainers_name, fitness_club_id)
+INSERT INTO fitness_trainers(id, trainers_name, fitness_club_id, membership_type, membership_price)
     VALUES
-        (0, 'Барсик Штангист', 1),
-        (1, 'Мурзик Иванович', 1),
-        (2, 'Gato Gato Gato', 1),
-        (3, 'П. Ушистик', 2),
-        (4, 'М. Яу', 2),
-        (5, 'М. Иу', 2),
-        (6, 'Не знаю как зовут, но жутко любит котиков', 3),
-        (7, 'Сам котик', 3);
+        (0, 'Барсик Штангист',                            1, 0, 1000),
+        (1, 'Мурзик Иванович',                            1, 1, 2000),
+        (2, 'Gato Gato Gato',                             1, 2, 3000),
+        (3, 'П. Ушистик',                                 2, 0, 1223),
+        (4, 'М. Яу',                                      2, 1, 12312),
+        (5, 'М. Иу',                                      2, 2, 123),
+        (6, 'Не знаю как зовут, но жутко любит котиков',  3, 0, 0),
+        (7, 'Сам котик',                                  3, 1, 12.12);
+

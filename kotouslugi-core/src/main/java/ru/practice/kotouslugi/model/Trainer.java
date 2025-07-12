@@ -12,6 +12,9 @@ import ru.practice.kotouslugi.model.Fitness;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ru.practice.kotouslugi.model.enums.MembershipType;
+
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -41,4 +44,13 @@ public class Trainer {
     @ManyToOne
     @JoinColumn(name = "fitness_club_id")
     private Fitness fitness_club;
+
+
+    /* Обновление */
+    /** Ценник тренера **/
+    @Column(precision = 20, scale = 2)
+    private BigDecimal membership_price;
+
+    /** Тип абонемента (см. enum MembershipType) */
+    private MembershipType membership_type;
 }

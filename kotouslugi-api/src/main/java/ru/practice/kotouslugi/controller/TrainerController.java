@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practice.kotouslugi.model.Fitness;
 import ru.practice.kotouslugi.model.Trainer;
+import ru.practice.kotouslugi.model.enums.MembershipType;
 import ru.practice.kotouslugi.service.TrainerService;
 
 import java.util.List;
@@ -46,8 +47,24 @@ public class TrainerController extends BaseController {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public List<Trainer> listByFitnessClubId(@Parameter(name = "id", required = true) @RequestParam Long id) {
-        return trainerService.listTrainersByFitnessClubId(id);
+    public List<Trainer> listByFitnessClubId(
+      @Parameter(name = "fitness_club_id", required = true) @RequestParam Long fitness_club_id
+    ) {
+        return trainerService.listTrainersByFitnessClubId(fitness_club_id);
+    }
+
+    @GetMapping(value = "/listByFitnessClubIdAndMembershipType", produces = "application/json")
+    @ResponseBody
+    @Operation(summary = "Получить список тренеров по ID фитнес-клуба и типу абонемента", tags = {"API фитнес-клубов"}, responses = {
+      @ApiResponse(responseCode = "200", description = "OK"),
+      @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+    )
+    public List<Trainer> listByFitnessClubIdAndMembershipType(
+            @Parameter(name = "fitness_club_id", required = true) @RequestParam Long fitness_club_id,
+            @Parameter(name = "membership_type", required = true) @RequestParam MembershipType membership_type
+        )
+    {
+        return trainerService.listTrainersByFitnessClubIdAndMembershipType(fitness_club_id, membership_type);
     }
 
     /* Когда-нибудь надо будет починить, но и без неё работает */
