@@ -18,7 +18,6 @@ values (2,
         'Услуга «Укотоение» поможет подобрать кото-приют и котёнка',
         'hugs.png');
 
-/*-- cat
 INSERT INTO cat (id, name, age, sex, breed)
 values (0,
         'Феликс',
@@ -30,7 +29,7 @@ values (1,
         'Муся',
         '1',
         'female',
-        'maine_coon');*/
+        'maine_coon');
 
 -- service
 INSERT INTO service(id, mnemonic, icon, title, description)
@@ -51,6 +50,13 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+  -- Добавлено "Свободные места"
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'workout',
+        'fitness.png',
+        'Запись в фитнес-клуб',
+        'Тренируйтесь с удовольствием - ваше здоровье начинается здесь!');
 
 -- category
 INSERT INTO category
@@ -59,6 +65,9 @@ INSERT INTO category
 values (1, 'Медицина');
 INSERT INTO category
 values (2, 'Отдых и развлечение');
+  -- Добавлено "Свободные места"
+INSERT INTO category
+values (3, 'Спорт');
 
 -- service_to_category
 INSERT INTO service_category
@@ -67,3 +76,26 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+  -- Добавлено "Свободные места"
+INSERT INTO service_category
+values (3, 3);
+
+-- "Свободные места", инициализация спортзалов
+INSERT INTO fitness(ID, FITNESS_CLUB, MEMBERSHIP_TYPE, PRICE)
+    VALUES(1, 'Большой котовий фитнес-клуб', 0, 2000.15);
+INSERT INTO fitness(ID, FITNESS_CLUB, MEMBERSHIP_TYPE, PRICE)
+    VALUES(2, 'Классный теннисный корт', 1, 1543.45);
+INSERT INTO fitness(ID, FITNESS_CLUB, MEMBERSHIP_TYPE, PRICE)
+    VALUES(3, 'Когтеточка', 2, 1423.44);
+
+-- "Свободные места" инициализация тренеров
+INSERT INTO fitness_trainers(id, trainers_name, fitness_club_id)
+    VALUES
+        (0, 'Барсик Штангист', 1),
+        (1, 'Мурзик Иванович', 1),
+        (2, 'Gato Gato Gato', 1),
+        (3, 'П. Ушистик', 2),
+        (4, 'М. Яу', 2),
+        (5, 'М. Иу', 2),
+        (6, 'Не знаю как зовут, но жутко любит котиков', 3),
+        (7, 'Сам котик', 3);
