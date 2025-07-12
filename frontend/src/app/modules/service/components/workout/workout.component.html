@@ -44,9 +44,10 @@
     <div class="field">
       <p class="label">Выберите длительность абонемента</p>
       <select formControlName="duration">
+        <option value="1 месяц">1 месяц</option>
         <option value="3 месяца">3 месяца</option>
         <option value="6 месяцев">6 месяцев</option>
-        <option value="12 месяцев">1 год</option>
+        <option value="12 месяцев">12 месяцев</option>
       </select>
     </div>
     <div *ngIf="getControl(1, 'membership_type').value === 'Групповой' || getControl(1, 'membership_type').value === 'Персональный'">
