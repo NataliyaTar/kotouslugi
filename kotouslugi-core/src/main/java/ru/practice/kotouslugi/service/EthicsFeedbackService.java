@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.EthicsFeedbackRepository;
 import ru.practice.kotouslugi.model.EthicsFeedback;
 
+import java.util.List;
+import java.util.Optional;
+
+
 @Service
 public class EthicsFeedbackService {
   private final EthicsFeedbackRepository ethicsFeedbackRepository;
@@ -29,5 +33,8 @@ public class EthicsFeedbackService {
 
     ethicsFeedbackRepository.save(ethicsFeedback);
     return true;
+  }
+  public List<EthicsFeedback> getAllFeedbacks() {
+    return ethicsFeedbackRepository.findAll();
   }
 }

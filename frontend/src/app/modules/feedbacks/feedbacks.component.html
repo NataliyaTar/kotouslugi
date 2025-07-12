@@ -1,3 +1,13 @@
-<div class="container page-wrapper">
-  <h2 style="margin-bottom: 120px;">Список отзывов</h2>
-</div>
+<form (ngSubmit)="submitFeedback()" #feedbackForm="ngForm">
+  <h2 style="font-size: 22px;">Добавить отзыв</h2>
+
+  <label for="rating" style="font-size: 14px; margin-bottom: 20px;">Оценка (1-5):</label>
+  <select id="rating" name="rating" [(ngModel)]="rating" required style="width: 300px; font-size: 14px; margin-left: 5px;">
+    <option [ngValue]="null">Выберите оценку</option>
+    <option *ngFor="let r of [1,2,3,4,5]" [ngValue]="r">{{ r }}</option>
+  </select>
+
+  <label for="comment" style="display: block; font-size: 14px; margin-top: 10px;">Комментарий:</label>
+  <textarea id="comment" name="comment" [(ngModel)]="comment" required rows="3" style="width: 300px; font-size: 14px; margin-top: 5px; resize: vertical;"></textarea>
+  <button type="submit">Отправить</button>
+</form>

@@ -8,6 +8,8 @@ import ru.practice.kotouslugi.model.EthicsFeedback;
 import ru.practice.kotouslugi.request.EthicsFeedbackRequest;
 import ru.practice.kotouslugi.service.EthicsFeedbackService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/ethicsFeedback")
 public class EthicsFeedbackController {
@@ -34,5 +36,11 @@ public class EthicsFeedbackController {
     } else {
       return ResponseEntity.badRequest().body("Отзыв уже существует!");
     }
+  }
+  @GetMapping("/all")
+  @Operation(summary = "Получить все отзывы", tags = {"АПИ отзывов"})
+  public ResponseEntity<List<EthicsFeedback>> getAllFeedbacks() {
+    List<EthicsFeedback> feedbacks = ethicsFeedbackService.getAllFeedbacks();
+    return ResponseEntity.ok(feedbacks);
   }
 }
