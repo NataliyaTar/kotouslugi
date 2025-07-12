@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { IValueCat, ICat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
@@ -10,6 +10,7 @@ import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
+
 
 export enum FormMap {
   // 0
@@ -41,6 +42,7 @@ export enum FormMap {
   templateUrl: './ethics.component.html',
   styleUrls: ['./ethics.component.scss']
 })
+
 
 export class EthicsComponent implements OnInit, OnDestroy {
 
@@ -136,18 +138,17 @@ export class EthicsComponent implements OnInit, OnDestroy {
         cat: [JSON.stringify(this.optionsCat[0])],
         course: ['', [Validators.required]],
         date: ['', [Validators.required, this.dateValidator]],
-        time: ['', [Validators.required]]
-
-      }),
+        time: ['', [Validators.required]],
+      }, { validators: this.dateTimeValidator }),
       1: this.fb.group({
         teacher: ['', [Validators.required, Validators.max(256)]],
         teacherInfo: ['', [Validators.max(256)]],
 
       }),
       2: this.fb.group({
-        owner: ["", [Validators.required]],
-        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['', [Validators.email]]
+        owner: ["", [Validators.required,  Validators.pattern(/^[А-Яа-яЁё]{1,48}$/)]],
+        telephone: ['', [Validators.required, Validators.pattern(/^8/), this.phoneValidator]],
+        email: ['', [Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/)]]
       })
     });
 
@@ -164,12 +165,53 @@ export class EthicsComponent implements OnInit, OnDestroy {
    * @private
    */
   private dateValidator(control: FormControl) {
-    if (new Date(control.value) < new Date()) {
-      return {minDate: true};
+    const d1 = new Date(control.value);
+    const d2 = new Date();
+
+    const sameYear = d1.getFullYear() === d2.getFullYear();
+    const sameMonth = d1.getMonth() === d2.getMonth();
+    const sameDay = d1.getDate() === d2.getDate();
+
+    if (sameYear && sameMonth && sameDay) {
+          return null; // даты совпадают — валидно
+    }
+    if (d1 < d2) {
+      return {minDate: true} // дата раньше текущей - не валидно
+    }
+    return null // дата позже текущей - валидно
+
+  }
+  private phoneValidator(control: FormControl) {
+    const phoneNumber = control.value
+    if (phoneNumber.length === 11) {
+      return null
+    }
+    return {phoneLen: true}
+  }
+
+  private dateTimeValidator(group: FormGroup) {
+    const dateControl = group.get('date');
+    const timeControl = group.get('time');
+
+    const dateValue = dateControl.value;
+    const timeValue = timeControl.value;
+
+    const selectedDate = new Date(dateValue);
+    const now = new Date();
+
+    if (selectedDate.getFullYear() === now.getFullYear()
+    && selectedDate.getMonth() === now.getMonth()
+    && selectedDate.getDate() === now.getDate()) {
+        const [hours, minutes] = timeValue.split(':').map(Number);
+        if (hours <= now.getHours()) {
+          // при одинаковой дате одинаковый час = ошибка
+          return { minTime: true };
+        }
     }
 
-    return false;
+    return null; // валидно
   }
+
 
   /**
    * Возвращает json в виде строки

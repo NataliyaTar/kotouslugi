@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EthicsRecordRepository extends JpaRepository<EthicsRecord, Long> {
+  /**
+   * Находит все записи, которые пересекаются с указанным интервалом.
+   * Занятие длится 1 час, поэтому проверяем overlap.
+   */
   @Query("""
   SELECT e FROM EthicsRecord e
   WHERE e.startTime < :endTime AND
@@ -19,4 +23,5 @@ public interface EthicsRecordRepository extends JpaRepository<EthicsRecord, Long
     @Param("startTime") LocalDateTime windowStart,
     @Param("endTime") LocalDateTime windowEnd
   );
+
 }

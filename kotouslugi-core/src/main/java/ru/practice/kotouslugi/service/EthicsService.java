@@ -15,11 +15,17 @@ public class EthicsService {
     this.recordRepository = recordRepository;
   }
 
+  /**
+   * Проверяет, доступно ли время для записи.
+   */
   public boolean isTimeSlotAvailable(LocalDateTime startTime) {
     LocalDateTime endTime = startTime.plusHours(1);
     return recordRepository.findOverlappingRecords(startTime, endTime).isEmpty();
   }
 
+  /**
+   * Добавляет новую запись, если время свободно.
+   */
   @Transactional
   public boolean addEthicsRecord(
     String catName,

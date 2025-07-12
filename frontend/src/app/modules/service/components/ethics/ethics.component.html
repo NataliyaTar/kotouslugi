@@ -1,16 +1,16 @@
 @if (loading) {
   <app-throbber></app-throbber>
 } @else {
-<div class="fields-wrapper" [formGroup]="form">
+<div class="fields-wrapper" [formGroup]="form" style="margin-top: 055px;">
   <!-- Шаг 0 -->
   <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
     <!-- Выбор кота -->
     <div class="field">
       <div>
         <p class="label">Выберите кота</p>
-        <div *ngIf="getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched">
+        @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
           <p class="error">Поле обязательно для заполнения</p>
-        </div>
+        }
       </div>
       <select formControlName="cat">
         @for (option of optionsCat; track $index) {
@@ -23,9 +23,9 @@
     <div class="field">
       <div>
         <p class="label">Тип курса</p>
-        <div *ngIf="getControl(0, 'course').errors?.['required'] && getControl(0, 'course').touched">
+        @if (getControl(0, 'course').errors?.['required'] && getControl(0, 'course').touched) {
           <p class="error">Поле обязательно для заполнения</p>
-        </div>
+        }
       </div>
       <select formControlName="course">
         @for (option of courseOptions; track $index) {
@@ -38,10 +38,14 @@
     <div class="field">
       <div>
         <p class="label">Дата</p>
-        <div *ngIf="getControl(0, 'date').errors && getControl(0, 'date').touched">
-          <p class="error" *ngIf="getControl(0, 'date').errors?.['required']">Поле обязательно для заполнения</p>
-          <p class="error" *ngIf="getControl(0, 'date').errors?.['minDate']">Некорректная дата</p>
-        </div>
+        @if (getControl(0, 'date').errors && getControl(0, 'date').touched) {
+          @if (getControl(0, 'date').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl(0, 'date').errors?.['minDate']) {
+            <p class="error">Некорректная дата</p>
+          }
+        }
       </div>
       <input type="date" formControlName="date" placeholder="Выберите дату" />
     </div>
@@ -50,11 +54,22 @@
     <div class="field">
       <div>
         <p class="label">Время</p>
-        <div *ngIf="getControl(0, 'time').errors?.['required'] && getControl(0, 'time').touched">
+        @if (getControl(0, 'time').errors?.['required'] && getControl(0, 'time').touched) {
           <p class="error">Поле обязательно для заполнения</p>
-        </div>
+        }
+        @if (getControl(0, 'date').errors?.['minTime']) {
+          <p class="error">Некорректное время</p>
+        }
       </div>
-      <input type="time" formControlName="time" />
+      <input formControlName="time" type="time" list="time_list" (invalid)="getControl(0, 'time').invalid">
+      <datalist id="time_list">
+        <option value="08:00">
+        <option value="09:00">
+        <option value="10:00">
+        <option value="11:00">
+        <option value="12:00">
+        <option value="13:00">
+      </datalist>
     </div>
   </div>
 
@@ -64,9 +79,9 @@
     <div class="field">
       <div>
         <p class="label">Учитель</p>
-        <div *ngIf="getControl(1, 'teacher').errors?.['required'] && getControl(1, 'teacher').touched">
+        @if (getControl(1, 'teacher').errors?.['required'] && getControl(1, 'teacher').touched) {
           <p class="error">Поле обязательно для заполнения</p>
-        </div>
+        }
       </div>
       <select formControlName="teacher">
         @for (option of teacherOptions; track $index) {
@@ -78,7 +93,7 @@
     <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
       <div class="field">
         <div>
-          <p class="label">Об учителе: </p>
+          <p class="label" style="white-space: nowrap;">Об учителе:</p>
         </div>
       </div>
     </div>
@@ -90,35 +105,52 @@
     <div class="field">
       <div>
         <p class="label">Имя владельца</p>
-        <div *ngIf="getControl(2, 'owner').errors?.['required'] && getControl(2, 'owner').touched">
-          <p class="error">Поле обязательно для заполнения</p>
-        </div>
+        @if (getControl(2, 'owner').errors && getControl(2, 'owner').touched) {
+          @if (getControl(2, 'owner').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl(2, 'owner').errors?.['pattern']) {
+            <p class="error">Имя должно состоять из букв русского алфавит</p>
+          }
+        }
       </div>
-      <input formControlName="owner" placeholder="Введите имя" />
+      <input formControlName="owner" maxLength="48" placeholder="Введите имя" />
     </div>
 
     <!-- Телефон -->
     <div class="field">
       <div>
         <p class="label">Телефон для связи</p>
-        <div *ngIf="getControl(2, 'telephone').errors && getControl(2, 'telephone').touched">
-          <p class="error" *ngIf="getControl(2, 'telephone').errors?.['required']">Поле обязательно для заполнения</p>
-          <p class="error" *ngIf="getControl(2, 'telephone').errors?.['pattern']">Введите 11 цифр</p>
-        </div>
+        @if (getControl(2, 'telephone').errors && getControl(2, 'telephone').touched) {
+          @if (getControl(2, 'telephone').errors?.['required']) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (getControl(2, 'telephone').errors?.['phoneLen']) {
+            <p class="error">Длина телефона менее 11 цифр</p>
+          }
+          @if (getControl(2, 'telephone').errors?.['pattern']) {
+            <p class="error">Номер должен начинаться с 8</p>
+          }
+
+        }
       </div>
-      <input formControlName="telephone" placeholder="89001230045" />
+      <input formControlName="telephone" maxlength="11" placeholder="8 (___) ___-__-__"
+             (invalid)="getControl(2, 'telephone').invalid">
     </div>
 
     <!-- Email -->
     <div class="field">
       <div>
-        <p class="label">Email для связи</p>
-        <div *ngIf="getControl(2, 'email').errors && getControl(2, 'email').touched">
-          <p class="error" *ngIf="getControl(2, 'email').errors?.['email']">Некорректный email</p>
-        </div>
+        <p class="label">Email (необязательно)</p>
+        @if (getControl(2, 'email').errors && getControl(2, 'email').touched) {
+          @if (getControl(2, 'email').errors?.['pattern']) {
+            <p class="error">Некорректный email</p>
+          }
+        }
       </div>
-      <input type="email" formControlName="email" placeholder="youremail@tempmail.ru">
+      <input type="email" formControlName="email" maxLength="48" placeholder="youremail@tempmail.ru">
     </div>
+
   </div>
   @if (active === 3) {
     <app-check-info [data]="getResult"></app-check-info>

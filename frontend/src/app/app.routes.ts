@@ -33,6 +33,10 @@ export const routes: Routes = [
     loadChildren: () => import('./modules/service/service.module').then(mod => mod.ServiceModule)
   },
   {
+    path: 'feedbacks',
+    loadChildren: () => import('./modules/feedbacks/feedbacks.module').then(mod => mod.FeedbacksModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./modules/not-found/not-found.module').then(mod => mod.NotFoundModule)
   }

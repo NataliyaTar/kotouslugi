@@ -58,6 +58,10 @@
       <artifactId>json</artifactId>
       <version>20230227</version>
     </dependency>
+      <dependency>
+          <groupId>jakarta.validation</groupId>
+          <artifactId>jakarta.validation-api</artifactId>
+      </dependency>
   </dependencies>
 
   <build>
