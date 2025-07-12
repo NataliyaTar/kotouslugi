@@ -225,7 +225,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   public get getResult() {
     const rawData = this.form.getRawValue();
-    
+
     if (rawData[1]?.membership_type === 'Свободный') {
       delete rawData[1].trainer_name;
     }
