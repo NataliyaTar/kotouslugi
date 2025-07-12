@@ -124,6 +124,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M6</version>
         <configuration>
+          <!--suppress UnresolvedMavenProperty -->
           <argLine>
             ${jacocoArgLine}
             --add-opens=java.base/java.net=ALL-UNNAMED
