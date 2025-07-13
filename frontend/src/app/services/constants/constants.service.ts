@@ -2,7 +2,13 @@ import { Injectable } from '@angular/core';
 import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex } from '@models/cat.model';
 import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
+import { FitnessService } from '@services/fitness/fitness.service';
+import { IFitness, IValueFitness } from '@models/fitness.model';
 import { IValue } from '@models/common.model';
+import { ITrainerGroupedByFitnessClub, ITrainerOption } from '@models/trainer.model';
+import { TrainerService } from '@services/trainer/trainer.service';
+import { map } from 'rxjs/operators';
+import { ITrainer } from '@models/trainer.model';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +89,8 @@ export class ConstantsService {
 
   constructor(
     private catService: CatService,
+    private fitnessService: FitnessService,
+    private trainerService: TrainerService
   ) { }
 
   /**
@@ -126,5 +134,44 @@ export class ConstantsService {
         }));
       })
     )
+  }
+
+  /**
+   * Все фитнес-клубы (для dropdown) — формат: "название — цена ₽"
+   */
+  public getFitnessOptionsAll(): Observable<IValueFitness[]> {
+    return this.fitnessService.getFitnessList().pipe(
+      take(1)
+      ).pipe(
+        mergeMap((res) => {
+          return of (res.map((item) => {
+            return {
+              id: item.id,
+              text: `${item.fitness_club} `
+            }
+          }));
+        })
+      )
+    }
+  //Группируем тренеров по спортзалам
+  public getTrainerGroupedByFitnessClub(): Observable<ITrainerGroupedByFitnessClub> {
+    return this.trainerService.getAll().pipe(
+      map((res: any[]) => {
+        const grouped: ITrainerGroupedByFitnessClub = {};
+        res.forEach(trainer => {
+          const key = trainer.fitness_club?.id;  // тут изменил
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push({ id: trainer.id, text: trainer.trainers_name, membership_type: trainer.membership_type, membership_price: trainer.membership_price});
+        });
+        return grouped;
+      })
+    );
+  }
+
+  /**
+   * Возвращает полный список фитнес-клубов с ценами
+   */
+  public getFitnessRawList(): Observable<IFitness[]> {
+    return this.fitnessService.getFitnessList().pipe(take(1));
   }
 }

@@ -1,0 +1,99 @@
+@if (loading) {
+<app-throbber></app-throbber>
+} @else {
+<div class="fields-wrapper" [formGroup]="form">
+  <!-- Шаг 0 -->
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <div class="field">
+      <p class="label">Выберите кота</p>
+      @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+      <p class="error">Поле обязательно для заполнения</p>
+      }
+      <select formControlName="cat">
+        @for (option of optionsCat; track $index) {
+        <option [value]="getItem('cat', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <p class="label">Выберите спортзал</p>
+      @if (getControl(0, 'fitness_club').errors?.['required'] && getControl(0, 'fitness_club').touched) {
+      <p class="error">Поле обязательно для заполнения</p>
+      }
+      <select formControlName="fitness_club">
+        @for (option of optionsFitness; track $index) {
+        <option [value]="getItem('fitness', $index)">{{option.text}}</option>
+        }
+      </select>
+
+    </div>
+  </div>
+  <!-- Шаг 1 -->
+  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+    <div class="field">
+      <p class="label">Выберите тип абонемента</p>
+      <select formControlName="membership_type">
+        <option value="Свободный">Свободный</option>
+        <option value="Групповой">Групповой</option>
+        <option value="Персональный">Персональный</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <p class="label">Выберите длительность абонемента</p>
+      <select formControlName="duration">
+        <option value="1 месяц">1 месяц</option>
+        <option value="3 месяца">3 месяца</option>
+        <option value="6 месяцев">6 месяцев</option>
+        <option value="12 месяцев">12 месяцев</option>
+      </select>
+    </div>
+    <div *ngIf="getControl(1, 'membership_type').value === 'Групповой' || getControl(1, 'membership_type').value === 'Персональный'">
+      <div class="field">
+        <p class="label">Выберите тренера</p>
+        <select formControlName="trainer_name">
+          <option *ngFor="let trainer of filteredTrainers; index as i" [value]="getItem('trainer', i)">
+            {{ trainer.text }}
+          </option>
+
+        </select>
+
+        <div *ngIf="getControl(1, 'trainer_name').invalid && getControl(1, 'trainer_name').touched">
+          <small class="error">Выберите тренера</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+    <div class="field">
+      <div>
+        <p class="label">Телефон для связи</p>
+        @if (getControl(2, 'telephone').errors && getControl(2, 'telephone').touched) {
+        @if (getControl(2, 'telephone').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(2, 'telephone').errors?.['pattern']) {
+        <p class="error">Введите 11 цифр</p>
+        }
+        }
+      </div>
+      <input formControlName="telephone" placeholder="12345678901"
+             (invalid)="getControl(2, 'telephone').invalid">
+    </div>
+    <div class="field">
+      <div>
+        <p class="label">Email для связи</p>
+        @if (getControl(2, 'email').errors?.['pattern'] && getControl(2, 'email').touched) {
+        <p class="error">Введите 11 цифр</p>
+        }
+      </div>
+      <input formControlName="email" type="email" placeholder="abc@dfg.ru"
+             (invalid)="getControl(2, 'email').invalid">
+    </div>
+  </div>
+  @if (active === 3) {
+  <app-check-info [data]="getResult"></app-check-info>
+  }
+</div>
+}
