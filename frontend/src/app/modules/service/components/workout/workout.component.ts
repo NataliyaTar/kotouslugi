@@ -77,6 +77,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       .getTrainerGroupedByFitnessClub()
       .pipe(take(1))
       .subscribe((res) => {
+        console.log(res);
         this.trainerOptions = res;
 
         this.constantService
