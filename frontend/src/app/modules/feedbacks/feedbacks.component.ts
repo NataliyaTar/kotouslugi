@@ -26,14 +26,14 @@ import { EStatus, IOrder, TStatus } from '@models/order.model';
 export class FeedbacksComponent implements OnInit {
     public loading = true; // Загружены ли данные для страницы
     public error = false; // Произошла ли ошибка реста
-    public rating: number;
-    public comment: String;
+    public rating: number | null = null;
+    public comment: String | null = "";
+    public orderId: number | null = null;
     public orders: IOrder[]; // Список заявок
 
     constructor(
         private orderService: OrderService,
-      ) {
-      }
+        ) {}
 
     public ngOnInit() {
         // получаем список заявок
@@ -46,16 +46,16 @@ export class FeedbacksComponent implements OnInit {
         })
       }
 
-
-     submitFeedback() {
-        if (this.rating === null || this.comment.trim() === '') {
-          alert('Пожалуйста, заполните все поля');
+     public submitFeedback() {
+        if (this.rating === null) {
+          alert('Выберите оценку');
           return;
         }
-
+        console.log('Comment = ', this.comment);
         const data = {
           rating: this.rating,
-          comment: this.comment
+          comment: this.comment,
+          orderId: this.orderId
         };
 
         const jsonData = JSON.stringify(data);

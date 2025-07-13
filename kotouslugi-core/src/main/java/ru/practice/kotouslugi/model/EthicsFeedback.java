@@ -12,4 +12,7 @@ public class EthicsFeedback {
   private Long id;
   private int rating;
   private String comment;
+  
+  @Column(name = "order_id", unique = true)
+  private int orderId;
 }

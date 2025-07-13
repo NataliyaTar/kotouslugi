@@ -29,7 +29,8 @@ public class EthicsFeedbackController {
     ) {
     boolean isAdded = ethicsFeedbackService.addEthicsFeedback(
       ethicsFeedbackRequest.getRating(),
-      ethicsFeedbackRequest.getComment()
+      ethicsFeedbackRequest.getComment(),
+      ethicsFeedbackRequest.getOrderId()
     );
     if (isAdded) {
       return ResponseEntity.ok("Отзыв добавлен!");
@@ -37,7 +38,8 @@ public class EthicsFeedbackController {
       return ResponseEntity.badRequest().body("Отзыв уже существует!");
     }
   }
-  @GetMapping("/all")
+
+  @PostMapping("/all")
   @Operation(summary = "Получить все отзывы", tags = {"АПИ отзывов"})
   public ResponseEntity<List<EthicsFeedback>> getAllFeedbacks() {
     List<EthicsFeedback> feedbacks = ethicsFeedbackService.getAllFeedbacks();

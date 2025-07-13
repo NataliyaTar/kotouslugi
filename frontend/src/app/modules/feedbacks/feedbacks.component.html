@@ -31,32 +31,34 @@
         <h2 style="font-size: 28px;">Добавить отзыв</h2>
         <!-- Блок для выбора записи -->
         <div style="margin-bottom: 20px;"></div>
-        <label style="font-size: 18px;">Выберите запись</label>
-        @for (order of orders; track $index) {
-          <select>
-            <option v-for="order in orders" :key="order.id">
-              {{order.name}} | Дата: {{ order.created.slice(0, 10) }} | {{ order.created.slice(11, 19) }}
+        <label for="orderId" style="font-size: 18px;">Список записей</label>
+        <select id="orderId" name="orderId" [(ngModel)]="orderId" required style="font-size: 18px; border: 1px solid #000;">
+          <option [ngValue]="null" style="font-size:18px;">Выберите запись</option>
+          @for (order of orders; track $index) {
+            <option [ngValue]="order.id" style="font-size:14px;">
+              {{order.id}}. {{order.name}} | {{ order.created.slice(0, 10) }} | {{ order.created.slice(11, 19) }}
             </option>
-          </select>
-        }
+          }
+        </select>
 
         <!-- Блок для оценки -->
-        <div style="margin-bottom: 20px;"></div>
-        <div style="margin-bottom: 32px;">
-          <label for="rating" style="font-size: 18px; display: block; margin-bottom: 12px;">Оценка (1-5):</label>
-          <select id="rating" name="rating" [(ngModel)]="rating" required style="width: 100%; font-size: 20px; border: 1px solid #000;" placeholder="Выберите оценку">
-            <option [ngValue]="null" style="font-size: 20px;">Выберите оценку</option>
+        <div style="margin-bottom: 20px; margin-top: 20px;">
+          <label for="rating" style="font-size: 18px; display: block;">Оценка (1-5):</label>
+          <select id="rating" name="rating" [(ngModel)]="rating" required style="font-size: 18px; border: 1px solid #000;">
+            <option [ngValue]="null" style="font-size: 18px;">Выберите оценку</option>
             <option *ngFor="let r of [1,2,3,4,5]" [ngValue]="r">{{ r }}</option>
           </select>
         </div>
         <!-- Поле для комментария -->
         <div>
-          <label for="comment" style="display: block; font-size: 18px; margin-top: 12px;">Комментарий:</label>
-          <textarea id="comment" name="comment" [(ngModel)]="comment" required rows="3" style="width: 100%; font-size: 18px; margin-top: 5px; resize: vertical;"></textarea>
+          <label for="comment" style="font-size: 18px;">Комментарий (не обязательно):</label>
+          <textarea id="comment" name="comment" [(ngModel)]='comment' maxlength="128" style="font-size: 20px; border: 1px solid #000;" placeholder="Введите комментарий..."></textarea>
         </div>
       </div>
       <button type="submit" style="margin-top: 8px;">Отправить</button>
     </form>
+
+
 
   </div>
   <div class="right-panel">

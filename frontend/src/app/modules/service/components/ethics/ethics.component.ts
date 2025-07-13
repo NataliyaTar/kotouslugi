@@ -96,7 +96,6 @@ export class EthicsComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe((res: IValueCat[]) => {
       this.optionsCat = res;
-
       this.prepareService();
     });
   }

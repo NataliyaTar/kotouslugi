@@ -20,16 +20,17 @@ public class EthicsFeedbackService {
   @Transactional
   public boolean addEthicsFeedback(
     int rating,
-    String comment) {
+    String comment,
+    int orderId) {
 
-    if (ethicsFeedbackRepository.existsEthicsFeedbackByComment(comment)
-      && ethicsFeedbackRepository.existsEthicsFeedbackByRating(rating)) {
+    if (ethicsFeedbackRepository.existsEthicsFeedbackByOrderId(orderId)) {
       return false;
     }
 
     EthicsFeedback ethicsFeedback = new EthicsFeedback();
     ethicsFeedback.setRating(rating);
     ethicsFeedback.setComment(comment);
+    ethicsFeedback.setOrderId(orderId);
 
     ethicsFeedbackRepository.save(ethicsFeedback);
     return true;
