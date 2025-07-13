@@ -22,4 +22,8 @@ public class Review {
   private Long id;
   private Integer rating;
   private String comment;
+
+  @ManyToOne
+  @JoinColumn(name = "order_id")
+  private Order order;
 }

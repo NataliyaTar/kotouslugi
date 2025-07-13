@@ -14,6 +14,8 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,4 +38,14 @@ public class Order {
   private String user_comment;
   private OrderStatus status;
   private LocalDateTime delivery_arrival_time; // дата и время доставки
+
+  @ManyToOne
+  @JoinColumn(name = "address_id")
+  private UserAddress address;
+
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<OrderItem> items = new ArrayList<>();
+
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Review> reviews = new ArrayList<>();
 }

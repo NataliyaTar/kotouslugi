@@ -26,4 +26,5 @@ public class Product {
   private Taste taste;
   private Integer weight_grams;
   private Double price;
+
 }
