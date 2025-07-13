@@ -169,6 +169,9 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         this.form.get('1.trainer_name')?.setValue(JSON.stringify(value), { emitEvent: false });
       }
     });
+    this.form.get('1.duration')?.valueChanges.subscribe(() => {
+      this.updateTotalPrice();
+    });
 
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form,
@@ -193,12 +196,32 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       return 0;
     }
   }
+  private getDurationMultiplier(): number {
+    const duration = this.form.get('1.duration')?.value;
+    switch (duration) {
+      case '3 месяца':
+        return 1.25;
+      case '6 месяцев':
+        return 1.5;
+      case '12 месяцев':
+        return 2;
+      default:
+        return 1; // 1 месяц или неизвестное значение
+    }
+  }
+
 
   private updateTotalPrice(): void {
     const fitnessPrice = this.getBaseFitnessPrice();
     const trainerPrice = this.getTrainerPrice();
-    this.form.get('1.price')?.setValue(fitnessPrice + trainerPrice);
+    const multiplier = this.getDurationMultiplier();
+
+    const total = Math.round((fitnessPrice + trainerPrice) * multiplier);
+    const formatted = `${total} ₽`;
+
+    this.form.get('1.price')?.setValue(formatted);
   }
+
 
   private filterTrainersByMembershipType(): void {
     const membershipType = this.form.get('1.membership_type')?.value;
