@@ -174,6 +174,4 @@ export class ConstantsService {
   public getFitnessRawList(): Observable<IFitness[]> {
     return this.fitnessService.getFitnessList().pipe(take(1));
   }
-
-
 }

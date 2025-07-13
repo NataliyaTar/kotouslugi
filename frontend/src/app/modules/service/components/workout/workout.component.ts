@@ -58,6 +58,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   public active = 0;
   public trainerOptions: ITrainerGroupedByFitnessClub = {};
   public currentTrainers: ITrainerOption[] = [];
+  public filteredTrainers: ITrainerOption[] = [];
 
   private idService: string;
   private steps: IStep[];
@@ -100,6 +101,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
                   ?.valueChanges.subscribe((fitnessId) => {
                     const id = JSON.parse(fitnessId)?.id;
                     this.currentTrainers = this.trainerOptions[id] || [];
+                    this.filterTrainersByMembershipType(); // Добавляем вызов фильтрации
 
                     const selected = this.fitnessFullList.find(
                       (f) => f.id === id
@@ -121,6 +123,14 @@ export class WorkoutComponent implements OnInit, OnDestroy {
                   (f) => f.id === initialFitnessId
                 );
                 this.form.get('1.price')?.setValue(initialSelected?.price);
+
+                this.filterTrainersByMembershipType();
+
+                this.form
+                  .get('1.membership_type')
+                  ?.valueChanges.subscribe(() => {
+                    this.filterTrainersByMembershipType();
+                  });
               });
           });
       });
@@ -165,6 +175,30 @@ export class WorkoutComponent implements OnInit, OnDestroy {
           this.initForm();
         });
     });
+  }
+  private filterTrainersByMembershipType(): void {
+    const membershipType = this.form?.get('1.membership_type')?.value;
+
+    if (!membershipType || !this.currentTrainers?.length) {
+      this.filteredTrainers = this.currentTrainers || [];
+      return;
+    }
+
+    // фильтруем по membership_type
+    this.filteredTrainers = this.currentTrainers.filter(
+      trainer => trainer.membership_type === membershipType
+    );
+
+    // сбрасываем выбранного тренера, если он больше не валиден
+    const currentValue = this.form.get('1.trainer_name')?.value;
+    const currentTrainer = currentValue ? JSON.parse(currentValue) : null;
+
+    if (
+      currentTrainer &&
+      !this.filteredTrainers.some(t => t.id === currentTrainer.id)
+    ) {
+      this.form.get('1.trainer_name')?.reset();
+    }
   }
 
   private initForm(): void {
@@ -249,15 +283,16 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   }
 
   getItem(type: 'cat' | 'fitness' | 'trainer', index: number): string {
+    if (type === 'trainer') {
+      return JSON.stringify(this.filteredTrainers[index]);
+    }
     if (type === 'cat') {
-      return JSON.stringify(this.optionsCat[index]); // без `.value`
+      return JSON.stringify(this.optionsCat[index]);
     }
     if (type === 'fitness') {
       return JSON.stringify(this.optionsFitness[index]);
     }
-    if (type === 'trainer') {
-      return JSON.stringify(this.currentTrainers[index]);
-    }
     return '';
   }
+
 }
