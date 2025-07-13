@@ -9,6 +9,13 @@ import { CommonModule } from '@angular/common';
 import { OrderService } from '@services/order/order.service';
 import { EStatus, IOrder, TStatus } from '@models/order.model';
 
+interface Feedback {
+  id: number;
+  rating: number;
+  comment: string;
+  orderId: number;
+}
+
 @Component({
   selector: 'app-feedbacks',
   standalone: true,
@@ -29,10 +36,20 @@ export class FeedbacksComponent implements OnInit {
     public rating: number | null = null;
     public comment: String | null = "";
     public orderId: number | null = null;
+    public feedbacks: Feedback[] = [];
     public orders: IOrder[]; // Список заявок
+    public selectedFeedbackOrderId: number | null = null;
+    public selectedFeedback: any = null;
+
+    public onSelect() {
+        this.selectedFeedback = this.feedbacks.find(
+          f => f.orderId === this.selectedFeedbackOrderId
+        );
+      }
 
     constructor(
         private orderService: OrderService,
+        private http: HttpClient,
         ) {}
 
     public ngOnInit() {
@@ -44,6 +61,20 @@ export class FeedbacksComponent implements OnInit {
           this.loading = false;
           this.error = true;
         })
+        this.loadFeedbacks();
+      }
+
+    public loadFeedbacks(): void {
+        this.http.get<Feedback[]>('/api/ethicsFeedback/all')
+          .subscribe(
+            data => {
+              this.feedbacks = data;
+              this.feedbacks.sort((a, b) => a.orderId - b.orderId);
+            },
+            error => {
+              console.error('Ошибка при получении отзывов', error);
+            }
+          );
       }
 
      public submitFeedback() {
@@ -51,7 +82,7 @@ export class FeedbacksComponent implements OnInit {
           alert('Выберите оценку');
           return;
         }
-        console.log('Comment = ', this.comment);
+        // console.log('Comment = ', this.comment);
         const data = {
           rating: this.rating,
           comment: this.comment,
@@ -59,7 +90,7 @@ export class FeedbacksComponent implements OnInit {
         };
 
         const jsonData = JSON.stringify(data);
-        console.log(jsonData);
+        // console.log(jsonData);
 
         fetch('/api/ethicsFeedback/add', {
           method: 'POST',
@@ -71,10 +102,12 @@ export class FeedbacksComponent implements OnInit {
 
         .then(response => response.text())
         .then(data => {
-          console.log('Ответ сервера:', data);
+          this.loadFeedbacks();
+          alert("Вы успешно оставили свой отзыв. Нажмите 'OK'");
+
         })
         .catch(error => {
-          console.error('Ошибка:', error);
+          alert("Произошла ошибка. Проверьте правильность введенных данных и попробуйте еще раз.");
         });
       }
 }

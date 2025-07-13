@@ -39,7 +39,7 @@ public class EthicsFeedbackController {
     }
   }
 
-  @PostMapping("/all")
+  @GetMapping("/all")
   @Operation(summary = "Получить все отзывы", tags = {"АПИ отзывов"})
   public ResponseEntity<List<EthicsFeedback>> getAllFeedbacks() {
     List<EthicsFeedback> feedbacks = ethicsFeedbackService.getAllFeedbacks();
