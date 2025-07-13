@@ -10,17 +10,17 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum MembershipType {
   /**
+   * Тип абонемента "Свободный"
+   */
+  GROUP("Свободный"),
+  /**
    * Тип абонемента "Групповой"
    */
-  GROUP("Групповой"),
+  PERSONAL("Групповой"),
   /**
    * Тип абонемента "Персональный"
    */
-  PERSONAL("Персональный"),
-  /**
-   * Тип абонемента "Свободный"
-   */
-  FREE("Свободный");
+  FREE("Персональный");
 
   private String message;
 

@@ -10,7 +10,6 @@ import { IValueCat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
-import { CatService } from '@services/cat/cat.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
@@ -71,134 +70,66 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     private serviceInfo: ServiceInfoService
   ) {}
 
-    ngOnInit(): void {
-    this.getCatOption();
+  ngOnInit(): void {
+    this.route.data.pipe(take(1)).subscribe((res) => {
+      this.idService = res['idService'];
 
-    this.constantService
-      .getTrainerGroupedByFitnessClub()
-      .pipe(take(1))
-      .subscribe((res) => {
-        console.log(res);
-        this.trainerOptions = res;
+      this.serviceInfo.getSteps(this.idService).pipe(take(1)).subscribe((steps) => {
+        this.steps = steps;
 
-        this.constantService
-          .getFitnessOptionsAll()
-          .pipe(take(1))
-          .subscribe((fitness) => {
-            this.optionsFitness = fitness;
+        this.subscriptions.push(
+          this.serviceInfo.activeStep.subscribe((res) => {
+            this.active = res?.[this.idService] || 0;
+          })
+        );
 
-            this.constantService
-              .getFitnessRawList()
-              .pipe(take(1))
-              .subscribe((fullList) => {
+        this.constantService.getCatOptionsAll().pipe(take(1)).subscribe((cats) => {
+          this.optionsCat = cats;
+
+          this.constantService.getTrainerGroupedByFitnessClub().pipe(take(1)).subscribe((trainers) => {
+            this.trainerOptions = trainers;
+
+            this.constantService.getFitnessOptionsAll().pipe(take(1)).subscribe((fitnessOptions) => {
+              this.optionsFitness = fitnessOptions;
+
+              this.constantService.getFitnessRawList().pipe(take(1)).subscribe((fullList) => {
                 this.fitnessFullList = fullList;
 
                 this.initForm();
 
-                // подписка на изменение клуба
-                this.form
-                  .get('0.fitness_club')
-                  ?.valueChanges.subscribe((fitnessId) => {
-                    const id = JSON.parse(fitnessId)?.id;
-                    this.currentTrainers = this.trainerOptions[id] || [];
-                    this.filterTrainersByMembershipType(); // Добавляем вызов фильтрации
+                this.form.get('0.fitness_club')?.valueChanges.subscribe((fitnessId) => {
+                  const id = JSON.parse(fitnessId)?.id;
+                  this.currentTrainers = this.trainerOptions[id] || [];
+                  this.filterTrainersByMembershipType();
+                  this.updateTotalPrice();
+                });
 
-                    const selected = this.fitnessFullList.find(
-                      (f) => f.id === id
-                    );
-                    const price = selected?.price ?? null;
+                const initialFitnessId = JSON.parse(this.form.get('0.fitness_club')?.value)?.id;
+                this.currentTrainers = this.trainerOptions[initialFitnessId] || [];
+                this.updateTotalPrice();
 
-                    this.form.get('1.price')?.setValue(price);
-                  });
+                this.form.get('1.membership_type')?.valueChanges.subscribe(() => {
+                  this.filterTrainersByMembershipType();
+                  this.updateTotalPrice();
+                });
 
-                // установка начального тренера и цены
-                const initialFitnessId = JSON.parse(
-                  this.form.get('0.fitness_club')?.value
-                )?.id;
-
-                this.currentTrainers =
-                  this.trainerOptions[initialFitnessId] || [];
-
-                const initialSelected = this.fitnessFullList.find(
-                  (f) => f.id === initialFitnessId
-                );
-                this.form.get('1.price')?.setValue(initialSelected?.price);
-
-                this.filterTrainersByMembershipType();
-
-                this.form
-                  .get('1.membership_type')
-                  ?.valueChanges.subscribe(() => {
-                    this.filterTrainersByMembershipType();
-                  });
+                this.form.get('1.trainer_name')?.valueChanges.subscribe((value) => {
+                  if (value && typeof value !== 'string') {
+                    this.form.get('1.trainer_name')?.setValue(JSON.stringify(value), { emitEvent: false });
+                    return;
+                  }
+                  this.updateTotalPrice();
+                });
               });
+            });
           });
+        });
       });
+    });
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
-  }
-
-  private getCatOption(): void {
-    this.constantService
-      .getCatOptionsAll()
-      .pipe(take(1))
-      .subscribe((res: IValueCat[]) => {
-        this.optionsCat = res;
-        this.prepareService();
-      });
-  }
-
-  private prepareService(): void {
-    this.route.data.pipe(take(1)).subscribe((res) => {
-      this.idService = res['idService'];
-
-      this.serviceInfo
-        .getSteps(this.idService)
-        .pipe(take(1))
-        .subscribe((res) => {
-          this.steps = res;
-        });
-
-      this.subscriptions.push(
-        this.serviceInfo.activeStep.subscribe((res) => {
-          this.active = res?.[this.idService] || 0;
-        })
-      );
-
-      this.constantService
-        .getFitnessOptionsAll()
-        .pipe(take(1))
-        .subscribe((fitness) => {
-          this.optionsFitness = fitness;
-          this.initForm();
-        });
-    });
-  }
-  private filterTrainersByMembershipType(): void {
-    const membershipType = this.form?.get('1.membership_type')?.value;
-
-    if (!membershipType || !this.currentTrainers?.length) {
-      this.filteredTrainers = this.currentTrainers || [];
-      return;
-    }
-
-    // фильтруем по membership_type
-    this.filteredTrainers = this.currentTrainers.filter(
-      trainer => trainer.membership_type === membershipType
-    );
-
-    // сбрасываем выбранного тренера, если он больше не валиден
-    const currentValue = this.form.get('1.trainer_name')?.value;
-    const currentTrainer = currentValue ? JSON.parse(currentValue) : null;
-
-    if (
-      currentTrainer &&
-      !this.filteredTrainers.some(t => t.id === currentTrainer.id)
-    ) {
-      this.form.get('1.trainer_name')?.reset();
-    }
   }
 
   private initForm(): void {
@@ -222,22 +153,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       }),
     });
 
-    // валидация trainer_name
-    this.form
-      .get('1.membership_type')
-      ?.valueChanges.subscribe((membershipType) => {
-        const trainerCtrl = this.form.get('1.trainer_name');
-        if (membershipType === 'Групповой' || membershipType === 'Персональный') {
-          trainerCtrl?.setValidators(Validators.required);
-        } else {
-          trainerCtrl?.clearValidators();
-        }
-        trainerCtrl?.updateValueAndValidity();
-      });
-
-    this.form
-      .get('1.membership_type')
-      ?.valueChanges.subscribe((membershipType) => {
+    this.form.get('1.membership_type')?.valueChanges.subscribe((membershipType) => {
       const trainerCtrl = this.form.get('1.trainer_name');
       if (membershipType === 'Групповой' || membershipType === 'Персональный') {
         trainerCtrl?.setValidators(Validators.required);
@@ -248,12 +164,9 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       trainerCtrl?.updateValueAndValidity();
     });
 
-    // сериализация выбранного тренера при изменении
     this.form.get('1.trainer_name')?.valueChanges.subscribe((value) => {
       if (value && typeof value !== 'string') {
-        this.form
-          .get('1.trainer_name')
-          ?.setValue(JSON.stringify(value), { emitEvent: false });
+        this.form.get('1.trainer_name')?.setValue(JSON.stringify(value), { emitEvent: false });
       }
     });
 
@@ -264,18 +177,52 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  private getBaseFitnessPrice(): number {
+    const fitnessValue = this.form.get('0.fitness_club')?.value;
+    const fitnessId = fitnessValue ? JSON.parse(fitnessValue).id : null;
+    const selected = this.fitnessFullList.find(f => f.id === fitnessId);
+    return selected?.price || 0;
+  }
+
+  private getTrainerPrice(): number {
+    const trainerValue = this.form.get('1.trainer_name')?.value;
+    try {
+      const trainer = trainerValue ? JSON.parse(trainerValue) : null;
+      return trainer?.membership_price || 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  private updateTotalPrice(): void {
+    const fitnessPrice = this.getBaseFitnessPrice();
+    const trainerPrice = this.getTrainerPrice();
+    this.form.get('1.price')?.setValue(fitnessPrice + trainerPrice);
+  }
+
+  private filterTrainersByMembershipType(): void {
+    const membershipType = this.form.get('1.membership_type')?.value;
+    if (!membershipType) {
+      this.filteredTrainers = [];
+      return;
+    }
+
+    this.filteredTrainers = this.currentTrainers.filter(
+      trainer => trainer.membership_type === membershipType
+    );
+
+    const currentTrainer = JSON.parse(this.form.get('1.trainer_name')?.value || 'null');
+    if (currentTrainer && !this.filteredTrainers.some(t => t.id === currentTrainer.id)) {
+      this.form.get('1.trainer_name')?.reset();
+    }
+  }
+
   public get getResult() {
     const rawData = this.form.getRawValue();
-
     if (rawData[1]?.membership_type === 'Свободный') {
       delete rawData[1].trainer_name;
     }
-
-    return this.serviceInfo.prepareDataForPreview(
-      rawData,
-      this.steps,
-      FormMap
-    );
+    return this.serviceInfo.prepareDataForPreview(rawData, this.steps, FormMap);
   }
 
   public getControl(step: number, id: string): FormControl {
@@ -294,5 +241,5 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     }
     return '';
   }
-
 }
+
