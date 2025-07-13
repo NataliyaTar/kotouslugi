@@ -12,6 +12,8 @@ import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
+import { OrderService } from '@services/order/order.service';
+import { PassportService } from '@services/passport/passport.service';
 
 export enum FormMap {
 cat  = 'Кличка',
@@ -64,6 +66,8 @@ public get getResult() {
     private route: ActivatedRoute,
     private catService: CatService,
     private constantService: ConstantsService,
+    private orderService: OrderService,
+    private passportService: PassportService,
   ) {
   }
 
@@ -203,5 +207,23 @@ public get getResult() {
     const control = this.getControl(1, 'selectedBank');
     control.setValue(bank);
     control.markAsTouched();
+  }
+
+  public send(): void {
+    const rawForm = this.form.getRawValue();
+
+    const merged: any = {
+      ...rawForm[0],
+      ...rawForm[1],
+      ...rawForm[2]
+    };
+
+    this.passportService.addCatPassport(merged).subscribe(
+    res => {
+      alert('Ваша заявка отправлена в МВД\nНажмите «OK» и сохраните документ');
+    }, error => {
+      alert('Произошла ошибка, повторите попытку позже\nНажмите «OK» для перехода на предыдущую страницу портала');
+      window.history.back();
+    });
   }
 }
