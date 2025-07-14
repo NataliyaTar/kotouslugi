@@ -29,8 +29,8 @@ public class CatService {
     public Long addCat(Cat cat) {
         try {
             cat = catRepository.save(cat);
-            logger.info(String.format("Добавлен кот = %s ", cat.getName()));
-            return cat.getId();
+            logger.info(String.format("Добавлен кот = %s ", cat.getCatName()));
+            return cat.getCatId();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return null;

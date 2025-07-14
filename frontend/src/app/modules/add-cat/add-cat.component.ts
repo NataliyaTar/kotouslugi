@@ -75,7 +75,9 @@ export class AddCatComponent implements OnInit {
       name: ['', [Validators.required, Validators.pattern(/^[А-яЁё]+$/)]],
       age: ['', [Validators.required, Validators.pattern(/^[\d]+$/)]],
       sex: [JSON.stringify(this.sexOptions[0]), [Validators.required]],
-      breed: [JSON.stringify(this.breedOptions[0]), [Validators.required]]
+      breed: [JSON.stringify(this.breedOptions[0]), [Validators.required]],
+      birthDate: ['', [Validators.required]],
+      ownerPhone: ['', [Validators.required, Validators.pattern(/^\+?\d{10,15}$/)]]
     });
   }
 

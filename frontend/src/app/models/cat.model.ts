@@ -1,11 +1,11 @@
-// Файл не трогаем
-
 export interface ICat {
   id: number;
   name: string;
   age: string;
   sex: TSex;
   breed: TBreed;
+  birthDate: string;
+  ownerPhone: string;
 }
 
 export interface IValueSex {

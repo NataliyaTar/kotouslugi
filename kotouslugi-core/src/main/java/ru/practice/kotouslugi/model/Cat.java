@@ -1,15 +1,8 @@
 package ru.practice.kotouslugi.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -20,10 +13,30 @@ import jakarta.persistence.Table;
 @AllArgsConstructor
 public class Cat {
     @Id
-    @GeneratedValue
-    private Long id;
-    private String name;
-    private String age;
-    private String sex;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cat_id")
+    private Long catId;
+
+    @Column(name = "cat_name", nullable = false, length = 100)
+    private String catName;
+
+    @Column(name = "breed", nullable = false, length = 30)
     private String breed;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cat_gender", nullable = false)
+    private CatGender catGender;
+
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birthDate;
+
+    @Column(name = "age", nullable = false)
+    private Integer age;
+
+    @Column(name = "owner_phone", nullable = false, length = 20)
+    private String ownerPhone;
+
+    public enum CatGender {
+        кошка, кот
+    }
 }

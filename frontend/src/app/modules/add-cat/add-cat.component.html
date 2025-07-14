@@ -62,6 +62,31 @@
             }
           </select>
         </div>
+        <div class="field">
+          <div>
+            <p class="label">Дата рождения</p>
+            @if (getControl('birthDate')?.errors && getControl('birthDate')?.touched) {
+              @if (getControl('birthDate').errors?.['required']) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+            }
+          </div>
+          <input type="date" formControlName="birthDate" (invalid)="getControl('birthDate').invalid">
+        </div>
+        <div class="field">
+          <div>
+            <p class="label">Телефон владельца</p>
+            @if (getControl('ownerPhone')?.errors && getControl('ownerPhone')?.touched) {
+              @if (getControl('ownerPhone').errors?.['required']) {
+                <p class="error">Поле обязательно для заполнения</p>
+              }
+              @if (getControl('ownerPhone').errors?.['pattern']) {
+                <p class="error">Введите корректный номер телефона</p>
+              }
+            }
+          </div>
+          <input type="tel" formControlName="ownerPhone" (invalid)="getControl('ownerPhone').invalid" placeholder="+79991234567">
+        </div>
       </div>
 
       @if (active === 1) {

@@ -1,5 +1,3 @@
-// Файл не трогаем
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -61,6 +59,15 @@ export class CatService {
       } catch (error) {}
       Object.assign(res, {[key]: value});
     });
+
+    if (res['sex'] === 'male') res['catGender'] = 'кот';
+    else if (res['sex'] === 'female') res['catGender'] = 'кошка';
+    delete res['sex'];
+
+    res['catName'] = res['name'];
+    delete res['name'];
+
+    if (typeof res['age'] === 'string') res['age'] = parseInt(res['age'], 10);
 
     return res;
   }

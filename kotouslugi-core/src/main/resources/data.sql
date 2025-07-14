@@ -67,3 +67,7 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+
+-- orders (пример новой структуры)
+INSERT INTO orders (cat_name, user_name, store_name, delivery_type, delivery_date, delivery_time, user_comment, status)
+VALUES ('Барсик', 'Иван Иванов', 'КотоМаркет', 'DELIVERY', '2024-07-14', '2024-07-14T12:00:00', 'Позвоните за час', 'ACCEPTED');
