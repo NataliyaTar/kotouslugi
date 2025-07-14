@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
+import { GroomingComponent } from './components/grooming/grooming.component'; // ← Измените ../ на ./
 
 /**
  * Роутинг для услуг
@@ -29,6 +30,11 @@ const routes: Routes = [
         component: VetComponent
       },
       // ToDo: your router for service
+      {
+        path: 'grooming',
+        component: GroomingComponent,
+        data: { idService: 'grooming' } // важно для общих сервисов
+      }
     ]
   }
 ];
