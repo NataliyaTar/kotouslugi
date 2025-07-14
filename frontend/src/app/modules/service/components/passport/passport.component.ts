@@ -131,8 +131,8 @@ public get getResult() {
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
         sex: [JSON.stringify(this.sexOptions[0]), [Validators.required]],
         date_of_birth: ['', [Validators.required, this.dateValidatorBirth]],
-        place_born: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]+$/)]],
-        reg_adress: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]+$/)]],
+        place_born: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]{4,250}$/)]],
+        reg_adress: ['', [Validators.required, Validators.pattern(/^[а-яА-ЯёЁ\d\s\.:\-,]{4,250}$/)]],
         children: [JSON.stringify(this.childOptions[0]), [Validators.required]]
       }),
       1: this.fb.group({
