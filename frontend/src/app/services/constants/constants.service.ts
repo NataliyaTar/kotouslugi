@@ -4,9 +4,17 @@ import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
 import { IValue } from '@models/common.model';
 
+
+interface ITeacher {
+  id: number;
+  text: string;
+  description: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
+
 export class ConstantsService {
 
   // варианты пола
@@ -82,23 +90,27 @@ export class ConstantsService {
   ];
 
  // варианты учителей
-  public teacherOptions: IValue[] = [
+  public teacherOptions: ITeacher[] = [
     {
       id: 0,
-      text: 'Строгокотикова Е.В.'
+      text: 'Строгокотикова Е.В.',
+      description: 'Добрый котик'
     },
     {
       id: 1,
-        text: 'Котолюбов А.Н.'
+      text: 'Котолюбов А.Н.',
+      description: 'Злой котик'
     },
     {
       id: 2,
-      text: 'Укольчиков П.А.'
+      text: 'Уколчиков П.А.',
+      description: 'Понимающий котик'
     },
     {
       id: 3,
-      text: 'Пузиков Д.И'
-    },
+      text: 'Пузиков Д.И.',
+      description: 'Строгий котик'
+    }
   ];
 
 

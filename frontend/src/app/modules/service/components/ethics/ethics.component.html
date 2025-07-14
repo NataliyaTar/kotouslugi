@@ -76,29 +76,28 @@
   </div>
 
   <!-- Шаг 1 -->
-  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+  <div class="field-wrapper" style="justify-content: center;" [hidden]="active !== 1" formGroupName="1">
     <!-- Учитель (выпадающий список) -->
     <div class="field">
       <div>
-        <p class="label">Учитель</p>
+        <p class="label" style="font-size: 18px;">Учитель</p>
         @if (getControl(1, 'teacher').errors?.['required'] && getControl(1, 'teacher').touched) {
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="teacher" [(ngModel)]='teacher'>
+      <select formControlName="teacher" [(ngModel)]="teacher" (change)="onSelect()">
         <option [ngValue]="null" style="font-size: 18px;">Выберите учителя</option>
         @for (option of teacherOptions; track $index) {
           <option>{{option.text}}</option>
         }
       </select>
-    </div>
 
-    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
-      <div class="field">
-        <div>
-          <p class="label" style="white-space: nowrap;">Об учителе:</p>
+      <div *ngIf="selectedTeacherDescription" style="margin-top: 10px;">
+        <div style="margin-top: 20px; font-size: 18px;">Об учителе:</div>
+        <!-- Блок с фоном для рейтинга -->
+        <div style="background-color: #f5f7fa; padding: 12px; border-radius: 4px; margin-bottom: 16px;">
+          <span style="font-size: 18px;">{{selectedTeacherDescription}}</span>
         </div>
-        <input formControlName="teacherInfo" [(ngModel)]='teacherInfo'>
       </div>
     </div>
   </div>

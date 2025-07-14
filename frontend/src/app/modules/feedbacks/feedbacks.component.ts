@@ -36,16 +36,16 @@ export class FeedbacksComponent implements OnInit {
     public rating: number | null = null;
     public comment: String | null = "";
     public orderId: number | null = null;
-    public feedbacks: Feedback[] = [];
     public orders: IOrder[]; // Список заявок
+    public feedbacks: Feedback[] = [];
     public selectedFeedbackOrderId: number | null = null;
     public selectedFeedback: any = null;
 
     public onSelect() {
-        this.selectedFeedback = this.feedbacks.find(
-          f => f.orderId === this.selectedFeedbackOrderId
-        );
-      }
+      this.selectedFeedback = this.feedbacks.find(
+        f => f.orderId === this.selectedFeedbackOrderId
+      );
+    }
 
     constructor(
         private orderService: OrderService,
@@ -103,11 +103,11 @@ export class FeedbacksComponent implements OnInit {
         .then(response => response.text())
         .then(data => {
           this.loadFeedbacks();
-          alert("Вы успешно оставили свой отзыв. Нажмите 'OK'");
+          // alert("Вы успешно оставили свой отзыв. Нажмите 'OK'");
 
         })
         .catch(error => {
-          alert("Произошла ошибка. Проверьте правильность введенных данных и попробуйте еще раз.");
+          // alert("Произошла ошибка. Проверьте правильность введенных данных и попробуйте еще раз.");
         });
       }
 }

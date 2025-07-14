@@ -12,6 +12,9 @@ import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 
 export enum FormMap {
   // 0
@@ -39,6 +42,8 @@ export enum FormMap {
       JsonPipe,
       ThrobberComponent,
       HttpClientModule,
+      CommonModule,
+      FormsModule,
     ],
   templateUrl: './ethics.component.html',
   styleUrls: ['./ethics.component.scss']
@@ -68,6 +73,8 @@ export class EthicsComponent implements OnInit, OnDestroy{
   public telephone: string | null = "";
   public email: string | null = '';
 
+  public selectedTeacherText: string;
+  public selectedTeacherDescription: string | null = null;
   /**
    * Возвращает преобразованное значение формы для отображения заполненных данных
    */
@@ -86,6 +93,14 @@ export class EthicsComponent implements OnInit, OnDestroy{
     private catService: CatService,
     private constantService: ConstantsService,
   ) {
+  }
+
+  public onSelect() {
+    const selectedOption = this.teacherOptions.find(
+      option => option.text === this.teacher
+    );
+    this.selectedTeacherDescription = selectedOption ? selectedOption.description : null;
+    this.teacherInfo = this.selectedTeacherDescription;
   }
 
   public submitEthicsRecord() {
