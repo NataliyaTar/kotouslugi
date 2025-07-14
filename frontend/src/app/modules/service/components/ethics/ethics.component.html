@@ -12,9 +12,10 @@
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="cat">
+      <select formControlName="cat" [(ngModel)]="cat">
+        <option [ngValue]="null" style="font-size: 18px;">Выберите котика</option>
         @for (option of optionsCat; track $index) {
-          <option [value]="getItem('cat', $index)">{{option.text}}</option>
+          <option>{{option.text}}</option>
         }
       </select>
     </div>
@@ -27,9 +28,10 @@
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="course">
+      <select formControlName="course" [(ngModel)]="course">
+        <option [ngValue]="null" style="font-size: 18px;">Выберите курс</option>
         @for (option of courseOptions; track $index) {
-          <option [value]="getItem('cou', $index)">{{option.text}}</option>
+          <option>{{option.text}}</option>
         }
       </select>
     </div>
@@ -47,7 +49,7 @@
           }
         }
       </div>
-      <input type="date" formControlName="date" placeholder="Выберите дату" />
+      <input type="date" formControlName="date" [(ngModel)]="date" placeholder="Выберите дату" />
     </div>
 
     <!-- Время -->
@@ -61,7 +63,7 @@
           <p class="error">Некорректное время</p>
         }
       </div>
-      <input formControlName="time" type="time" list="time_list" (invalid)="getControl(0, 'time').invalid">
+      <input formControlName="time" [(ngModel)]="time" type="time" list="time_list" (invalid)="getControl(0, 'time').invalid">
       <datalist id="time_list">
         <option value="08:00">
         <option value="09:00">
@@ -83,9 +85,10 @@
           <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="teacher">
+      <select formControlName="teacher" [(ngModel)]='teacher'>
+        <option [ngValue]="null" style="font-size: 18px;">Выберите учителя</option>
         @for (option of teacherOptions; track $index) {
-          <option [value]="getItem('tea', $index)">{{option.text}}</option>
+          <option>{{option.text}}</option>
         }
       </select>
     </div>
@@ -95,6 +98,7 @@
         <div>
           <p class="label" style="white-space: nowrap;">Об учителе:</p>
         </div>
+        <input formControlName="teacherInfo" [(ngModel)]='teacherInfo'>
       </div>
     </div>
   </div>
@@ -114,7 +118,7 @@
           }
         }
       </div>
-      <input formControlName="owner" maxLength="48" placeholder="Введите имя" />
+      <input formControlName="owner" [(ngModel)]='owner' maxLength="48" placeholder="Введите имя" />
     </div>
 
     <!-- Телефон -->
@@ -131,10 +135,9 @@
           @if (getControl(2, 'telephone').errors?.['pattern']) {
             <p class="error">Номер должен начинаться с 8</p>
           }
-
         }
       </div>
-      <input formControlName="telephone" maxlength="11" placeholder="8 (___) ___-__-__"
+      <input formControlName="telephone" [(ngModel)]='telephone' maxlength="11" placeholder="8 (___) ___-__-__"
              (invalid)="getControl(2, 'telephone').invalid">
     </div>
 
@@ -148,13 +151,15 @@
           }
         }
       </div>
-      <input type="email" formControlName="email" maxLength="48" placeholder="youremail@tempmail.ru">
+      <input type="email" formControlName="email" [(ngModel)]='email' maxLength="48" placeholder="youremail@tempmail.ru">
     </div>
 
   </div>
   @if (active === 3) {
     <app-check-info [data]="getResult"></app-check-info>
+    <button (click)="submitEthicsRecord()">Подтвердить</button>
   }
+
 </div>
 }
 

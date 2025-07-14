@@ -10,7 +10,8 @@ import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
-
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 export enum FormMap {
   // 0
@@ -29,7 +30,6 @@ export enum FormMap {
   email = 'Email для связи',
 }
 
-
 @Component({
   selector: 'app-ethics',
     standalone: true,
@@ -38,13 +38,14 @@ export enum FormMap {
       CheckInfoComponent,
       JsonPipe,
       ThrobberComponent,
+      HttpClientModule,
     ],
   templateUrl: './ethics.component.html',
   styleUrls: ['./ethics.component.scss']
 })
 
 
-export class EthicsComponent implements OnInit, OnDestroy {
+export class EthicsComponent implements OnInit, OnDestroy{
 
   public loading = true; // загружена ли информация для страницы
   public form: UntypedFormGroup; // форма
@@ -56,6 +57,16 @@ export class EthicsComponent implements OnInit, OnDestroy {
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
+
+  public cat: string | null = null;
+  public date: Date | null = new Date();
+  public time: string | null = "";
+  public course: string | null = null;
+  public teacher: string | null = null;
+  public teacherInfo: string | null = '';
+  public owner: string | null = null;
+  public telephone: string | null = "";
+  public email: string | null = '';
 
   /**
    * Возвращает преобразованное значение формы для отображения заполненных данных
@@ -77,6 +88,42 @@ export class EthicsComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  public submitEthicsRecord() {
+     const dateStr = this.date; // 'YYYY-MM-DD'
+     const timeStr = this.time; // 'HH:mm'
+     const startTimeStr = `${dateStr}T${timeStr}:00`; // 'YYYY-MM-DDTHH:mm'
+
+     const data = {
+       catName: this.cat,
+       startTime: startTimeStr,
+       courseType: this.course,
+       teacherName: this.teacher,
+       teacherAbout: this.teacherInfo,
+       ownerName: this.owner,
+       phoneNumber: this.telephone,
+       email: this.email
+     };
+
+     const jsonData = JSON.stringify(data);
+     console.log(jsonData);
+
+     fetch('/api/ethics/add', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json'
+       },
+       body: jsonData
+     })
+
+     .then(response => response.text())
+     .then(data => {
+       alert("Вы успешно оставили свой отзыв. Нажмите 'OK'");
+
+     })
+     .catch(error => {
+       alert("Произошла ошибка. Проверьте правильность введенных данных и попробуйте еще раз.");
+     });
+   }
 
   public ngOnInit(): void {
     this.getCatOption();
@@ -134,7 +181,7 @@ export class EthicsComponent implements OnInit, OnDestroy {
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: [JSON.stringify(this.optionsCat[0])],
+        cat: ['', [Validators.required]],
         course: ['', [Validators.required]],
         date: ['', [Validators.required, this.dateValidator]],
         time: ['', [Validators.required]],
@@ -145,7 +192,7 @@ export class EthicsComponent implements OnInit, OnDestroy {
 
       }),
       2: this.fb.group({
-        owner: ["", [Validators.required,  Validators.pattern(/^[А-Яа-яЁё]{1,48}$/)]],
+        owner: ['', [Validators.required,  Validators.pattern(/^[А-Яа-яЁё]{1,48}$/)]],
         telephone: ['', [Validators.required, Validators.pattern(/^8/), this.phoneValidator]],
         email: ['', [Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/)]]
       })
@@ -181,7 +228,7 @@ export class EthicsComponent implements OnInit, OnDestroy {
 
   }
   private phoneValidator(control: FormControl) {
-    const phoneNumber = control.value
+    const phoneNumber = control.value;
     if (phoneNumber.length === 11) {
       return null
     }
@@ -207,8 +254,39 @@ export class EthicsComponent implements OnInit, OnDestroy {
           return { minTime: true };
         }
     }
-
     return null; // валидно
+  }
+  private getDateTime(group: FormGroup) {
+      const dateControl = group.get('date');
+      const timeControl = group.get('time');
+       if (dateControl && timeControl) {
+          const dateValue = dateControl.value; // ожидается, что это строка или Date
+          const timeValue = timeControl.value; // ожидается, что это строка, например, '14:30'
+
+          if (dateValue && timeValue) {
+            // Если dateValue — это строка в формате 'YYYY-MM-DD' или Date
+            const dateObj = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
+
+            // Проверка, что dateObj действительно Date
+            if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+              return null;
+            }
+
+            // Получение компонентов даты
+            const year = dateObj.getFullYear();
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            const day = dateObj.getDate().toString().padStart(2, '0');
+
+            // Предположим, что timeValue в формате 'HH:mm'
+            const [hours, minutes] = timeValue.split(':');
+
+            // Формируем строку в формате ISO 8601: 'YYYY-MM-DDTHH:mm'
+            const localDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            return localDateTime;
+          }
+        }
+       return null;
   }
 
 
@@ -235,6 +313,8 @@ export class EthicsComponent implements OnInit, OnDestroy {
      public getControl(step: number, id: string): FormControl {
        return this.form.get(`${step}.${id}`) as FormControl;
      }
+
+
 }
 
 
