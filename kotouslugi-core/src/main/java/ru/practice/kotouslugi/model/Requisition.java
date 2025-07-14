@@ -33,7 +33,8 @@ public class Requisition implements Serializable {
     private String mnemonic;
     private RequisitionStatus status;
     private Date created;
-    @JsonDeserialize(using = StringDeserializer.class)
+    @Lob
+    @Column(name = "fields")
     private String fields;
 
     public static class StringDeserializer extends JsonDeserializer<String> {

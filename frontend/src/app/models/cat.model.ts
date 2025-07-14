@@ -6,6 +6,8 @@ export interface ICat {
   breed: TBreed;
   birthDate: string;
   ownerPhone: string;
+  catId?: number;
+  catName?: string;
 }
 
 export interface IValueSex {

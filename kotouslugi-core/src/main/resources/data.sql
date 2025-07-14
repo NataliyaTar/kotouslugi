@@ -47,10 +47,10 @@ values (1,
         'Подходи ответственно к своему здоровью. Здоровый ты - здоровая страна');
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (2,
-        'spa',
-        'relax.png',
-        'SPA-процедуры',
-        'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+        'food',
+        'eating.png',
+        'Заказать еду',
+        'Ваш питомец проголодался? Закажите котику покушать!');
 
 -- category
 INSERT INTO category
@@ -58,7 +58,7 @@ values (0, 'Семья и дети');
 INSERT INTO category
 values (1, 'Медицина');
 INSERT INTO category
-values (2, 'Отдых и развлечение');
+values (2, 'Питание');
 
 -- service_to_category
 INSERT INTO service_category
@@ -67,7 +67,4 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
-
--- orders (пример новой структуры)
-INSERT INTO orders (cat_name, user_name, store_name, delivery_type, delivery_date, delivery_time, user_comment, status)
-VALUES ('Барсик', 'Иван Иванов', 'КотоМаркет', 'DELIVERY', '2024-07-14', '2024-07-14T12:00:00', 'Позвоните за час', 'ACCEPTED');
+ALTER TABLE requisition ALTER COLUMN fields TEXT;

@@ -66,32 +66,34 @@ export class ServiceInfoService {
     Object.keys(rawValue).forEach((step, index) => {
       if (rawValue[step]) {
         const stepArr: any[] = [{title: steps[index].title}];
-
         Object.keys(rawValue[step]).forEach((key) => {
           let value = rawValue[step][key];
-
-          if (key === 'date') {
+          if (key === 'date' || key === 'deliveryDate') {
             value = new Date(rawValue[step][key]).toLocaleDateString('ru-RU', {
               year: 'numeric',
               month: '2-digit',
               day: '2-digit',
             });
+          } else if (Array.isArray(value)) {
+            value = value.map(item => {
+              try {
+                return JSON.parse(item)?.text || item;
+              } catch (error) {
+                return item;
+              }
+            }).join(', ');
           } else {
             try {
               value = JSON.parse(value)?.text || value;
             } catch (error) {}
           }
-
-          stepArr.push({
-            name: FormMap[key],
-            value: value || '-'
-          });
+          if (FormMap[key]) {
+            stepArr.push({label: FormMap[key], value});
+          }
         });
-
         arr.push(stepArr);
       }
     });
-
     return arr;
   }
 

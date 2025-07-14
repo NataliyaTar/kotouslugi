@@ -9,7 +9,6 @@ import { IValue } from '@models/common.model';
 })
 export class ConstantsService {
 
-  // варианты пола
   public sexOptions: IValueSex[] = [
     {
       id: 'male',
@@ -21,7 +20,6 @@ export class ConstantsService {
     }
   ];
 
-  // варианты пород
   public breedOptions: IValueBreed[] = [
     {
       id: 'siamese',
@@ -57,7 +55,6 @@ export class ConstantsService {
     }
   ];
 
-  // варианты специалистов
   public doctorOptions: IValue[] = [
     {
       id: 0,
@@ -81,13 +78,57 @@ export class ConstantsService {
     }
   ];
 
+  public shopOptions: IValue[] = [
+    {
+      id: 0,
+      text: 'Зоомагазин "КотБатон"'
+    },
+    {
+      id: 1,
+      text: 'Супермаркет "Пушистик"'
+    },
+    {
+      id: 2,
+      text: 'Интернет-магазин "МурМурФуд"'
+    },
+    {
+      id: 3,
+      text: 'Местный ларек у Мурки'
+    }
+  ];
+
+  // Варианты типов доставки (используют IValue, id: number)
+  public deliveryTypeOptions: IValue[] = [
+    { id: 0, text: 'Доставка' },
+    { id: 1, text: 'Самовывоз' }
+  ];
+  // Варианты продуктов (для мультивыбора) (используют IValue, id: number)
+  public productOptions: IValue[] = [
+    { id: 0, text: 'Сухой корм для взрослых' },
+    { id: 1, text: 'Влажный корм для котят' },
+    { id: 2, text: 'Лакомства для зубов' },
+    { id: 3, text: 'Кошачья мята (спрей)' },
+    { id: 4, text: 'Наполнитель комкующийся' },
+    { id: 5, text: 'Игрушка-лазер' }
+  ];
+  // Варианты городов (используют IValue, id: number)
+  public cityOptions: IValue[] = [
+    { id: 0, text: 'Ереван' },
+    { id: 1, text: 'Гюмри' },
+    { id: 2, text: 'Ванадзор' }
+  ];
+  // Варианты улиц (используют IValue, id: number)
+  public streetOptions: IValue[] = [
+    { id: 0, text: 'Туманяна' },
+    { id: 1, text: 'Маштоца' },
+    { id: 2, text: 'Сарьяна' },
+    { id: 3, text: 'Кохбаци' }
+  ];
+
   constructor(
     private catService: CatService,
   ) { }
 
-  /**
-   * Возвращает список котов сгруппированных по полу, преобразовывая ответ для использования в dropdown
-   */
   public getCatOptionsBySex(): Observable<ICatGroupedBySex> {
     return this.catService.getCatList().pipe(
       take(1)
@@ -110,9 +151,6 @@ export class ConstantsService {
     );
   }
 
-  /**
-   * Возвращает список котов, преобразовывая ответ для использования в dropdown
-   */
   public getCatOptionsAll():  Observable<IValueCat[]> {
     return this.catService.getCatList().pipe(
       take(1)
@@ -120,8 +158,8 @@ export class ConstantsService {
       mergeMap((res) => {
         return of(res.map((item) => {
           return {
-            id: item.id,
-            text: item.name
+            id: item.catId ?? item.id,
+            text: item.catName ?? item.name
           }
         }));
       })
