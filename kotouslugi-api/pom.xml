@@ -34,6 +34,13 @@
   </build>
 
   <dependencies>
+    <!-- Зависимость для валидаторов: Start -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <!-- Зависимость для валидаторов: End -->
+
     <dependency>
       <groupId>ru.practice.kotouslugi</groupId>
       <artifactId>kotouslugi-core</artifactId>

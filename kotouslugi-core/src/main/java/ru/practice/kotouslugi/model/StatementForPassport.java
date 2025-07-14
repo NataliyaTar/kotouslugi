@@ -1,6 +1,8 @@
 package ru.practice.kotouslugi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -20,21 +22,27 @@ public class StatementForPassport {
   @Column(name = "id")
   private Long id;
 
+  @NotNull
   @Column(name = "name", length = 25)
   private String name;
 
+  @NotBlank(message = "Sex is mandatory")
   @Column(name = "sex", length = 10)
   private String sex;
 
+  @NotNull(message = "Date of birth is mandatory")
   @Column(name = "date_of_birth")
   private LocalDate dateOfBirth;
 
+  @NotBlank(message = "Place of birth is mandatory")
   @Column(name = "place_born", length = 100)
   private String placeBorn;
 
+  @NotBlank(message = "Registration address is mandatory")
   @Column(name = "reg_adress", length = 100)
   private String regAdress;
 
+  @NotNull(message = "Children is mandatory")
   @Column(name = "children")
   private Boolean children;
 

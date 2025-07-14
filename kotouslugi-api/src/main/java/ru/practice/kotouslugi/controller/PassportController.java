@@ -2,6 +2,7 @@ package ru.practice.kotouslugi.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.MainEntity;
 import ru.practice.kotouslugi.model.StatementForPassport;
@@ -27,14 +28,16 @@ public class PassportController extends BaseController {
     tags = {"Загранпаспорт"},
     responses = {// дописать остальные статусы
       @ApiResponse(responseCode = "200", description = ""),
+      @ApiResponse(responseCode = "400", description = ""),
       @ApiResponse(responseCode = "500", description = "")
     }
   )
-  public MainEntity addStatementForPassport(@RequestBody StatementForPassport statementForPassport) {
+  public MainEntity addStatementForPassport(@RequestBody @Valid StatementForPassport statementForPassport) {
     return foreignPasswordService.addStatementForPassport(statementForPassport);
   }
 
 
+  // не используется на фронте (вся логика в /add-statement-for-passport)
   @PostMapping(value = "/payment-of-duty", produces = "application/json")
   @ResponseBody
   @Operation(
@@ -51,6 +54,7 @@ public class PassportController extends BaseController {
   }
 
 
+  // не используется на фронте (вся логика в /add-statement-for-passport)
   @PostMapping(value = "/add-feedback", produces = "application/json")
   @ResponseBody
   @Operation(
