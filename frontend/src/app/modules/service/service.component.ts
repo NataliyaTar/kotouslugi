@@ -98,7 +98,7 @@ export class ServiceComponent implements OnInit, OnDestroy {
       this.idService,
       this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue()
     ).subscribe(res => {
-      alert('Ваша заявка зарегистрирована\nНажмите «OK» для перехода на предыдущую страницу портала');
+      alert('Ваша заявка зарегистрирована\nСтатус заказа: Оформлен\nНажмите «OK» для перехода на предыдущую страницу портала');
       window.history.back();
     }, error => {
       alert('Произошла ошибка, повторите попытку позже\nНажмите «OK» для перехода на предыдущую страницу портала');
