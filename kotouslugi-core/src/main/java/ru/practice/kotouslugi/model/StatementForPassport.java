@@ -8,6 +8,12 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+
+
+/**
+ * Данные, которые приходят из формы "Информация о КотоТуристе".
+ * 6 обязательных полей согласно логике frontend.
+ **/
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -46,9 +52,11 @@ public class StatementForPassport {
   @Column(name = "children")
   private Boolean children;
 
+  // вроде в беке это поле никак не обрабатывается
   @Column(name = "mvd_place", length = 100)
   private String mvdPlace;
 
+  // вроде в беке это поле никак не обрабатывается
   @Column(name = "time_reception")
   private LocalDateTime timeReception;
 
