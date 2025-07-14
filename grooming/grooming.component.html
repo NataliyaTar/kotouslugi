@@ -1,0 +1,83 @@
+@if (loading) {
+<app-throbber></app-throbber>
+} @else {
+<div class="fields-wrapper" [formGroup]="form">
+  <!-- Шаг 0: Информация о клиенте -->
+  <div [hidden]="active !== 0" formGroupName="0">
+    <div>
+      <p>Выберите кота</p>
+      <select formControlName="cat">
+        @for (option of optionsCat; track $index) {
+        <option [value]="getItem('cat', $index)">
+          {{ option.text }}
+        </option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <p>Телефон для связи</p>
+      <input formControlName="telephone" placeholder="12345678901">
+    </div>
+
+    <div>
+      <p>Email для связи</p>
+      <input formControlName="email" type="email" placeholder="abc@dfg.ru">
+    </div>
+  </div>
+
+  <!-- Шаг 1: Услуга -->
+  <div [hidden]="active !== 1" formGroupName="1">
+    <div>
+      <p>Выберите услугу</p>
+      <select formControlName="service">
+        @for (item of serviceOptions; track $index) {
+        <option [value]="getItem('service', $index)">
+          {{ item.text }}
+        </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Шаг 2: Дата и время -->
+  <div [hidden]="active !== 2" formGroupName="2">
+    <div>
+      <p>Дата</p>
+      <input formControlName="date" type="date">
+    </div>
+
+    <div>
+      <p>Время</p>
+      <input formControlName="time" type="time" list="time_list">
+      <datalist id="time_list">
+        <option value="09:00">
+        <option value="10:00">
+        <option value="11:00">
+        <option value="12:00">
+        <option value="13:00">
+        <option value="14:00">
+        <option value="15:00">
+        <option value="16:00">
+        <option value="17:00">
+        <option value="18:00">
+      </datalist>
+    </div>
+  </div>
+
+  <!-- Шаг 3: Проверка информации -->
+  @if (active === 3) {
+  <div class="confirmation">
+    <h2>Спасибо за запись!</h2>
+    <p>Вы успешно записались на груминг.</p>
+    <app-check-info [data]="getResult"></app-check-info>
+  </div>
+  }
+
+  <!-- Кнопки управления -->
+  <div class="actions">
+    <button (click)="nextStep()" *ngIf="active < 2">Далее</button>
+    <button (click)="nextStep()" *ngIf="active === 2">Подтвердить</button>
+  </div>
+</div>
+}
