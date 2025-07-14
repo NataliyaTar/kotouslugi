@@ -1,8 +1,11 @@
 package ru.practice.kotouslugi.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.MainEntity;
 import ru.practice.kotouslugi.model.StatementForPassport;
@@ -26,10 +29,19 @@ public class PassportController extends BaseController {
     summary = "Заполнение формы для паспорта",
     description = "Добавляется в БД. Содержит полную обработку от МВД.",
     tags = {"Загранпаспорт"},
-    responses = {// дописать остальные статусы
-      @ApiResponse(responseCode = "200", description = ""),
-      @ApiResponse(responseCode = "400", description = ""),
-      @ApiResponse(responseCode = "500", description = "")
+    responses = {
+      @ApiResponse(
+        responseCode = "201",
+        description = "Заявление успешно создано",
+        content = @Content(schema = @Schema(implementation = MainEntity.class))),
+      @ApiResponse(
+        responseCode = "400",
+        description = "Неверные входные данные: отсутствуют обязательные поля или неверный формат данных",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(
+        responseCode = "500",
+        description = "Внутренняя ошибка сервера",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     }
   )
   public MainEntity addStatementForPassport(@RequestBody @Valid StatementForPassport statementForPassport) {
