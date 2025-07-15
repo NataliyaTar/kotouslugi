@@ -1,0 +1,19 @@
+[
+  {
+
+    "icon": "checklist.svg",
+    "title": "Информация о клиенте",
+    "route": "client"
+  },
+  {
+    "icon": "flight_takeoff.svg",
+    "title": "Выберите услугу",
+    "route": "service"
+  },
+  {
+
+    "icon": "calendar.svg",
+    "title": "Дата и время",
+    "route": "time"
+  }
+]

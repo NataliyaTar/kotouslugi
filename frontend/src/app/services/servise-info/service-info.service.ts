@@ -42,6 +42,10 @@ export class ServiceInfoService {
     return this.http.get<IStep[]>(`/assets/jsons/services-orders/${idService}.json`);
   }
 
+  public getBookingServices(): Observable<any[]> {
+    return this.http.get<any[]>(`/api/booking/services`);
+  }
+
   /**
    * Устанавливает значение для активного шага
    * Нужно для обращения к параметру из разных компонентов
