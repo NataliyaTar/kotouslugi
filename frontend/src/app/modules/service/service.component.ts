@@ -25,7 +25,7 @@ export class ServiceComponent implements OnInit, OnDestroy {
   public steps: IStep[]; // список шагов формы
   public active: number; // активный шаг
 
-  private idService: string; // мнемоника услуги
+  public idService: string; // мнемоника услуги
   private subscriptions: Subscription[] = [];
 
   constructor(

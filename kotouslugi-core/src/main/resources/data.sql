@@ -47,10 +47,10 @@ values (1,
         'Подходи ответственно к своему здоровью. Здоровый ты - здоровая страна');
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (2,
-        'spa',
+        'hotel',
         'relax.png',
-        'SPA-процедуры',
-        'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+        'Отель',
+        'Нужно записать котика на передержку? Ваш комфорт - наша забота!');
 
 -- category
 INSERT INTO category
@@ -67,3 +67,15 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+
+INSERT INTO hotel (id, name, address) VALUES (1, 'КотоОтель Москва', 'Москва, ул. ул. Зои Космодемьянской, д. 60');
+INSERT INTO hotel (id, name, address) VALUES (2, 'КотоОтель Санкт-Петербург', 'Санкт-Петербург, ул. алл. Больничная, д. 73');
+INSERT INTO hotel (id, name, address) VALUES (3, 'КотоОтель Казань', 'Казань, ул. наб. Привольная, д. 74');
+INSERT INTO hotel (id, name, address) VALUES (4, 'КотоОтель Новосибирск', 'Новосибирск, ул. алл. Стахановская, д. 53');
+INSERT INTO hotel (id, name, address) VALUES (5, 'КотоОтель Екатеринбург', 'Екатеринбург, ул. ул. Хуторская, д. 57');
+INSERT INTO hotel (id, name, address) VALUES (6, 'КотоОтель Нижний Новгород', 'Нижний Новгород, ул. алл. Волгоградская, д. 19');
+INSERT INTO hotel (id, name, address) VALUES (7, 'КотоОтель Краснодар', 'Краснодар, ул. ш. Радищева, д. 23');
+INSERT INTO hotel (id, name, address) VALUES (8, 'КотоОтель Владивосток', 'Владивосток, ул. алл. Минина, д. 71');
+INSERT INTO hotel (id, name, address) VALUES (9, 'КотоОтель Самара', 'Самара, ул. наб. Клубная, д. 59');
+INSERT INTO hotel (id, name, address) VALUES (10, 'КотоОтель Пермь', 'Пермь, ул. пер. Слободской, д. 1');
+
