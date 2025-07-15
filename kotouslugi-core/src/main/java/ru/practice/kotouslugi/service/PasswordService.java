@@ -18,7 +18,9 @@ import ru.practice.kotouslugi.model.enums.StatementStatus;
 import ru.practice.kotouslugi.request.FeedbackRequest;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+
+
+
 
 @Service
 public class PasswordService {
@@ -28,6 +30,8 @@ public class PasswordService {
   private final MetricsRepository metricsRepository;
   private final MainEntityRepository mainEntityRepository;
 
+
+  /// Настройка клиентов
   private final RestTemplate restTemplate;
 
   private MVDClient mvdClient;
@@ -38,6 +42,7 @@ public class PasswordService {
     this.mvdClient = mvdClient;
     this.bankClient = bankClient;
   }
+
 
   /// Настройка сервиса
   public PasswordService(StatementForPassportRepository statementForPassportRepository,
@@ -55,76 +60,92 @@ public class PasswordService {
   }
 
 
-
-
-  /// Основные функции сервиса
+  /// Блок функций для main ручки: Start
   public MainEntity addStatementForPassport(StatementForPassport statementForPassport) {
-    // 1. Сохраняем заявление
+    // 1. Сохранение заявления и создание основной сущности
+    MainEntity mainEntity = createAndSaveMainEntity(statementForPassport);
+
+    // 2. Инициализация метрик
+    initMetrics(mainEntity);
+
+    // 3. Проверка паспорта в МВД
+    if (!processMvdVerification(mainEntity)) {
+      return mainEntity;
+    }
+
+    // 4. Оплата пошлины в банке
+    processBankPayment(mainEntity);
+
+    return mainEntity;
+  }
+
+  private MainEntity createAndSaveMainEntity(StatementForPassport statementForPassport) {
     statementForPassportRepository.save(statementForPassport);
 
-    // 2. Создаем основную сущность
     MainEntity mainEntity = MainEntity.builder()
       .statement(statementForPassport)
       .build();
-    mainEntityRepository.save(mainEntity);
 
-    // 3. Инициализируем метрики
+    return mainEntityRepository.save(mainEntity);
+  }
+
+  private void initMetrics(MainEntity mainEntity) {
     Metrics metrics = Metrics.builder()
       .dateStart(LocalDateTime.now())
       .status(StatementStatus.CREATED)
       .build();
-    metricsRepository.save(metrics);
 
+    metricsRepository.save(metrics);
     mainEntity.setMetrics(metrics);
     mainEntityRepository.save(mainEntity);
+  }
 
-    // 4. Проверка паспорта в МВД
-    metrics.setStatus(StatementStatus.SENT_TO_MVD);
-    metricsRepository.save(metrics);
+  private boolean processMvdVerification(MainEntity mainEntity) {
+    updateMetricsStatus(mainEntity, StatementStatus.SENT_TO_MVD);
 
-    StatementStatus mvdStatus = mvdClient.verifyPassport("типо отправляем какое-то сообщение в МВД");
+    StatementStatus mvdStatus = mvdClient.verifyPassport("будто что-то отправляем в МВД");
 
-    // 5. Обработка ответа от МВД
     if (StatementStatus.REJECTED_IN_MVD.equals(mvdStatus)) {
-      metrics.setStatus(StatementStatus.REJECTED_IN_MVD);
-      metrics.setDateEnd(LocalDateTime.now());
-      metricsRepository.save(metrics);
-      return mainEntity;
+      completeWithStatus(mainEntity, StatementStatus.REJECTED_IN_MVD);
+      return false;
     }
 
     if (!StatementStatus.READY_IN_MVD.equals(mvdStatus)) {
-      metrics.setStatus(StatementStatus.ERROR_IN_MVD);
-      metrics.setDateEnd(LocalDateTime.now());
-      metricsRepository.save(metrics);
-      return mainEntity;
+      completeWithStatus(mainEntity, StatementStatus.ERROR_IN_MVD);
+      return false;
     }
 
-    // 6. Успешная проверка в МВД
-    metrics.setStatus(StatementStatus.READY_IN_MVD);
-    metricsRepository.save(metrics);
+    updateMetricsStatus(mainEntity, StatementStatus.READY_IN_MVD);
+    return true;
+  }
 
-    // 7. Оплата пошлины в банке
-    metrics.setStatus(StatementStatus.SENT_TO_BANK);
-    metricsRepository.save(metrics);
+  private void processBankPayment(MainEntity mainEntity) {
+    updateMetricsStatus(mainEntity, StatementStatus.SENT_TO_BANK);
 
-    StatementStatus bankStatus = bankClient.processPaymentDuty("типо что-то отправили в банк");
+    StatementStatus bankStatus = bankClient.processPaymentDuty("будто что-то отправляем в Банк");
 
-    // 8. Обработка ответа от банка
     if (StatementStatus.APPROVED_BY_BANK.equals(bankStatus)) {
       mainEntity.getStatement().setPoshlina(true);
-      metrics.setStatus(StatementStatus.APPROVED_BY_BANK);
+      completeWithStatus(mainEntity, StatementStatus.APPROVED_BY_BANK);
     } else if (StatementStatus.REJECTED_IN_BANK.equals(bankStatus)) {
-      metrics.setStatus(StatementStatus.REJECTED_IN_BANK);
+      completeWithStatus(mainEntity, StatementStatus.REJECTED_IN_BANK);
     } else {
-      metrics.setStatus(StatementStatus.ERROR_IN_BANK);
+      completeWithStatus(mainEntity, StatementStatus.ERROR_IN_BANK);
     }
-
-    metrics.setDateEnd(LocalDateTime.now());
-    metricsRepository.save(metrics);
-    mainEntityRepository.save(mainEntity);
-
-    return mainEntity;
   }
+
+  private void updateMetricsStatus(MainEntity mainEntity, StatementStatus status) {
+    mainEntity.getMetrics().setStatus(status);
+    metricsRepository.save(mainEntity.getMetrics());
+  }
+
+  private void completeWithStatus(MainEntity mainEntity, StatementStatus status) {
+    mainEntity.getMetrics().setStatus(status);
+    mainEntity.getMetrics().setDateEnd(LocalDateTime.now());
+    metricsRepository.save(mainEntity.getMetrics());
+    mainEntityRepository.save(mainEntity);
+  }
+  /// Блок функций для main ручки: End
 
 
 
