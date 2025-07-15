@@ -49,7 +49,7 @@ public class TrainerService {
    * @param id - идентификатор фитнес-клуба
    * @return - список фитнес-клубов
    */
-  public List<Trainer> listTrainersByFitnessClubIdAndMembershipType(Long id, MembershipType mType) {
+  public List<Trainer> listTrainersByFClubIdAndMType(Long id, MembershipType mType) {
     List<Trainer> entityList = new LinkedList<>();
     Iterable<Trainer> trainerEntities = trainerRepository.getByFitnessClubIdAndMembershipType(id, mType);
     trainerEntities.forEach(entityList::add);

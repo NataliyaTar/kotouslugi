@@ -7,13 +7,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practice.kotouslugi.model.Fitness;
 import ru.practice.kotouslugi.model.Trainer;
 import ru.practice.kotouslugi.model.enums.MembershipType;
 import ru.practice.kotouslugi.service.TrainerService;
@@ -53,33 +50,20 @@ public class TrainerController extends BaseController {
         return trainerService.listTrainersByFitnessClubId(fitness_club_id);
     }
 
-    @GetMapping(value = "/listByFitnessClubIdAndMembershipType", produces = "application/json")
+    @GetMapping(value = "/listByFClubIdAndMType", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список тренеров по ID фитнес-клуба и типу абонемента", tags = {"API фитнес-клубов"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public List<Trainer> listByFitnessClubIdAndMembershipType(
+    public List<Trainer> listByFClubIdAndMType(
             @Parameter(name = "fitness_club_id", required = true) @RequestParam Long fitness_club_id,
-            @Parameter(name = "membership_type", required = true) @RequestParam MembershipType membership_type
+            @Parameter(name = "membership_type", required = true) @RequestParam String membership_type
         )
     {
-        return trainerService.listTrainersByFitnessClubIdAndMembershipType(fitness_club_id, membership_type);
+        MembershipType mtype = MembershipType.fromMessage(membership_type);
+        return trainerService.listTrainersByFClubIdAndMType(fitness_club_id, mtype);
     }
-
-    /* Когда-нибудь надо будет починить, но и без неё работает */
-    /*
-    @PostMapping(value = "/add", produces = "application/json")
-    @ResponseBody
-    @Operation(summary = "Добавить тренера фитнес-клуба", tags = {"API фитнес-клубов"}, responses = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
-    )
-    public ResponseEntity<Long> addTrainer(@RequestBody Trainer trainer) {
-        return wrapper((s) -> trainerService.addTrainer(trainer));
-    }
-    */
-
 
     @GetMapping(value = "/get", produces = "application/json")
     @ResponseBody
