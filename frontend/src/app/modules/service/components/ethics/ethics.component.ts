@@ -132,8 +132,13 @@ export class EthicsComponent implements OnInit, OnDestroy{
 
      .then(response => response.text())
      .then(data => {
-       alert("Вы успешно оставили свой отзыв. Нажмите 'OK'");
-
+       if (data === 'Запись успешно добавлена!') {
+         alert("Данные корректны, нажмите кнопку 'Сохранить'");
+       }
+       else {
+         alert("Это время занято, выберите другое");
+       }
+       console.log("data=", data);
      })
      .catch(error => {
        alert("Произошла ошибка. Проверьте правильность введенных данных и попробуйте еще раз.");
@@ -239,7 +244,7 @@ export class EthicsComponent implements OnInit, OnDestroy{
     if (d1 < d2) {
       return {minDate: true} // дата раньше текущей - не валидно
     }
-    return null // дата позже текущей - валидно
+    return false // дата позже текущей - валидно
 
   }
   private phoneValidator(control: FormControl) {

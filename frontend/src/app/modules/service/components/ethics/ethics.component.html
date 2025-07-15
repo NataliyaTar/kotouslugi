@@ -59,9 +59,10 @@
         @if (getControl(0, 'time').errors?.['required'] && getControl(0, 'time').touched) {
           <p class="error">Поле обязательно для заполнения</p>
         }
-        @if (getControl(0, 'date').errors?.['minTime']) {
+        @if (form.get('time')?.errors?.['dateTimeValidator']) {
           <p class="error">Некорректное время</p>
         }
+
       </div>
       <input formControlName="time" [(ngModel)]="time" type="time" list="time_list" (invalid)="getControl(0, 'time').invalid">
       <datalist id="time_list">
@@ -156,7 +157,9 @@
   </div>
   @if (active === 3) {
     <app-check-info [data]="getResult"></app-check-info>
-    <button (click)="submitEthicsRecord()">Подтвердить</button>
+    <div style="text-align: center; margin-top: 15px;">
+      <button (click)="submitEthicsRecord()">Подтвердить</button>
+    </div>
   }
 
 </div>

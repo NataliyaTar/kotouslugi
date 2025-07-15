@@ -35,13 +35,13 @@
         <h2 style="font-size: 28px;">Добавить отзыв</h2>
         <!-- Блок для выбора записи -->
         <div style="margin-bottom: 20px;"></div>
-        <label for="orderId" style="font-size: 18px;">Список записей</label>
-        <select id="orderId" name="orderId" [(ngModel)]="orderId" required style="font-size: 18px; border: 1px solid #000;">
+        <label for="reqId" style="font-size: 18px;">Список записей</label>
+        <select id="reqId" name="reqId" [(ngModel)]="orderId" required style="font-size: 18px; border: 1px solid #000;">
           <option [ngValue]="null" style="font-size:18px;">Выберите запись</option>
-          @for (order of orders; track $index) {
-            <option [ngValue]="order.id" style="font-size:14px;">
-              {{order.id}}. {{order.name}} | {{ order.created.slice(0, 10) }} | {{ order.created.slice(11, 19) }}
-            </option>
+          @for (req of requisition; track $index) {
+          <option [ngValue]="req.id" style="font-size:14px;">
+            Заявка {{req.id}}. Дата: {{ getDateTimeFromResult(req.result) }}
+          </option>
           }
         </select>
 
@@ -68,7 +68,7 @@
     <form>
       <div style="width: 400px;">
         <h2 style="font-size: 28px; margin-bottom: 24px;">Список отзывов</h2>
-        <label for="orderId" style="font-size: 18px;">Отзывы</label>
+        <label style="font-size: 18px;">Отзывы</label>
         <select [(ngModel)]="selectedFeedbackOrderId" name="selectedFeedback" (change)="onSelect()" style="border: 1px solid #000;">
           <option [ngValue]="null" style="font-size:18px;">Выберите отзыв</option>
           <option *ngFor="let feedback of feedbacks" [ngValue]="feedback.orderId" >
