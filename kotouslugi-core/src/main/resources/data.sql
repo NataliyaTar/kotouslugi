@@ -18,6 +18,7 @@ values (2,
         'Услуга «Укотоение» поможет подобрать кото-приют и котёнка',
         'hugs.png');
 
+/*
 INSERT INTO cat (id, name, age, sex, breed)
 values (0,
         'Феликс',
@@ -30,6 +31,7 @@ values (1,
         '1',
         'female',
         'maine_coon');
+*/
 
 -- service
 INSERT INTO service(id, mnemonic, icon, title, description)
