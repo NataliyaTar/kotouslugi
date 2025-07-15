@@ -58,10 +58,11 @@ public class TrainerController extends BaseController {
     )
     public List<Trainer> listByFClubIdAndMType(
             @Parameter(name = "fitness_club_id", required = true) @RequestParam Long fitness_club_id,
-            @Parameter(name = "membership_type", required = true) @RequestParam MembershipType membership_type
+            @Parameter(name = "membership_type", required = true) @RequestParam String membership_type
         )
     {
-        return trainerService.listTrainersByFClubIdAndMType(fitness_club_id, membership_type);
+        MembershipType mtype = MembershipType.fromMessage(membership_type);
+        return trainerService.listTrainersByFClubIdAndMType(fitness_club_id, mtype);
     }
 
     @GetMapping(value = "/get", produces = "application/json")
