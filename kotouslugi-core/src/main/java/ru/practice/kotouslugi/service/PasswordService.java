@@ -66,10 +66,10 @@ public class PasswordService {
     // Устанавливаем статус "направленно в мвд" и отправляем в МВД.
     metrics.setStatus(StatementStatus.SENT_TO_MVD);
     metricsRepository.save(metrics);
-    StatementStatus mvd_answer = sent_to_mvd("что-то отправляем в мвд");
+    StatementStatus mvdAnswer = sentToMVD("что-то отправляем в мвд");
 
     // Если ответа от МВД не пришло выставляем соответствующий статус.
-    if (mvd_answer == null) {
+    if (mvdAnswer == null) {
       // Поставили статус "ошибка в МВД" и сохранили в БД. Это финальный статус.
       metrics.setStatus(StatementStatus.ERROR_IN_MVD);
       metrics.setDateEnd(LocalDateTime.now());
@@ -77,20 +77,20 @@ public class PasswordService {
     }
 
     // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД". Это финальный статус.
-    if (Objects.equals(mvd_answer, StatementStatus.REJECTED_IN_MVD)) {
+    if (Objects.equals(mvdAnswer, StatementStatus.REJECTED_IN_MVD)) {
       metrics.setStatus(StatementStatus.REJECTED_IN_MVD);
       metrics.setDateEnd(LocalDateTime.now());
       metricsRepository.save(metrics);
     }
 
     // Если в МВД не отклонили, то устанавливаем статус "готово в МВД".
-    if (Objects.equals(mvd_answer, StatementStatus.READY_IN_MVD)) {
+    if (Objects.equals(mvdAnswer, StatementStatus.READY_IN_MVD)) {
       metrics.setStatus(StatementStatus.READY_IN_MVD);
       metricsRepository.save(metrics);
     }
 
     // Дергает ручку банка теперь тоже сам
-    payment_duty(mainEntity.getId());
+    paymentDuty(mainEntity.getId());
 
     return mainEntity;
   }
@@ -98,7 +98,7 @@ public class PasswordService {
 
 
 
-  public MainEntity payment_duty(Long id) {
+  public MainEntity paymentDuty(Long id) {
     // Получаем сущность с проверкой на существование
     MainEntity mainEntity = mainEntityRepository.findById(id)
       .orElseThrow(() -> new EntityNotFoundException("MainEntity not found with id: " + id));
@@ -107,22 +107,22 @@ public class PasswordService {
     // Ставим статус "отправлено в банк".
     // Отправляем в банк --> получаем ответ --> ставим статус, который прислал банк или ошибку --> сохраняем в БД
     mainEntity.getMetrics().setStatus(StatementStatus.SENT_TO_BANK);
-    StatementStatus bank_answer = sent_to_bank("что-то отправляем");
+    StatementStatus bankAnswer = sentToBank("что-то отправляем");
 
-    if (bank_answer == null) {
+    if (bankAnswer == null) {
       // Поставили статус "ошибка в банке" и сохранили в БД. Это финальный статус.
       mainEntity.getMetrics().setStatus(StatementStatus.ERROR_IN_BANK);
       mainEntity.getMetrics().setDateEnd(LocalDateTime.now());
       mainEntityRepository.save(mainEntity);
     }
 
-    if (bank_answer == StatementStatus.REJECTED_IN_BANK) {
-      mainEntity.getMetrics().setStatus(bank_answer);
+    if (bankAnswer == StatementStatus.REJECTED_IN_BANK) {
+      mainEntity.getMetrics().setStatus(bankAnswer);
       mainEntity.getMetrics().setDateEnd(LocalDateTime.now());
       mainEntityRepository.save(mainEntity);
     }
 
-    mainEntity.getMetrics().setStatus(bank_answer);
+    mainEntity.getMetrics().setStatus(bankAnswer);
     // Меняет статус в пошлине
     mainEntity.getStatement().setPoshlina(true);
     mainEntityRepository.save(mainEntity);
@@ -155,13 +155,13 @@ public class PasswordService {
 
 
   /// Ручки к другим сервисам
-  public StatementStatus sent_to_mvd(String message) {
+  public StatementStatus sentToMVD(String message) {
     String url = "http://localhost:8080/api/mvd/verify-passport";
     return restTemplate.postForObject(url, message, StatementStatus.class);
   }
 
 
-  public StatementStatus sent_to_bank(String message) {
+  public StatementStatus sentToBank(String message) {
     String url = "http://localhost:8080/api/bank/payment_duty";
     return restTemplate.postForObject(url, message, StatementStatus.class);
   }

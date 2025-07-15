@@ -1,14 +1,13 @@
 package ru.practice.kotouslugi.service;
 
 import org.springframework.stereotype.Service;
-import ru.practice.kotouslugi.model.StatementForPassport;
 import ru.practice.kotouslugi.model.enums.StatementStatus;
 
 import java.util.Random;
 
 @Service
 public class MvdService {
-  public StatementStatus verify_in_mvd(String message) throws InterruptedException {
+  public StatementStatus verifyInMVD(String message) throws InterruptedException {
     Random random = new Random();
     int delay = 1000 + random.nextInt(2000);
     Thread.sleep(delay);

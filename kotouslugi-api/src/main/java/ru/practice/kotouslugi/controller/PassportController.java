@@ -56,13 +56,13 @@ public class PassportController extends BaseController {
     summary = "Оплата пошлины",
     description = "",
     tags = {"Загранпаспорт"},
-    responses = {// дописать остальные статусы
+    responses = {
       @ApiResponse(responseCode = "200", description = ""),
       @ApiResponse(responseCode = "500", description = "")
     }
   )
   public MainEntity payment_duty(@RequestBody BankRequest request) {
-    return foreignPasswordService.payment_duty(request.getId());
+    return foreignPasswordService.paymentDuty(request.getId());
   }
 
 
@@ -73,7 +73,7 @@ public class PassportController extends BaseController {
     summary = "Заполнение отзыва",
     description = "",
     tags = {"Загранпаспорт"},
-    responses = {// дописать остальные статусы
+    responses = {
       @ApiResponse(responseCode = "200", description = ""),
       @ApiResponse(responseCode = "500", description = "")
     }
