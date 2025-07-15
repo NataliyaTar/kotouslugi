@@ -1,28 +1,28 @@
 package ru.practice.kotouslugi.service;
 
 import org.springframework.stereotype.Service;
-import ru.practice.kotouslugi.dao.BookingRequestRepository;
-import ru.practice.kotouslugi.model.BookingRequest;
+import ru.practice.kotouslugi.dao.BookingRepository;
 
 import java.util.List;
 
 @Service
 public class BookingService
 {
-  private final BookingRequestRepository bookingRequestRepository;
+  private final BookingRepository bookingRepositoryRepository;
 
-  public BookingService(BookingRequestRepository bookingRequestRepository) {
-    this.bookingRequestRepository = bookingRequestRepository;
+  public BookingService(BookingRepository bookingRepositoryRepository) {
+    this.bookingRepositoryRepository = bookingRepositoryRepository;
   }
 
-  public List<BookingRequest> getAllBookings() {
-    return bookingRequestRepository.findAll();
+  public List<ru.practice.kotouslugi.model.BookingRequest> getAllBookings() {
+    return bookingRepositoryRepository.findAll();
   }
-  public BookingRequest saveBooking(BookingRequest bookingRequest) {
-    if (bookingRequestRepository.isTimeBooked(bookingRequest.getStart_time(), (long) bookingRequest.getWorker_id())) {
+  public ru.practice.kotouslugi.model.BookingRequest saveBooking(ru.practice.kotouslugi.model.BookingRequest bookingRequest) {
+    Long workerId = bookingRequest.getWorkerId();
+    if (bookingRepositoryRepository.isTimeBooked(bookingRequest.getStartTime(), workerId)) {
       throw new RuntimeException("Время уже занято");
     }
-    return bookingRequestRepository.save(bookingRequest);
+    return bookingRepositoryRepository.save(bookingRequest);
   }
 
 }

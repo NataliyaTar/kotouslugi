@@ -16,7 +16,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Type_service
+public class TypeService
 {
   @Id
   @GeneratedValue

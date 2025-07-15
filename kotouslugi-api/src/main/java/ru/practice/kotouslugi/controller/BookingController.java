@@ -5,10 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.BookingRequest;
 import ru.practice.kotouslugi.model.Master;
-import ru.practice.kotouslugi.model.Type_service;
+import ru.practice.kotouslugi.model.TypeService;
 import ru.practice.kotouslugi.service.BookingService;
 import ru.practice.kotouslugi.service.MasterService;
-import ru.practice.kotouslugi.service.TypeServiceService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,14 +18,14 @@ public class BookingController
 {
   private final BookingService bookingService;
   private final MasterService masterService;
-  private final TypeServiceService typeServiceService;
+  private final ru.practice.kotouslugi.service.TypeService typeService;
 
   public BookingController(BookingService bookingService,
                            MasterService masterService,
-                           TypeServiceService typeServiceService) {
+                           ru.practice.kotouslugi.service.TypeService typeService) {
     this.bookingService = bookingService;
     this.masterService = masterService;
-    this.typeServiceService = typeServiceService;
+    this.typeService = typeService;
   }
 
   @GetMapping("/masters")
@@ -35,8 +34,8 @@ public class BookingController
   }
 
   @GetMapping("/services")
-  public List<Type_service> getAllServices() {
-    return typeServiceService.getAllServices();
+  public List<TypeService> getAllServices() {
+    return typeService.getAllServices();
   }
 
   @PostMapping
@@ -44,7 +43,7 @@ public class BookingController
     @RequestBody BookingRequest bookingRequest) {
 
 
-    if (bookingRequest.getStart_time() == null || bookingRequest.getStart_time().isBefore(LocalDateTime.now())) {
+    if (bookingRequest.getStartTime() == null || bookingRequest.getStartTime().isBefore(LocalDateTime.now())) {
       throw new IllegalArgumentException("Некорректное время записи");
     }
 

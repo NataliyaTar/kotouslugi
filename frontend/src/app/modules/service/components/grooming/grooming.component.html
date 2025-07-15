@@ -1,0 +1,73 @@
+@if (loading) {
+<app-throbber></app-throbber>
+} @else {
+<div class="fields-wrapper" [formGroup]="form">
+  <div [hidden]="active !== 0" formGroupName="0">
+    <div class="field-container">
+      <p>Выберите кота</p>
+      <select formControlName="cat">
+        @for (option of optionsCat; track $index) {
+        <option [value]="getItem('cat', $index)">
+          {{ option.text }}
+        </option>
+        }
+      </select>
+    </div>
+
+    <div class="field-container">
+      <p>Телефон для связи</p>
+      <input formControlName="telephone" placeholder="12345678901" />
+    </div>
+
+    <div class="field-container">
+      <p>Email для связи</p>
+      <input formControlName="email" type="email" placeholder="abc@dfg.ru" />
+    </div>
+  </div>
+
+  <div [hidden]="active !== 1" formGroupName="1">
+    <div class="field-container">
+      <p>Выберите услугу</p>
+      <select formControlName="service">
+        @for (item of serviceOptions; track $index) {
+        <option [value]="getItem('service', $index)">
+          {{ item.description }}
+        </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div [hidden]="active !== 2" formGroupName="2">
+    <div class="field-container">
+      <p>Дата</p>
+      <input formControlName="date" type="date" />
+    </div>
+
+    <div class="field-container">
+      <p>Время</p>
+      <input formControlName="time" type="time" list="time_list" />
+      <datalist id="time_list">
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="12:00">12:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+        <option value="16:00">16:00</option>
+        <option value="17:00">17:00</option>
+        <option value="18:00">18:00</option>
+      </datalist>
+    </div>
+  </div>
+
+  @if (active === 3) {
+  <div class="confirmation">
+    <h2>Спасибо за запись!</h2>
+    <p>Вы успешно записались на груминг.</p>
+    <app-check-info [data]="getResult"></app-check-info>
+  </div>
+  }
+</div>
+}

@@ -3,19 +3,18 @@ package ru.practice.kotouslugi.service;
 
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.TypeServiceRepository;
-import ru.practice.kotouslugi.model.Type_service;
 
 import java.util.List;
 @Service
-public class TypeServiceService
+public class TypeService
 {
   private final TypeServiceRepository typeServiceRepo;
 
-  public TypeServiceService(TypeServiceRepository typeServiceRepo) {
+  public TypeService(TypeServiceRepository typeServiceRepo) {
     this.typeServiceRepo = typeServiceRepo;
   }
 
-  public List<Type_service> getAllServices() {
+  public List<ru.practice.kotouslugi.model.TypeService> getAllServices() {
     return typeServiceRepo.findAll();
   }
 

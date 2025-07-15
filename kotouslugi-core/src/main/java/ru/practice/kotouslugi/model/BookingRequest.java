@@ -27,10 +27,10 @@ public class BookingRequest
   @Id
   @GeneratedValue
   private Long id;
-  private int cat_id;
-  private String contact_email;
-  private String contact_number;
-  private int worker_id;
-  private LocalDateTime start_time;
-  private int id_type_service;
+  private int catId;
+  private String contactEmail;
+  private String contactNumber;
+  private long workerId;
+  private LocalDateTime startTime;
+  private int idTypeService;
 }

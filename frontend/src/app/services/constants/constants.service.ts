@@ -57,6 +57,12 @@ export class ConstantsService {
     }
   ];
 
+public groomingOptions = [
+  { text: 'Стрижка', value: 'Стрижка' },
+  { text: 'Купание', value: 'Купание' },
+  { text: 'Чистка ушей', value: 'Чистка ушей' },
+  { text: 'Чистка глаз', value: 'Чистка глаз' }
+];
   // варианты специалистов
   public doctorOptions: IValue[] = [
     {
