@@ -66,21 +66,7 @@ public class TrainerController extends BaseController {
     {
         return trainerService.listTrainersByFitnessClubIdAndMembershipType(fitness_club_id, membership_type);
     }
-
-    /* Когда-нибудь надо будет починить, но и без неё работает */
-    /*
-    @PostMapping(value = "/add", produces = "application/json")
-    @ResponseBody
-    @Operation(summary = "Добавить тренера фитнес-клуба", tags = {"API фитнес-клубов"}, responses = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
-    )
-    public ResponseEntity<Long> addTrainer(@RequestBody Trainer trainer) {
-        return wrapper((s) -> trainerService.addTrainer(trainer));
-    }
-    */
-
-
+    
     @GetMapping(value = "/get", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить тренера фитнес-клуба по идентификатору", tags = {"API фитнес-клубов"}, responses = {
