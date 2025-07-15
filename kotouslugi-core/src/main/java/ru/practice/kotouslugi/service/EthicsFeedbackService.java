@@ -6,7 +6,6 @@ import ru.practice.kotouslugi.dao.EthicsFeedbackRepository;
 import ru.practice.kotouslugi.model.EthicsFeedback;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
