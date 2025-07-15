@@ -28,8 +28,7 @@ export class OrdersComponent implements OnInit {
   }
 
   public ngOnInit() {
-    // получаем список заявок
-    this.orderService.getOrdersList().subscribe(res => {
+    this.orderService.getAllOrders().subscribe(res => {
       this.orders = res;
       this.loading = false;
     }, error => {

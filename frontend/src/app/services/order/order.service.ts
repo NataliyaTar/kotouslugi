@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, map, forkJoin } from 'rxjs';
 import { EStatus, IOrder, TStatus } from '@models/order.model';
 
 @Injectable({
@@ -33,36 +33,68 @@ export class OrderService {
   }
 
   /**
-   * Сохраняет запись на услугу
+   * Сохраняет запись на услугу через BookingController
    * @param mnemonicService - мнемоника услуги
    * @param rawValue - значение из формы
    */
   public saveOrder(mnemonicService: string, rawValue: any): Observable<any> {
-    let res: { [key: string]: any } = {
-      mnemonic: mnemonicService
+    const step0 = rawValue[0] || {};
+    const step1 = rawValue[1] || {};
+    const step2 = rawValue[2] || {};
+
+    let startTime = null;
+    if (step2.date && step2.time) {
+      startTime = `${step2.date}T${step2.time}:00`;
+    }
+
+    let catId = step0.cat;
+    try {
+      catId = JSON.parse(step0.cat)?.id ?? step0.cat;
+    } catch {}
+    let serviceId = step1.service;
+    if (typeof serviceId === 'string') {
+      serviceId = parseInt(serviceId, 10);
+    }
+
+    const bookingRequest = {
+      catId: Number(catId),
+      idTypeService: Number(serviceId),
+      startTime: startTime,
+      contactNumber: step0.telephone,
+      contactEmail: step0.email
     };
-    let fields = <any>[];
 
-    Object.keys(rawValue).forEach((step, index) => {
-      let stepValue: { [key: string]: string | number } = {
-        id: index
-      };
+    return this.http.post('/api/booking', bookingRequest);
+  }
 
-      Object.keys(rawValue[step]).forEach(key => {
-        let value = rawValue[step][key];
-        try {
-          value = JSON.parse(value)?.id ?? value;
-        } catch (error) {
-        }
-        Object.assign(stepValue, {[key]: value});
-      });
 
-      fields.push(stepValue);
-    });
+  public getBookingRequests(): Observable<any[]> {
+    return this.http.get<any[]>(`/api/booking/bookings`);
+  }
 
-    Object.assign(res, {fields: JSON.stringify(fields)});
 
-    return this.http.post(`${this.orderApi}create`, res);
+  public getAllOrders(): Observable<IOrder[]> {
+    return forkJoin([
+      this.getOrdersList(),
+      this.getBookingRequests()
+    ]).pipe(
+      map(([orders, bookings]) => {
+        const mappedBookings: IOrder[] = bookings.map(b => ({
+          id: String(b.id),
+          name: 'Груминг',
+          mnemonic: 'grooming',
+          status: 'FILED',
+          created: b.startTime,
+          fields: JSON.stringify({
+            catId: b.catId,
+            contactEmail: b.contactEmail,
+            contactNumber: b.contactNumber,
+            idTypeService: b.idTypeService
+          })
+        }));
+        return [...orders, ...mappedBookings];
+      })
+    );
   }
 
 }

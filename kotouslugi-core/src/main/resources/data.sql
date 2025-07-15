@@ -31,7 +31,6 @@ values (1,
         '1',
         'female',
         'maine_coon');*/
-
 -- service
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (0,
@@ -67,3 +66,56 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+
+
+
+
+INSERT INTO Type_service  VALUES
+(1,'Комплекс "Нежная лаванда"');
+
+
+INSERT INTO Type_service VALUES
+(2,'Премиум-уход "Бархатные лапки"');
+
+
+INSERT INTO Type_service VALUES
+(3,'Детокс-программа "Облачная нежность"');
+
+
+INSERT INTO Type_service VALUES
+(4,'Экспресс-уход "Утренняя роса"');
+
+
+INSERT INTO Type_service VALUES
+(5,'Люкс-пакет "Золотой стандарт"');
+
+
+
+
+
+INSERT INTO MASTER
+(id,name)
+VALUES
+(1,'Антон');
+
+
+INSERT INTO MASTER
+(id,name)
+VALUES
+(2,'Игорь');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
