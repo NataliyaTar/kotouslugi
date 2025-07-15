@@ -39,13 +39,13 @@ public enum MembershipType {
 
 
   public static MembershipType fromMessage(String encodedValue) {
-    String decodedValue = URLDecoder.decode(encodedValue, StandardCharsets.UTF_8);
+      String decodedValue = URLDecoder.decode(encodedValue, StandardCharsets.UTF_8);
 
-    for (MembershipType type : values()) {
-      if (type.message.equals(decodedValue)) {
-        return type;
+      for (MembershipType type : values()) {
+          if (type.message.equals(decodedValue)) {
+              return type;
+          }
       }
-    }
-    throw new IllegalArgumentException("Unknown membership type: " + decodedValue);
+      throw new IllegalArgumentException("Unknown membership type: " + decodedValue);
   }
 }

@@ -102,6 +102,31 @@ public class TrainerControllerTest {
         verify(trainerService).listTrainersByFClubIdAndMType(15L, MembershipType.FREE);
     }
 
+    @Test
+    void shouldGetTrainer() throws Exception {
+      doReturn(this.getTestTrainer()).when(trainerService).getTrainer(15L);
+
+      mockMvc.perform(get("/api/fitness_trainers/get?id=15")
+          .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+      verify(trainerService).getTrainer(15L);
+    }
+
+    @Test
+    void shouldDeleteTrainer() throws Exception {
+      doNothing().when(trainerService).deleteTrainer(15L);
+
+      mockMvc.perform(delete("/api/fitness_trainers/delete?id=15")
+          .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+      verify(trainerService).deleteTrainer(any());
+    }
+
+
     Trainer getTestTrainer() {
         Fitness fitness = Fitness.builder()
             .id(15L)
