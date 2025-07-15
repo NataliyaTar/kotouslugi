@@ -92,7 +92,14 @@ public class FitnessControllerTest {
 
     @Test
     void shouldDeleteFitness() throws Exception {
+        doNothing().when(fitnessService).deleteFitness(15L);
 
+        mockMvc.perform(delete("/api/fitness_club/delete?id=15")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        verify(fitnessService).deleteFitness(any());
     }
 
     // возвращает объект для проведения тестов
@@ -105,8 +112,3 @@ public class FitnessControllerTest {
           .build();
     }
 }
-
-// list
-// add
-// get
-// delete

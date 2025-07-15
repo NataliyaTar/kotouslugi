@@ -7,13 +7,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practice.kotouslugi.model.Fitness;
 import ru.practice.kotouslugi.model.Trainer;
 import ru.practice.kotouslugi.model.enums.MembershipType;
 import ru.practice.kotouslugi.service.TrainerService;
@@ -64,9 +61,9 @@ public class TrainerController extends BaseController {
             @Parameter(name = "membership_type", required = true) @RequestParam MembershipType membership_type
         )
     {
-        return trainerService.listTrainersByFitnessClubIdAndMembershipType(fitness_club_id, membership_type);
+        return trainerService.listTrainersByFClubIdAndMType(fitness_club_id, membership_type);
     }
-    
+
     @GetMapping(value = "/get", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить тренера фитнес-клуба по идентификатору", tags = {"API фитнес-клубов"}, responses = {
