@@ -27,31 +27,11 @@ public class EthicsService {
    * Добавляет новую запись, если время свободно.
    */
   @Transactional
-  public boolean addEthicsRecord(
-    String catName,
-    LocalDateTime startTime,
-    String courseType,
-    String teacherName,
-    String teacherAbout,
-    String ownerName,
-    String phoneNumber,
-    String email
-  ) {
-    if (!isTimeSlotAvailable(startTime)) {
+  public boolean addEthicsRecord( EthicsRecord ethicsRecord) {
+    if (!isTimeSlotAvailable(ethicsRecord.getStartTime())) {
       return false;  // Время занято
     }
-
-    EthicsRecord record = new EthicsRecord();
-    record.setCatName(catName);
-    record.setStartTime(startTime);
-    record.setCourseType(courseType);
-    record.setTeacherName(teacherName);
-    record.setTeacherAbout(teacherAbout);
-    record.setOwnerName(ownerName);
-    record.setPhoneNumber(phoneNumber);
-    record.setEmail(email);
-
-    recordRepository.save(record);
+    recordRepository.save(ethicsRecord);
     return true;
   }
 }

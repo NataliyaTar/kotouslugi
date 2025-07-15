@@ -5,14 +5,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.EthicsFeedback;
-import ru.practice.kotouslugi.request.EthicsFeedbackRequest;
 import ru.practice.kotouslugi.service.EthicsFeedbackService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/ethicsFeedback")
-public class EthicsFeedbackController {
+public class EthicsFeedbackController extends BaseController {
   private final EthicsFeedbackService ethicsFeedbackService;
 
   public EthicsFeedbackController(EthicsFeedbackService ethicsFeedbackService) {
@@ -25,13 +24,10 @@ public class EthicsFeedbackController {
     @ApiResponse(responseCode = "400", description = "Внутренняя ошибка")}
   )
   public ResponseEntity<String> addFeedback(
-    @RequestBody EthicsFeedbackRequest ethicsFeedbackRequest
-    ) {
-    boolean isAdded = ethicsFeedbackService.addEthicsFeedback(
-      ethicsFeedbackRequest.getRating(),
-      ethicsFeedbackRequest.getComment(),
-      ethicsFeedbackRequest.getOrderId()
-    );
+    @RequestBody EthicsFeedback ethicsFeedback
+  ) {
+    boolean isAdded = ethicsFeedbackService.addEthicsFeedback(ethicsFeedback);
+
     if (isAdded) {
       return ResponseEntity.ok("Отзыв добавлен!");
     } else {

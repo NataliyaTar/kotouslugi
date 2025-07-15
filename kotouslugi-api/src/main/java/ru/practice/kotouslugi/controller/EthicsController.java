@@ -3,7 +3,6 @@ package ru.practice.kotouslugi.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.EthicsRecord;
-import ru.practice.kotouslugi.request.EthicsRequest;
 import ru.practice.kotouslugi.service.EthicsService;
 
 import java.time.LocalDateTime;
@@ -31,18 +30,9 @@ public class EthicsController extends BaseController {
    */
   @PostMapping("/add")
   public ResponseEntity<String> addRecord(
-    @RequestBody EthicsRequest ethicsRequest
+    @RequestBody EthicsRecord ethicsRecord
   ) {
-    boolean isAdded = ethicsService.addEthicsRecord(
-      ethicsRequest.getCatName(),
-      ethicsRequest.getStartTime(),
-      ethicsRequest.getCourseType(),
-      ethicsRequest.getTeacherName(),
-      ethicsRequest.getTeacherAbout(),
-      ethicsRequest.getOwnerName(),
-      ethicsRequest.getPhoneNumber(),
-      ethicsRequest.getEmail()
-    );
+    boolean isAdded = ethicsService.addEthicsRecord(ethicsRecord);
 
     if (isAdded) {
       return ResponseEntity.ok("Запись успешно добавлена!");

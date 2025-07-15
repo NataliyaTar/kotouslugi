@@ -18,20 +18,7 @@ public class EthicsFeedbackService {
   }
 
   @Transactional
-  public boolean addEthicsFeedback(
-    int rating,
-    String comment,
-    int orderId) {
-
-    if (ethicsFeedbackRepository.existsEthicsFeedbackByOrderId(orderId)) {
-      return false;
-    }
-
-    EthicsFeedback ethicsFeedback = new EthicsFeedback();
-    ethicsFeedback.setRating(rating);
-    ethicsFeedback.setComment(comment);
-    ethicsFeedback.setOrderId(orderId);
-
+  public boolean addEthicsFeedback(EthicsFeedback ethicsFeedback) {
     ethicsFeedbackRepository.save(ethicsFeedback);
     return true;
   }
