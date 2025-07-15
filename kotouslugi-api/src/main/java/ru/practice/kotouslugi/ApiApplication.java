@@ -12,9 +12,4 @@ public class ApiApplication {
     SpringApplication.run(ru.practice.kotouslugi.ApiApplication.class, args);
   }
 
-  @Bean
-  public RestTemplate restTemplate() {
-    return new RestTemplate();
-  }
-
 }

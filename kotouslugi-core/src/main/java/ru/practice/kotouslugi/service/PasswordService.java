@@ -1,8 +1,11 @@
 package ru.practice.kotouslugi.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import ru.practice.kotouslugi.client.BankClient;
+import ru.practice.kotouslugi.client.MVDClient;
 import ru.practice.kotouslugi.dao.FeedbackRepository;
 import ru.practice.kotouslugi.dao.MainEntityRepository;
 import ru.practice.kotouslugi.dao.MetricsRepository;
@@ -27,77 +30,105 @@ public class PasswordService {
 
   private final RestTemplate restTemplate;
 
+  private MVDClient mvdClient;
+  private BankClient bankClient;
+
+  @Autowired
+  public void SomeService(MVDClient mvdClient, BankClient bankClient) {
+    this.mvdClient = mvdClient;
+    this.bankClient = bankClient;
+  }
 
   /// Настройка сервиса
   public PasswordService(StatementForPassportRepository statementForPassportRepository,
                          FeedbackRepository feedbackRepository,
                          MetricsRepository metricsRepository,
                          MainEntityRepository mainEntityRepository,
-                         RestTemplate restTemplate) {
+                         RestTemplate restTemplate, MVDClient mvdClient, BankClient bankClient) {
     this.statementForPassportRepository = statementForPassportRepository;
     this.feedbackRepository = feedbackRepository;
     this.metricsRepository = metricsRepository;
     this.mainEntityRepository = mainEntityRepository;
     this.restTemplate = restTemplate;
+    this.mvdClient = mvdClient;
+    this.bankClient = bankClient;
   }
+
+
 
 
   /// Основные функции сервиса
   public MainEntity addStatementForPassport(StatementForPassport statementForPassport) {
-    // Сохраняем данные из формы в БД.
+    // 1. Сохраняем заявление
     statementForPassportRepository.save(statementForPassport);
 
-    // Создаём главную сущность и сразу добавляем в неё данные из формы(StatementForPassport).
-    MainEntity mainEntity = MainEntity.builder().build();
-    mainEntity.setStatement(statementForPassport);
+    // 2. Создаем основную сущность
+    MainEntity mainEntity = MainEntity.builder()
+      .statement(statementForPassport)
+      .build();
     mainEntityRepository.save(mainEntity);
 
-    // Добавляем метрики к main сущности и сохранение метрики в БД
-    Metrics metrics = Metrics.builder().build();
-    metrics.setDateStart(LocalDateTime.now());
+    // 3. Инициализируем метрики
+    Metrics metrics = Metrics.builder()
+      .dateStart(LocalDateTime.now())
+      .status(StatementStatus.CREATED)
+      .build();
     metricsRepository.save(metrics);
+
     mainEntity.setMetrics(metrics);
     mainEntityRepository.save(mainEntity);
 
-    // Ставим статус "заявление создано" и обновляем метрики в БД
-    metrics.setStatus(StatementStatus.CREATED);
-    metricsRepository.save(metrics);
-
-    // Устанавливаем статус "направленно в мвд" и отправляем в МВД.
+    // 4. Проверка паспорта в МВД
     metrics.setStatus(StatementStatus.SENT_TO_MVD);
     metricsRepository.save(metrics);
-    StatementStatus mvdAnswer = sentToMVD("что-то отправляем в мвд");
 
-    // Если ответа от МВД не пришло выставляем соответствующий статус.
-    if (mvdAnswer == null) {
-      // Поставили статус "ошибка в МВД" и сохранили в БД. Это финальный статус.
-      metrics.setStatus(StatementStatus.ERROR_IN_MVD);
-      metrics.setDateEnd(LocalDateTime.now());
-      metricsRepository.save(metrics);
-    }
+    StatementStatus mvdStatus = mvdClient.verifyPassport("типо отправляем какое-то сообщение в МВД");
 
-    // Если в МВД отклонили, то устанавливаем финальный статус в заявлении "отклонено в МВД". Это финальный статус.
-    if (Objects.equals(mvdAnswer, StatementStatus.REJECTED_IN_MVD)) {
+    // 5. Обработка ответа от МВД
+    if (StatementStatus.REJECTED_IN_MVD.equals(mvdStatus)) {
       metrics.setStatus(StatementStatus.REJECTED_IN_MVD);
       metrics.setDateEnd(LocalDateTime.now());
       metricsRepository.save(metrics);
+      return mainEntity;
     }
 
-    // Если в МВД не отклонили, то устанавливаем статус "готово в МВД".
-    if (Objects.equals(mvdAnswer, StatementStatus.READY_IN_MVD)) {
-      metrics.setStatus(StatementStatus.READY_IN_MVD);
+    if (!StatementStatus.READY_IN_MVD.equals(mvdStatus)) {
+      metrics.setStatus(StatementStatus.ERROR_IN_MVD);
+      metrics.setDateEnd(LocalDateTime.now());
       metricsRepository.save(metrics);
+      return mainEntity;
     }
 
-    // Дергает ручку банка теперь тоже сам
-    paymentDuty(mainEntity.getId());
+    // 6. Успешная проверка в МВД
+    metrics.setStatus(StatementStatus.READY_IN_MVD);
+    metricsRepository.save(metrics);
+
+    // 7. Оплата пошлины в банке
+    metrics.setStatus(StatementStatus.SENT_TO_BANK);
+    metricsRepository.save(metrics);
+
+    StatementStatus bankStatus = bankClient.processPaymentDuty("типо что-то отправили в банк");
+
+    // 8. Обработка ответа от банка
+    if (StatementStatus.APPROVED_BY_BANK.equals(bankStatus)) {
+      mainEntity.getStatement().setPoshlina(true);
+      metrics.setStatus(StatementStatus.APPROVED_BY_BANK);
+    } else if (StatementStatus.REJECTED_IN_BANK.equals(bankStatus)) {
+      metrics.setStatus(StatementStatus.REJECTED_IN_BANK);
+    } else {
+      metrics.setStatus(StatementStatus.ERROR_IN_BANK);
+    }
+
+    metrics.setDateEnd(LocalDateTime.now());
+    metricsRepository.save(metrics);
+    mainEntityRepository.save(mainEntity);
 
     return mainEntity;
   }
 
 
 
-
+  /// Не используется
   public MainEntity paymentDuty(Long id) {
     // Получаем сущность с проверкой на существование
     MainEntity mainEntity = mainEntityRepository.findById(id)
@@ -132,7 +163,7 @@ public class PasswordService {
 
 
 
-
+  /// Не используется
   public MainEntity addFeedback(FeedbackRequest feedbackRequest) {
     // Получаем сущность с проверкой на существование
     MainEntity mainEntity = mainEntityRepository.findById(feedbackRequest.getId())
@@ -153,14 +184,7 @@ public class PasswordService {
 
 
 
-
-  /// Ручки к другим сервисам
-  public StatementStatus sentToMVD(String message) {
-    String url = "http://localhost:8080/api/mvd/verify-passport";
-    return restTemplate.postForObject(url, message, StatementStatus.class);
-  }
-
-
+  /// Не используется
   public StatementStatus sentToBank(String message) {
     String url = "http://localhost:8080/api/bank/payment_duty";
     return restTemplate.postForObject(url, message, StatementStatus.class);
