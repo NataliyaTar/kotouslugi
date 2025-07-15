@@ -53,13 +53,13 @@ public class TrainerController extends BaseController {
         return trainerService.listTrainersByFitnessClubId(fitness_club_id);
     }
 
-    @GetMapping(value = "/listByFitnessClubIdAndMembershipType", produces = "application/json")
+    @GetMapping(value = "/listByFClubIdAndMType", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Получить список тренеров по ID фитнес-клуба и типу абонемента", tags = {"API фитнес-клубов"}, responses = {
       @ApiResponse(responseCode = "200", description = "OK"),
       @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
     )
-    public List<Trainer> listByFitnessClubIdAndMembershipType(
+    public List<Trainer> listByFClubIdAndMType(
             @Parameter(name = "fitness_club_id", required = true) @RequestParam Long fitness_club_id,
             @Parameter(name = "membership_type", required = true) @RequestParam MembershipType membership_type
         )
