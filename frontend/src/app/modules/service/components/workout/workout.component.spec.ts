@@ -4,7 +4,7 @@ import { WorkoutComponent } from './workout.component';
 
 describe('WorkoutComponent', () => {
   let component: WorkoutComponent;
-  let fixture: ComponentFixture<WorkoutComponent;
+  let fixture: ComponentFixture<WorkoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
