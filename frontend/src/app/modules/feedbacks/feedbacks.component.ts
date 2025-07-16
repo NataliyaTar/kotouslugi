@@ -43,8 +43,6 @@ interface RequisitionItem {
   selector: 'app-feedbacks',
   standalone: true,
   imports: [
-    ThrobberComponent,
-    ErrorComponent,
     HttpClientModule,
     CommonModule,
     FormsModule
@@ -185,6 +183,12 @@ export class FeedbacksComponent implements OnInit {
         .then(response => response.text())
         .then(data => {
           this.loadFeedbacks();
+          if (data === 'Отзыв добавлен!') {
+            alert('Отзыв успешно добавлен!');
+          }
+          else {
+            alert('Отзыв для выбранной записи уже существует!');
+          }
           // alert("Вы успешно оставили свой отзыв. Нажмите 'OK'");
 
         })

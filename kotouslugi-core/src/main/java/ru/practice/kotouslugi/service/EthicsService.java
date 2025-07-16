@@ -27,7 +27,7 @@ public class EthicsService {
    * Добавляет новую запись, если время свободно.
    */
   @Transactional
-  public boolean addEthicsRecord( EthicsRecord ethicsRecord) {
+  public boolean addEthicsRecord(EthicsRecord ethicsRecord) {
     if (!isTimeSlotAvailable(ethicsRecord.getStartTime())) {
       return false;  // Время занято
     }

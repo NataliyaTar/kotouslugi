@@ -19,6 +19,7 @@ public class EthicsFeedbackController extends BaseController {
   }
 
   @PostMapping(value = "/add", produces = "application/json")
+  @ResponseBody
   @Operation(summary = "Добавить отзыв", tags = {"АПИ отзывов"}, responses = {
     @ApiResponse(responseCode = "200", description = "Ок"),
     @ApiResponse(responseCode = "400", description = "Внутренняя ошибка")}

@@ -145,21 +145,16 @@
     <div class="field">
       <div>
         <p class="label">Email (необязательно)</p>
-        @if (getControl(2, 'email').errors && getControl(2, 'email').touched) {
-          @if (getControl(2, 'email').errors?.['pattern']) {
-            <p class="error">Некорректный email</p>
-          }
+        @if (getControl(2, 'mail').errors?.['pattern'] && getControl(0, 'mail').touched) {
+          <p class="error">Вау</p>
         }
       </div>
-      <input type="email" formControlName="email" [(ngModel)]='email' maxLength="48" placeholder="youremail@tempmail.ru">
+      <input formControlName="email" type="email" placeholder="youremail@dfg.ru" (invalid)="getControl(2, 'mail').invalid">
     </div>
 
   </div>
   @if (active === 3) {
     <app-check-info [data]="getResult"></app-check-info>
-    <div style="text-align: center; margin-top: 15px;">
-      <button (click)="submitEthicsRecord()">Подтвердить</button>
-    </div>
   }
 
 </div>

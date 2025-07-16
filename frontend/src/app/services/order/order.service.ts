@@ -64,5 +64,4 @@ export class OrderService {
 
     return this.http.post(`${this.orderApi}create`, res);
   }
-
 }

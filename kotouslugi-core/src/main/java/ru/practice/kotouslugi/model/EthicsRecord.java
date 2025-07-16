@@ -1,13 +1,17 @@
 package ru.practice.kotouslugi.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ethics_records")
-@Getter @Setter
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EthicsRecord {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +29,7 @@ public class EthicsRecord {
   // Длительность занятия в минутах (фиксированная = 60)
   @Transient  // Не сохраняем в БД, вычисляемое поле
   private final int durationMinutes = 60;
+
 
   public LocalDateTime getEndTime() {
     return startTime.plusMinutes(durationMinutes);

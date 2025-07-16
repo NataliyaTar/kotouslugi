@@ -30,7 +30,7 @@ export enum FormMap {
   // 2
   owner = 'Имя владельца',
   telephone = 'Телефон для связи',
-  email = 'Email для связи',
+  mail = 'Email для связи',
 }
 
 @Component({
@@ -71,7 +71,7 @@ export class EthicsComponent implements OnInit, OnDestroy{
   public teacherInfo: string | null = '';
   public owner: string | null = null;
   public telephone: string | null = "";
-  public email: string | null = '';
+  public mail: string | null = '';
 
   public selectedTeacherText: string;
   public selectedTeacherDescription: string | null = null;
@@ -116,7 +116,7 @@ export class EthicsComponent implements OnInit, OnDestroy{
        teacherAbout: this.teacherInfo,
        ownerName: this.owner,
        phoneNumber: this.telephone,
-       email: this.email
+       email: this.mail
      };
 
      const jsonData = JSON.stringify(data);
@@ -214,7 +214,7 @@ export class EthicsComponent implements OnInit, OnDestroy{
       2: this.fb.group({
         owner: ['', [Validators.required,  Validators.pattern(/^[А-Яа-яЁё]{1,48}$/)]],
         telephone: ['', [Validators.required, Validators.pattern(/^8/), this.phoneValidator]],
-        email: ['', [Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/)]]
+        mail: ['', [Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/)]]
       })
     });
 

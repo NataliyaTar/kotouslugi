@@ -7,7 +7,6 @@ import ru.practice.kotouslugi.model.EthicsFeedback;
 
 import java.util.List;
 
-
 @Service
 public class EthicsFeedbackService {
   private final EthicsFeedbackRepository ethicsFeedbackRepository;

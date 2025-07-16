@@ -16,8 +16,6 @@ public class EthicsController extends BaseController {
     this.ethicsService = ethicsService;
   }
 
-  /* Проверка доступности времени (GET /api/ethics/check?startTime=2025-12-31T15:30:00)
-   */
   @GetMapping("/check")
   public ResponseEntity<Boolean> checkTimeSlot(
     @RequestParam LocalDateTime startTime
@@ -26,9 +24,7 @@ public class EthicsController extends BaseController {
     return ResponseEntity.ok(isAvailable);
   }
 
-  /* Добавление новой записи (POST /api/ethics/add)
-   */
-  @PostMapping("/add")
+  @PostMapping(value = "/add", produces = "application/json")
   public ResponseEntity<String> addRecord(
     @RequestBody EthicsRecord ethicsRecord
   ) {
