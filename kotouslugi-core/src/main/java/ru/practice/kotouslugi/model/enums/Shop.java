@@ -1,4 +1,4 @@
-package ru.practice.kotouslugi.model;
+package ru.practice.kotouslugi.model.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,15 +11,13 @@ import jakarta.persistence.*;
 @Setter
 @Entity
 @Builder
-@Table(name = "address")
+@Table(name = "shop")
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserAddress {
+
+public class Shop {
   @Id
   @GeneratedValue
   private Long id;
-  private String city;
-  private String street;
-  private Integer floor;
-  private Integer apartment_number;
+  private String name;
 }

@@ -68,3 +68,42 @@ values (1, 1);
 INSERT INTO service_category
 values (2, 2);
 ALTER TABLE requisition ALTER COLUMN fields TEXT;
+
+-- product
+INSERT INTO product(food_name, feed_type, taste, weight_grams, price)
+values ('Сухой корм для котят', DRY_FOOD, HAM_FLAVOR, 500, 450.0);
+
+INSERT INTO product(food_name, feed_type, taste, weight_grams, price)
+values ('Влажный корм для стерилизованных кошек', WET_FOOD, BEEF_FLAVOR, 85, 89.0);
+
+INSERT INTO product(food_name, feed_type, taste, weight_grams, price)
+values ('Лакомство для зубов', MEDICINAL_FOOD, CHICKEN_TASTE, 100, 99.9);
+
+--shop
+INSERT INTO shop(name)
+values ('Зоомагазин "Кошачий рай"');
+
+INSERT INTO shop(name)
+values ('Магазин здорового корма "Пушистый мир"');
+
+INSERT INTO shop(name)
+values ('Сеть зоомагазинов "Лапки"');
+
+INSERT INTO shop(name)
+values ('Домашний магазин для кошек "Уют"');
+
+--userAddress
+INSERT INTO address(city, street)
+values ('Воронеж', 'ул. Кольцовская');
+
+INSERT INTO address(city, street)
+values ('Москва', 'ул. Ленина');
+
+INSERT INTO address(city, street)
+values ('Санкт-Петербург', 'Невский проспект');
+
+INSERT INTO address(city, street)
+values ('Казань', 'ул. Баумана');
+
+INSERT INTO address(city, street)
+values ('Краснодар', 'ул. Красная');
