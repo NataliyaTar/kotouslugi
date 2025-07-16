@@ -51,6 +51,12 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'food',
+        'eating.png',
+        'Заказ еды',
+        'Ваш питомец проголодался? Закажите котику покушать!');
 
 -- category
 INSERT INTO category
@@ -59,6 +65,8 @@ INSERT INTO category
 values (1, 'Медицина');
 INSERT INTO category
 values (2, 'Отдых и развлечение');
+INSERT INTO category
+values (3, 'Питание');
 
 -- service_to_category
 INSERT INTO service_category
@@ -67,3 +75,5 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+INSERT INTO service_category
+values (3, 3);
