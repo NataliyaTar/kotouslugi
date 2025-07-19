@@ -1,7 +1,8 @@
+// src/app/services/constants/constants.service.ts
 import { Injectable } from '@angular/core';
-import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex } from '@models/cat.model';
+import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex, ICat } from '@models/cat.model'; // Добавил ICat
 import { mergeMap, Observable, of, take } from 'rxjs';
-import { CatService } from '@services/cat/cat.service';
+import { CatService } from '@services/cat/cat.service'; // ИСПРАВЛЕНО: 'from' вместо '=>'
 import { IValue } from '@models/common.model';
 
 @Injectable({
@@ -9,7 +10,6 @@ import { IValue } from '@models/common.model';
 })
 export class ConstantsService {
 
-  // варианты пола
   public sexOptions: IValueSex[] = [
     {
       id: 'male',
@@ -21,7 +21,6 @@ export class ConstantsService {
     }
   ];
 
-  // варианты пород
   public breedOptions: IValueBreed[] = [
     {
       id: 'siamese',
@@ -57,7 +56,6 @@ export class ConstantsService {
     }
   ];
 
-  // варианты специалистов
   public doctorOptions: IValue[] = [
     {
       id: 0,
@@ -81,6 +79,50 @@ export class ConstantsService {
     }
   ];
 
+  // --- НОВЫЕ КОНСТАНТЫ ДЛЯ ДОСТАВКИ ЕДЫ (С ЧИСЛОВЫМИ ID) ---
+  public cityOptions: IValue[] = [
+    { id: 101, text: 'Воронеж' },
+    { id: 102, text: 'Москва' },
+    { id: 103, text: 'Санкт-Петербург' },
+    { id: 104, text: 'Волгоград' },
+    { id: 105, text: 'Белгород' },
+    { id: 106, text: 'Старый Оскол' }
+  ];
+
+  public streetOptions: IValue[] = [
+    { id: 201, text: 'Ленина' },
+    { id: 202, text: 'Дзержинского' },
+    { id: 203, text: 'Мира' },
+    { id: 204, text: 'Карла Маркса' },
+    { id: 205, text: 'Орджоникидзе' }
+  ];
+
+  public shopOptions: IValue[] = [
+    { id: 301,
+      text: 'Магнит'
+    },
+    { id: 302,
+      text: 'Пятерочка'
+    },
+    { id: 303,
+      text: 'Чижик'
+    }
+  ];
+
+  public deliveryTypeOptions: IValue[] = [
+    { id: 401, text: 'Доставка' },
+    { id: 402, text: 'Самовывоз' }
+  ];
+
+  public productOptions: IValue[] = [
+    { id: 0, text: 'Сухой корм "Whiskas" (1кг)' },
+    { id: 1, text: 'Влажный корм "Felix" (100г)' },
+    { id: 2, text: 'Лакомство "Dreamies" (60г)' },
+    { id: 3, text: 'Консервы "Sheba" (85г)' },
+    { id: 4, text: 'Витамины для шерсти' },
+    { id: 5, text: 'Игрушка-мышка' }
+  ];
+
   constructor(
     private catService: CatService,
   ) { }
@@ -92,10 +134,10 @@ export class ConstantsService {
     return this.catService.getCatList().pipe(
       take(1)
     ).pipe(
-      mergeMap((res) => {
+      mergeMap((res: ICat[]) => { // ИСПРАВЛЕНО: Явно указан тип res как ICat[]
         const male: IValueCat[] = [];
         const female: IValueCat[] = [];
-        res.forEach(item => {
+        res.forEach((item: ICat) => { // ИСПРАВЛЕНО: Явно указан тип item как ICat
           if (item.sex === 'male') {
             male.push({id: item.id, text: item.name});
           } else {
@@ -117,8 +159,8 @@ export class ConstantsService {
     return this.catService.getCatList().pipe(
       take(1)
     ).pipe(
-      mergeMap((res) => {
-        return of(res.map((item) => {
+      mergeMap((res: ICat[]) => { // ИСПРАВЛЕНО: Явно указан тип res как ICat[]
+        return of(res.map((item: ICat) => { // ИСПРАВЛЕНО: Явно указан тип item как ICat
           return {
             id: item.id,
             text: item.name
