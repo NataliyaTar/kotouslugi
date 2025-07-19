@@ -3,10 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
+import { FoodComponent } from './components/food/food.component';
 
-/**
- * Роутинг для услуг
- */
+
 const routes: Routes = [
   {
     path: '',
@@ -28,7 +27,14 @@ const routes: Routes = [
         },
         component: VetComponent
       },
-      // ToDo: your router for service
+      {
+        path: 'food',
+        pathMatch: 'full',
+        data: {
+          idService: 'food'
+        },
+        component: FoodComponent
+      },
     ]
   }
 ];
