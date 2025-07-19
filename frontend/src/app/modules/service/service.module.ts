@@ -5,7 +5,7 @@ import { NewFamilyComponent } from './components/new-family/new-family.component
 import { VetComponent } from './components/vet/vet.component';
 import { FoodComponent } from './components/food/food.component';
 
-
+//Роуты
 const routes: Routes = [
   {
     path: '',
