@@ -1,0 +1,196 @@
+@if (loading) {
+<app-throbber></app-throbber>
+} @else {
+<div class="fields-wrapper" [formGroup]="form">
+<div class="field-wrapper" [hidden]="active !== 0" [formGroup]="getControl(0, '')">
+<div class="field">
+<div>
+<p class="label">{{ FormMap.cat }}</p>
+  @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+  <p class="error">Поле обязательно для заполнения</p>
+  }
+  </div>
+  <select formControlName="cat">
+  @for (option of optionsCat; track $index) {
+  <option [value]="getItem('cat', $index)">{{option.text}}</option>
+  }
+  </select>
+  </div>
+  <div class="field">
+  <div>
+  <p class="label">{{ FormMap.orderName }}</p>
+  @if (getControl(0, 'orderName').errors && getControl(0, 'orderName').touched) {
+@if (getControl(0, 'orderName').errors?.['required']) {
+  <p class="error">Поле обязательно для заполнения</p>
+    }
+    @if (getControl(0, 'orderName').errors?.['maxlength']) {
+  <p class="error">Максимум 100 символов</p>
+    }
+    }
+    </div>
+  <input formControlName="orderName" placeholder="Ваше Имя">
+    </div>
+    <div class="field">
+    <div>
+    <p class="label">{{ FormMap.telephone }}</p>
+    @if (getControl(0, 'telephone').errors && getControl(0, 'telephone').touched) {
+  @if (getControl(0, 'telephone').errors?.['required']) {
+    <p class="error">Поле обязательно для заполнения</p>
+      }
+      @if (getControl(0, 'telephone').errors?.['pattern']) {
+    <p class="error">Введите 11 цифр (например, 79123456789)</p>
+      }
+  }
+  </div>
+  <input formControlName="telephone" placeholder="79123456789">
+  </div>
+  <div class="field">
+  <div>
+  <p class="label">{{ FormMap.email }}</p>
+  @if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
+<p class="error">Введите корректный Email</p>
+}
+</div>
+<input formControlName="email" type="email" placeholder="example@mail.com">
+</div>
+</div>
+
+<div class="field-wrapper" [hidden]="active !== 1" [formGroup]="getControl(1, '')">
+<div class="field">
+<div>
+<p class="label">{{ FormMap.city }}</p>
+  @if (getControl(1, 'city').errors?.['required'] && getControl(1, 'city').touched) {
+  <p class="error">Поле обязательно для заполнения</p>
+  }
+  </div>
+  <select formControlName="city">
+  @for (option of cityOptions; track $index) {
+  <option [value]="getItem('city', $index)">{{option.text}}</option>
+  }
+  </select>
+  </div>
+  <div class="field">
+  <div>
+  <p class="label">{{ FormMap.street }}</p>
+  @if (getControl(1, 'street').errors?.['required'] && getControl(1, 'street').touched) {
+<p class="error">Поле обязательно для заполнения</p>
+}
+</div>
+<select formControlName="street">
+@for (option of streetOptions; track $index) {
+<option [value]="getItem('street', $index)">{{option.text}}</option>
+}
+</select>
+</div>
+<div class="field">
+<div>
+<p class="label">{{ FormMap.floor }}</p>
+  @if (getControl(1, 'floor').errors?.['nonNegative'] && getControl(1, 'floor').touched) {
+  <p class="error">Введите неотрицательное число</p>
+  }
+  </div>
+  <input formControlName="floor" type="text" pattern="[0-9]*" inputmode="numeric" placeholder="Например, 2">
+</div>
+<div class="field">
+<div>
+<p class="label">{{ FormMap.entrance }}</p>
+  @if (getControl(1, 'entrance').errors?.['nonNegative'] && getControl(1, 'entrance').touched) {
+  <p class="error">Введите неотрицательное число</p>
+  }
+  </div>
+  <input formControlName="entrance" type="text" pattern="[0-9]*" inputmode="numeric" placeholder="Например, 1">
+</div>
+</div>
+
+<div class="field-wrapper" [hidden]="active !== 2" [formGroup]="getControl(2, '')">
+<div class="field">
+<div>
+<p class="label">{{ FormMap.shop }}</p>
+  @if (getControl(2, 'shop').errors?.['required'] && getControl(2, 'shop').touched) {
+  <p class="error">Поле обязательно для заполнения</p>
+  }
+  </div>
+  <select formControlName="shop">
+  @for (option of shopOptions; track $index) {
+  <option [value]="getItem('shop', $index)">{{option.text}}</option>
+  }
+  </select>
+  </div>
+  <div class="field">
+  <div>
+  <p class="label">{{ FormMap.deliveryType }}</p>
+  @if (getControl(2, 'deliveryType').errors?.['required'] && getControl(2, 'deliveryType').touched) {
+<p class="error">Поле обязательно для заполнения</p>
+}
+</div>
+<select formControlName="deliveryType">
+@for (option of deliveryTypeOptions; track $index) {
+<option [value]="getItem('deliveryType', $index)">{{option.text}}</option>
+}
+</select>
+</div>
+<div class="field">
+<div>
+<p class="label">{{ FormMap.deliveryDate }}</p>
+  @if (getControl(2, 'deliveryDate').errors && getControl(2, 'deliveryDate').touched) {
+  @if (getControl(2, 'deliveryDate').errors?.['required']) {
+    <p class="error">Поле обязательно для заполнения</p>
+      }
+      @if (getControl(2, 'deliveryDate').errors?.['minDate']) {
+    <p class="error">Выберите дату не ранее сегодняшнего дня</p>
+      }
+  }
+  </div>
+  <input formControlName="deliveryDate" type="date">
+  </div>
+  <div class="field">
+  <div>
+  <p class="label">{{ FormMap.deliveryTime }}</p>
+  @if (getControl(2, 'deliveryTime').errors?.['required'] && getControl(2, 'deliveryTime').touched) {
+<p class="error">Поле обязательно для заполнения</p>
+}
+</div>
+<input formControlName="deliveryTime" type="time" list="time_list">
+<datalist id="time_list">
+<option value="09:00">
+<option value="10:00">
+<option value="11:00">
+<option value="12:00">
+<option value="13:00">
+<option value="14:00">
+<option value="15:00">
+<option value="16:00">
+<option value="17:00">
+<option value="18:00">
+</datalist>
+</div>
+</div>
+
+<div class="field-wrapper" [hidden]="active !== 3" [formGroup]="getControl(3, '')">
+<div class="field">
+<div>
+<p class="label">{{ FormMap.products }}</p>
+  @if (getControl(3, 'products').errors?.['required'] && getControl(3, 'products').touched) {
+  <p class="error">Выберите хотя бы один продукт</p>
+  }
+  </div>
+  <select formControlName="products" multiple size="5">
+  @for (product of productOptions; track $index) {
+  <option [value]="getItem('product', $index)">{{product.text}}</option>
+  }
+  </select>
+  </div>
+  </div>
+
+  <div class="field-wrapper" [hidden]="active !== 4" [formGroup]="getControl(4, '')">
+<div class="field">
+<p class="label">{{ FormMap.comment }}</p>
+<textarea formControlName="comment" rows="4" placeholder="Дополнительные пожелания к заказу..."></textarea>
+</div>
+</div>
+
+@if (active === 5) {
+<app-check-info [data]="getResult"></app-check-info>
+}
+</div>
+}

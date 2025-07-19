@@ -32,6 +32,7 @@ export const routes: Routes = [
     path: 'service',
     loadChildren: () => import('./modules/service/service.module').then(mod => mod.ServiceModule)
   },
+
   {
     path: '**',
     loadChildren: () => import('./modules/not-found/not-found.module').then(mod => mod.NotFoundModule)

@@ -1,4 +1,4 @@
-// Файл не трогаем
+// Файл не трогаем.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
