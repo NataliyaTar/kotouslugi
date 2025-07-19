@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { IValueCat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
@@ -10,9 +10,10 @@ import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
+import { FoodService } from '@services/food/food.service';
 
 export enum FormMap {
-  cat = 'Кличка кота',
+  cat = 'Кличка',
   ownerName = 'Имя владельца',
   telephone = 'Телефон для связи',
   email = 'Email для связи',
@@ -21,19 +22,10 @@ export enum FormMap {
   house = 'Дом',
   apartment = 'Квартира',
   shop = 'Магазин',
-  deliveryType = 'Тип доставки',
+  products = 'Продукты',
   deliveryDate = 'Дата доставки',
   deliveryTime = 'Время доставки',
-  products = 'Выбранные товары',
-  comment = 'Комментарий к заказу'
-}
-
-interface IProduct {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  image?: string;
+  comment = 'Комментарий'
 }
 
 @Component({
@@ -46,31 +38,23 @@ interface IProduct {
     ThrobberComponent,
   ],
   templateUrl: './food.component.html',
-  styleUrl: './food.component.scss'
+  styleUrls: ['./food.component.scss']
 })
 export class FoodComponent implements OnInit, OnDestroy {
+
   public loading = true;
   public form: UntypedFormGroup;
   public active: number;
-  public optionsCat: IValueCat[] = [];
-  public cityOptions: { id: number; name: string }[] = [];
-  public streetOptions: { id: number; name: string }[] = [];
-  public shopOptions: { id: number; name: string }[] = [];
-  public productOptions: IProduct[] = [];
-  public selectedProducts: IProduct[] = [];
+  public optionsCat: IValueCat[];
+  public shops: any[] = [];
+  public products: any[] = [];
 
   private idService: string;
   private steps: IStep[];
   private subscriptions: Subscription[] = [];
 
   public get getResult() {
-    const formData = this.form.getRawValue();
-    const result = {
-      ...formData,
-      products: this.selectedProducts,
-      totalPrice: this.getTotalPrice()
-    };
-    return this.serviceInfo.prepareDataForPreview(result, this.steps, FormMap);
+    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
   }
 
   constructor(
@@ -78,54 +62,13 @@ export class FoodComponent implements OnInit, OnDestroy {
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private catService: CatService,
-    private constantService: ConstantsService
+    private constantService: ConstantsService,
+    private foodService: FoodService
   ) {}
 
   public ngOnInit(): void {
     this.getCatOption();
-    this.loadStaticData();
-  }
-
-  private loadStaticData(): void {
-    // Временные данные - потом заменим на API
-    this.cityOptions = [
-      { id: 1, name: 'Москва' },
-      { id: 2, name: 'Санкт-Петербург' },
-      { id: 3, name: 'Новосибирск' }
-    ];
-
-    this.shopOptions = [
-      { id: 1, name: 'Зоомагазин "Котофей"' },
-      { id: 2, name: 'Зоомагазин "Мурмаркет"' },
-      { id: 3, name: 'Зоомагазин "КотБатон"' }
-    ];
-
-    this.productOptions = [
-      {
-        id: 1,
-        name: 'Сухой корм для взрослых',
-        price: 1200,
-        description: 'Премиум качество, 5 кг'
-      },
-      {
-        id: 2,
-        name: 'Влажный корм для котят',
-        price: 850,
-        description: 'Нежные кусочки, 12 пакетиков'
-      },
-      {
-        id: 3,
-        name: 'Лакомства для кошек',
-        price: 350,
-        description: 'Ассорти 5 видов, 100 г'
-      },
-      {
-        id: 4,
-        name: 'Наполнитель древесный',
-        price: 600,
-        description: 'Экологичный, 10 л'
-      }
-    ];
+    this.loadShops();
   }
 
   public ngOnDestroy() {
@@ -142,7 +85,6 @@ export class FoodComponent implements OnInit, OnDestroy {
   private prepareService(): void {
     this.route.data.pipe(take(1)).subscribe(res => {
       this.idService = res['idService'];
-
       this.serviceInfo.getSteps(this.idService).pipe(take(1)).subscribe(res => {
         this.steps = res;
       });
@@ -152,7 +94,6 @@ export class FoodComponent implements OnInit, OnDestroy {
           this.active = res?.[this.idService] || 0;
         })
       );
-
       this.initForm();
     });
   }
@@ -163,93 +104,86 @@ export class FoodComponent implements OnInit, OnDestroy {
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
         ownerName: ['', [Validators.required]],
         telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['', [Validators.required, Validators.email]]
+        email: ['', [Validators.email]]
       }),
       1: this.fb.group({
-        city: ['', [Validators.required]],
-        street: ['', [Validators.required]],
-        house: [null, [Validators.required, this.positiveNumberValidator]],
-        apartment: [null, this.optionalPositiveNumberValidator]
+        city: ['', [Validators.required, this.capitalizeValidator]],
+        street: ['', [Validators.required, this.capitalizeValidator]],
+        house: ['', [Validators.required, Validators.min(1)]],
+        apartment: ['']
       }),
       2: this.fb.group({
         shop: ['', [Validators.required]],
-        deliveryType: ['delivery', [Validators.required]],
+        products: [[], [Validators.required]],
         deliveryDate: ['', [Validators.required, this.dateValidator]],
         deliveryTime: ['']
       }),
       3: this.fb.group({
-        products: [[], [Validators.required, Validators.minLength(1)]]
-      }),
-      4: this.fb.group({
         comment: ['']
       })
     });
 
-    this.serviceInfo.servicesForms$.next({
-      [this.idService]: this.form
+    this.form.get('2.shop')?.valueChanges.subscribe(shopId => {
+      if (shopId) this.loadProducts(shopId);
     });
 
+    this.serviceInfo.servicesForms$.next({ [this.idService]: this.form });
     this.loading = false;
   }
 
-  private dateValidator(control: AbstractControl): ValidationErrors | null {
-    if (new Date(control.value) < new Date()) {
-      return { minDate: true };
+  private loadShops(): void {
+    this.foodService.getShops().subscribe(shops => {
+      this.shops = shops;
+    });
+  }
+
+  private loadProducts(shopId: number): void {
+    this.foodService.getProducts(shopId).subscribe(products => {
+      this.products = products;
+    });
+  }
+
+  private dateValidator(control: FormControl) {
+    return new Date(control.value) < new Date() ? { minDate: true } : null;
+  }
+
+  private capitalizeValidator(control: FormControl) {
+    const value = control.value;
+    if (value && value[0] !== value[0]?.toUpperCase()) {
+      return { capitalize: true };
     }
     return null;
-  }
-
-  private positiveNumberValidator(control: AbstractControl): ValidationErrors | null {
-    const value = Number(control.value);
-    return value >= 1 ? null : { positive: true };
-  }
-
-  private optionalPositiveNumberValidator(control: AbstractControl): ValidationErrors | null {
-    const value = control.value;
-    if (!value) return null;
-    return Number(value) >= 1 ? null : { positive: true };
-  }
-
-  public getItem(type: 'cat' | 'city' | 'street' | 'shop', index: number): string {
-    switch (type) {
-      case 'cat': return JSON.stringify(this.optionsCat[index]);
-      case 'city': return JSON.stringify(this.cityOptions[index]);
-      case 'street': return JSON.stringify(this.streetOptions[index]);
-      case 'shop': return JSON.stringify(this.shopOptions[index]);
-      default: return '';
-    }
   }
 
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
 
-  public onCitySelect(cityId: number): void {
-    // Здесь будет запрос к API для получения улиц
-    // Временные данные
-    this.streetOptions = [
-      { id: 1, name: 'Ленина' },
-      { id: 2, name: 'Пушкина' },
-      { id: 3, name: 'Гагарина' },
-      { id: 4, name: 'Центральная' }
-    ];
-  }
+  public submitOrder(): void {
+    if (this.form.valid) {
+      const formData = this.form.getRawValue();
+      const orderData = {
+        cat: JSON.parse(formData[0].cat),
+        ownerName: formData[0].ownerName,
+        telephone: formData[0].telephone,
+        email: formData[0].email,
+        address: {
+          city: formData[1].city,
+          street: formData[1].street,
+          house: formData[1].house,
+          apartment: formData[1].apartment
+        },
+        shopId: formData[2].shop,
+        products: formData[2].products,
+        deliveryDate: formData[2].deliveryDate,
+        deliveryTime: formData[2].deliveryTime,
+        comment: formData[3].comment
+      };
 
-  public toggleProduct(product: IProduct): void {
-    const index = this.selectedProducts.findIndex(p => p.id === product.id);
-    if (index >= 0) {
-      this.selectedProducts.splice(index, 1);
-    } else {
-      this.selectedProducts.push(product);
+      this.foodService.createOrder(orderData).subscribe(() => {
+        const nextStep = this.active + 1;
+        this.serviceInfo.setActiveStep(this.idService, nextStep);
+      });
     }
-    this.form.get('3.products').setValue(this.selectedProducts);
-  }
-
-  public isProductSelected(product: IProduct): boolean {
-    return this.selectedProducts.some(p => p.id === product.id);
-  }
-
-  public getTotalPrice(): number {
-    return this.selectedProducts.reduce((sum, product) => sum + product.price, 0);
   }
 }

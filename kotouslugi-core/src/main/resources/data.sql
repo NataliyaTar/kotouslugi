@@ -77,3 +77,78 @@ INSERT INTO service_category
 values (2, 2);
 INSERT INTO service_category
 values (3, 3);
+
+-- Добавляем таблицы для поддержки функционала заказа еды
+CREATE TABLE shop (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    city_id INTEGER REFERENCES city(id),
+                    address TEXT
+);
+
+CREATE TABLE city (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE street (
+                      id SERIAL PRIMARY KEY,
+                      city_id INTEGER REFERENCES city(id),
+                      name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE product (
+                       id SERIAL PRIMARY KEY,
+                       name VARCHAR(255) NOT NULL,
+                       description TEXT,
+                       price DECIMAL(10, 2) NOT NULL,
+                       image_url VARCHAR(255),
+                       shop_id INTEGER REFERENCES shop(id)
+);
+
+CREATE TABLE food_order (
+                          id SERIAL PRIMARY KEY,
+                          cat_id INTEGER REFERENCES cat(id),
+                          owner_name VARCHAR(255) NOT NULL,
+                          telephone VARCHAR(20) NOT NULL,
+                          email VARCHAR(255),
+                          city_id INTEGER REFERENCES city(id),
+                          street_id INTEGER REFERENCES street(id),
+                          house VARCHAR(20) NOT NULL,
+                          apartment VARCHAR(20),
+                          shop_id INTEGER REFERENCES shop(id),
+                          delivery_type VARCHAR(50) NOT NULL,
+                          delivery_date DATE NOT NULL,
+                          delivery_time TIME,
+                          comment TEXT,
+                          status VARCHAR(50) DEFAULT 'Подана',
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          total_price DECIMAL(10, 2) NOT NULL
+);
+
+CREATE TABLE order_product (
+                             order_id INTEGER REFERENCES food_order(id),
+                             product_id INTEGER REFERENCES product(id),
+                             quantity INTEGER DEFAULT 1,
+                             PRIMARY KEY (order_id, product_id)
+);-- Добавляем тестовые города
+INSERT INTO city (name) VALUES
+                          ('Москва'),
+                          ('Санкт-Петербург');
+
+-- Добавляем улицы
+INSERT INTO street (city_id, name) VALUES
+                                     (1, 'Арбат'),
+                                     (1, 'Тверская'),
+                                     (2, 'Невский проспект');
+
+-- Добавляем магазины
+INSERT INTO shop (name, city_id, address) VALUES
+                                            ('Котофей', 1, 'ул. Арбат, д. 12'),
+                                            ('Мурмаркет', 2, 'Невский пр-т, д. 45');
+
+-- Добавляем продукты
+INSERT INTO product (name, description, price, image_url, shop_id) VALUES
+                                                                     ('Вискас', 'Корм для взрослых кошек', 350.0, 'whiskas.jpg', 1),
+                                                                     ('Royal Canin', 'Премиум корм для котят', 1200.0, 'royal.jpg', 1),
+                                                                     ('Purina', 'Корм с лососем', 780.0, 'purina.jpg', 2);
