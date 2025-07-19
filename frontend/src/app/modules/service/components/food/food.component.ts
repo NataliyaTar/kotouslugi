@@ -1,31 +1,34 @@
+// src/app/modules/service/components/food/food.component.ts
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { IValueCat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
+import { CommonModule, JsonPipe, AsyncPipe } from '@angular/common';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
 import { CatService } from '@services/cat/cat.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
-import { JsonPipe } from '@angular/common';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
-import { FoodService } from '@services/food/food.service';
+import { IPreview, IValue } from '@models/common.model';
 
 export enum FormMap {
-  cat = 'Кличка',
-  ownerName = 'Имя владельца',
+  cat = 'Кличка кота',
+  orderName = 'Имя для заказа',
   telephone = 'Телефон для связи',
   email = 'Email для связи',
   city = 'Город',
   street = 'Улица',
-  house = 'Дом',
-  apartment = 'Квартира',
+  floor = 'Этаж',
+  entrance = 'Подъезд',
   shop = 'Магазин',
-  products = 'Продукты',
+  deliveryType = 'Тип доставки',
   deliveryDate = 'Дата доставки',
   deliveryTime = 'Время доставки',
-  comment = 'Комментарий'
+  products = 'Продукты',
+  comment = 'Комментарий к заказу',
 }
 
 @Component({
@@ -34,156 +37,298 @@ export enum FormMap {
   imports: [
     ReactiveFormsModule,
     CheckInfoComponent,
+    CommonModule,
     JsonPipe,
     ThrobberComponent,
+    AsyncPipe
   ],
   templateUrl: './food.component.html',
   styleUrls: ['./food.component.scss']
 })
 export class FoodComponent implements OnInit, OnDestroy {
-
   public loading = true;
-  public form: UntypedFormGroup;
-  public active: number;
-  public optionsCat: IValueCat[];
-  public shops: any[] = [];
-  public products: any[] = [];
+  public form!: UntypedFormGroup;
+  public active: number = 0; // Активный шаг формы, синхронизируется с ServiceInfoService
 
-  private idService: string;
-  private steps: IStep[];
+  public optionsCat: IValueCat[] = [];
+  public cityOptions: IValue[] = [];
+  public streetOptions: IValue[] = [];
+  public shopOptions: IValue[] = [];
+  public deliveryTypeOptions: IValue[] = [];
+  public productOptions: IValue[] = [];
+
+  public idService: string = '';
+  public steps: IStep[] = [];
   private subscriptions: Subscription[] = [];
 
-  public get getResult() {
-    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
+  public FormMap = FormMap;
+
+  /**
+   * Возвращает преобразованное значение формы для отображения заполненных данных на этапе проверки.
+   */
+  public get getResult(): IPreview[][] {
+    const rawValue = this.form.getRawValue();
+
+    const preparedForPreview: any = {};
+
+    preparedForPreview[0] = {
+      cat: rawValue[0].cat,
+      orderName: rawValue[0].orderName,
+      telephone: rawValue[0].telephone,
+      email: rawValue[0].email
+    };
+
+    preparedForPreview[1] = {
+      city: rawValue[1].city,
+      street: rawValue[1].street,
+      floor: rawValue[1].floor,
+      entrance: rawValue[1].entrance
+    };
+
+    preparedForPreview[2] = {
+      shop: rawValue[2].shop,
+      deliveryType: rawValue[2].deliveryType,
+      deliveryDate: rawValue[2].deliveryDate,
+      deliveryTime: rawValue[2].deliveryTime
+    };
+
+    const selectedProductsRaw = Array.isArray(rawValue[3].products)
+      ? rawValue[3].products
+      : [];
+
+    const productNamesForPreview = selectedProductsRaw
+      .map((jsonString: string) => {
+        try {
+          return JSON.parse(jsonString)?.text;
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter((name: string | null) => name !== null)
+      .join(', ');
+
+    preparedForPreview[3] = {
+      products: productNamesForPreview || '-'
+    };
+
+    preparedForPreview[4] = {
+      comment: rawValue[4].comment
+    };
+
+    // preparedForPreview[5] = {}; // Эту строку УДАЛИЛИ, так как шаг 5 - это сама проверка
+
+    // ИСПРАВЛЕНИЕ: Передаем в prepareDataForPreview только те шаги,
+    // которые содержат реальные поля формы. Последний шаг (индекс 5)
+    // - это шаг "Проверка информации", его нужно исключить.
+    const stepsForPreview = this.steps.slice(0, this.steps.length - 1); // Исключаем последний шаг
+
+    return this.serviceInfo.prepareDataForPreview(preparedForPreview, stepsForPreview, FormMap);
   }
 
   constructor(
     private fb: FormBuilder,
-    private serviceInfo: ServiceInfoService,
+    public serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private catService: CatService,
     private constantService: ConstantsService,
-    private foodService: FoodService
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
-    this.getCatOption();
-    this.loadShops();
+    this.getInitialData();
   }
 
-  public ngOnDestroy() {
-    this.subscriptions.forEach(item => item.unsubscribe());
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  private getCatOption(): void {
-    this.constantService.getCatOptionsAll().pipe(take(1)).subscribe((res: IValueCat[]) => {
-      this.optionsCat = res;
-      this.prepareService();
+  public getControl(step: number, id: ''): UntypedFormGroup;
+  public getControl(step: number, id: string): FormControl;
+  public getControl(step: number, id: string): UntypedFormGroup | FormControl {
+    if (id === '') {
+      return this.form.get(step.toString()) as UntypedFormGroup;
+    }
+    return this.form.get(`${step}.${id}`) as FormControl;
+  }
+
+  public getItem(type: 'cat' | 'shop' | 'deliveryType' | 'product' | 'city' | 'street', index: number): string {
+    let item: IValue | IValueCat | undefined;
+    switch (type) {
+      case 'cat': item = this.optionsCat[index]; break;
+      case 'shop': item = this.shopOptions[index]; break;
+      case 'deliveryType': item = this.deliveryTypeOptions[index]; break;
+      case 'product': item = this.productOptions[index]; break;
+      case 'city': item = this.cityOptions[index]; break;
+      case 'street': item = this.streetOptions[index]; break;
+      default: item = undefined;
+    }
+    return item ? JSON.stringify(item) : '';
+  }
+
+  private dateValidator = (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) { return null; }
+    const today = new Date();
+    const inputDate = new Date(control.value);
+    today.setHours(0, 0, 0, 0);
+    inputDate.setHours(0, 0, 0, 0);
+    return inputDate >= today ? null : { minDate: true };
+  };
+
+  private getInitialData(): void {
+    this.constantService.getCatOptionsAll().pipe(
+      take(1)
+    ).subscribe({
+      next: (catsRes: IValueCat[]) => {
+        this.optionsCat = catsRes.map(cat => ({ id: cat.id, text: cat.text }));
+        this.shopOptions = this.constantService.shopOptions;
+        this.deliveryTypeOptions = this.constantService.deliveryTypeOptions;
+        this.productOptions = this.constantService.productOptions;
+        this.cityOptions = this.constantService.cityOptions;
+        this.streetOptions = this.constantService.streetOptions;
+
+        this.prepareService();
+      },
+      error: (error) => {
+        console.error('Ошибка при загрузке начальных данных:', error);
+        this.loading = false;
+      }
     });
   }
 
   private prepareService(): void {
-    this.route.data.pipe(take(1)).subscribe(res => {
+    this.route.data.pipe(
+      take(1)
+    ).subscribe((res: { [key: string]: any }) => {
       this.idService = res['idService'];
-      this.serviceInfo.getSteps(this.idService).pipe(take(1)).subscribe(res => {
-        this.steps = res;
-      });
 
-      this.subscriptions.push(
-        this.serviceInfo.activeStep.subscribe(res => {
-          this.active = res?.[this.idService] || 0;
-        })
-      );
-      this.initForm();
+      this.serviceInfo.getSteps(this.idService).pipe(
+        take(1)
+      ).subscribe(stepsRes => {
+        this.steps = stepsRes;
+        this.initForm();
+        this.loading = false;
+
+        // ВАЖНО: Восстанавливаем подписку на activeStep
+        // Это синхронизирует внутренний 'active' с ServiceInfoService
+        this.subscriptions.push(
+          this.serviceInfo.activeStep.subscribe(activeRes => {
+            if (activeRes && activeRes[this.idService] !== undefined) {
+              this.active = activeRes[this.idService];
+            }
+          })
+        );
+      });
     });
   }
 
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
-        ownerName: ['', [Validators.required]],
+        cat: [this.optionsCat.length > 0 ? JSON.stringify(this.optionsCat[0]) : null, [Validators.required]],
+        orderName: ['', [Validators.required, Validators.maxLength(100)]],
         telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        email: ['', [Validators.email]]
+        email: ['', [Validators.pattern(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)]]
       }),
       1: this.fb.group({
-        city: ['', [Validators.required, this.capitalizeValidator]],
-        street: ['', [Validators.required, this.capitalizeValidator]],
-        house: ['', [Validators.required, Validators.min(1)]],
-        apartment: ['']
+        city: [this.cityOptions.length > 0 ? JSON.stringify(this.cityOptions[0]) : null, [Validators.required]],
+        street: [this.streetOptions.length > 0 ? JSON.stringify(this.streetOptions[0]) : null, [Validators.required]],
+        floor: [''],
+        entrance: ['']
       }),
       2: this.fb.group({
-        shop: ['', [Validators.required]],
-        products: [[], [Validators.required]],
+        shop: [this.shopOptions.length > 0 ? JSON.stringify(this.shopOptions[0]) : null, [Validators.required]],
+        deliveryType: [this.deliveryTypeOptions.length > 0 ? JSON.stringify(this.deliveryTypeOptions[0]) : null, [Validators.required]],
         deliveryDate: ['', [Validators.required, this.dateValidator]],
-        deliveryTime: ['']
+        deliveryTime: ['', [Validators.required]],
       }),
       3: this.fb.group({
+        products: [this.productOptions.length > 0 ? [JSON.stringify(this.productOptions[0])] : [], [Validators.required]]
+      }),
+      4: this.fb.group({
         comment: ['']
-      })
+      }),
+      5: this.fb.group({})
     });
 
-    this.form.get('2.shop')?.valueChanges.subscribe(shopId => {
-      if (shopId) this.loadProducts(shopId);
-    });
-
-    this.serviceInfo.servicesForms$.next({ [this.idService]: this.form });
-    this.loading = false;
-  }
-
-  private loadShops(): void {
-    this.foodService.getShops().subscribe(shops => {
-      this.shops = shops;
+    // ВАЖНО: Регистрируем форму в ServiceInfoService, как это делает VetComponent
+    this.serviceInfo.servicesForms$.next({
+      [this.idService]: this.form
     });
   }
 
-  private loadProducts(shopId: number): void {
-    this.foodService.getProducts(shopId).subscribe(products => {
-      this.products = products;
+  private getPayloadForBackend(): any {
+    const rawValueFromForm = this.form.getRawValue();
+
+    const allFields: { [key: string]: any } = {};
+    Object.keys(rawValueFromForm).forEach(groupKey => {
+      if (typeof rawValueFromForm[groupKey] === 'object' && rawValueFromForm[groupKey] !== null) {
+        Object.assign(allFields, rawValueFromForm[groupKey]);
+      }
     });
-  }
 
-  private dateValidator(control: FormControl) {
-    return new Date(control.value) < new Date() ? { minDate: true } : null;
-  }
-
-  private capitalizeValidator(control: FormControl) {
-    const value = control.value;
-    if (value && value[0] !== value[0]?.toUpperCase()) {
-      return { capitalize: true };
+    for (const key in allFields) {
+      if (allFields.hasOwnProperty(key)) {
+        let value = allFields[key];
+        try {
+          const parsed = JSON.parse(value);
+          if (parsed && typeof parsed === 'object' && parsed.hasOwnProperty('id')) {
+            allFields[key] = parsed.id;
+          }
+        } catch (e) {
+        }
+      }
     }
-    return null;
+
+    if (Array.isArray(allFields['products'])) {
+      allFields['products'] = allFields['products'].map((jsonString: string) => {
+        try {
+          return JSON.parse(jsonString)?.id;
+        } catch (e) {
+          return null;
+        }
+      }).filter((id: number | null) => id !== null);
+    }
+
+    if (allFields['deliveryDate']) {
+      const date = new Date(allFields['deliveryDate']);
+      allFields['deliveryDate'] = date.toISOString().split('T')[0];
+    }
+
+    return {
+      mnemonic: this.idService,
+      fields: JSON.stringify(allFields)
+    };
   }
 
-  public getControl(step: number, id: string): FormControl {
-    return this.form.get(`${step}.${id}`) as FormControl;
+  // Эти методы теперь не вызываются напрямую из HTML FoodComponent,
+  // но их можно использовать, если родительскому компоненту нужен доступ
+  // к валидации или подготовке данных FoodComponent.
+
+  /**
+   * Возвращает валидность текущего шага.
+   */
+  public isCurrentStepValid(): boolean {
+    const currentStepFormGroup = this.form.get(this.active.toString()) as UntypedFormGroup;
+    if (currentStepFormGroup) {
+      return currentStepFormGroup.valid;
+    }
+    return false;
   }
 
-  public submitOrder(): void {
-    if (this.form.valid) {
-      const formData = this.form.getRawValue();
-      const orderData = {
-        cat: JSON.parse(formData[0].cat),
-        ownerName: formData[0].ownerName,
-        telephone: formData[0].telephone,
-        email: formData[0].email,
-        address: {
-          city: formData[1].city,
-          street: formData[1].street,
-          house: formData[1].house,
-          apartment: formData[1].apartment
-        },
-        shopId: formData[2].shop,
-        products: formData[2].products,
-        deliveryDate: formData[2].deliveryDate,
-        deliveryTime: formData[2].deliveryTime,
-        comment: formData[3].comment
-      };
-
-      this.foodService.createOrder(orderData).subscribe(() => {
-        const nextStep = this.active + 1;
-        this.serviceInfo.setActiveStep(this.idService, nextStep);
-      });
+  /**
+   * Отмечает все контролы текущего шага как "тронутые", чтобы показать ошибки.
+   */
+  public markCurrentStepAsTouched(): void {
+    const currentStepFormGroup = this.form.get(this.active.toString()) as UntypedFormGroup;
+    if (currentStepFormGroup) {
+      currentStepFormGroup.markAllAsTouched();
     }
   }
+
+  /**
+   * Возвращает Payload для отправки на бэкенд (для использования родителем).
+   */
+  public getFormPayload(): any {
+    return this.getPayloadForBackend();
+  }
+
 }
