@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class FoodService {
-  private apiUrl = '/api/food'; // Используем относительный путь
+  private apiUrl = '/api/food';
 
   constructor(private http: HttpClient) { }
 

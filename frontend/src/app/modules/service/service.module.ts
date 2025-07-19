@@ -5,9 +5,7 @@ import { NewFamilyComponent } from './components/new-family/new-family.component
 import { VetComponent } from './components/vet/vet.component';
 import { FoodComponent } from './components/food/food.component';
 
-/**
- * Роутинг для услуг
- */
+
 const routes: Routes = [
   {
     path: '',
@@ -37,7 +35,6 @@ const routes: Routes = [
         },
         component: FoodComponent
       },
-      // ToDo: your router for service
     ]
   }
 ];

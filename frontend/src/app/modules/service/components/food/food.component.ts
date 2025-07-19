@@ -1,5 +1,3 @@
-// src/app/modules/service/components/food/food.component.ts
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { IValueCat } from '@models/cat.model';
@@ -22,7 +20,7 @@ export enum FormMap {
   city = 'Город',
   street = 'Улица',
   floor = 'Этаж',
-  entrance = 'Подъезд',
+  entrance = 'Квартира',
   shop = 'Магазин',
   deliveryType = 'Тип доставки',
   deliveryDate = 'Дата доставки',
@@ -48,7 +46,7 @@ export enum FormMap {
 export class FoodComponent implements OnInit, OnDestroy {
   public loading = true;
   public form!: UntypedFormGroup;
-  public active: number = 0; // Активный шаг формы, синхронизируется с ServiceInfoService
+  public active: number = 0;
 
   public optionsCat: IValueCat[] = [];
   public cityOptions: IValue[] = [];
@@ -63,9 +61,6 @@ export class FoodComponent implements OnInit, OnDestroy {
 
   public FormMap = FormMap;
 
-  /**
-   * Возвращает преобразованное значение формы для отображения заполненных данных на этапе проверки.
-   */
   public get getResult(): IPreview[][] {
     const rawValue = this.form.getRawValue();
 
@@ -115,12 +110,7 @@ export class FoodComponent implements OnInit, OnDestroy {
       comment: rawValue[4].comment
     };
 
-    // preparedForPreview[5] = {}; // Эту строку УДАЛИЛИ, так как шаг 5 - это сама проверка
-
-    // ИСПРАВЛЕНИЕ: Передаем в prepareDataForPreview только те шаги,
-    // которые содержат реальные поля формы. Последний шаг (индекс 5)
-    // - это шаг "Проверка информации", его нужно исключить.
-    const stepsForPreview = this.steps.slice(0, this.steps.length - 1); // Исключаем последний шаг
+    const stepsForPreview = this.steps.slice(0, this.steps.length - 1);
 
     return this.serviceInfo.prepareDataForPreview(preparedForPreview, stepsForPreview, FormMap);
   }
@@ -173,6 +163,14 @@ export class FoodComponent implements OnInit, OnDestroy {
     return inputDate >= today ? null : { minDate: true };
   };
 
+  private nonNegativeNumberValidator = (control: AbstractControl): ValidationErrors | null => {
+    if (control.value === null || control.value === '') {
+      return null;
+    }
+    const value = Number(control.value);
+    return !isNaN(value) && value >= 0 ? null : { nonNegative: true };
+  };
+
   private getInitialData(): void {
     this.constantService.getCatOptionsAll().pipe(
       take(1)
@@ -207,8 +205,6 @@ export class FoodComponent implements OnInit, OnDestroy {
         this.initForm();
         this.loading = false;
 
-        // ВАЖНО: Восстанавливаем подписку на activeStep
-        // Это синхронизирует внутренний 'active' с ServiceInfoService
         this.subscriptions.push(
           this.serviceInfo.activeStep.subscribe(activeRes => {
             if (activeRes && activeRes[this.idService] !== undefined) {
@@ -231,8 +227,8 @@ export class FoodComponent implements OnInit, OnDestroy {
       1: this.fb.group({
         city: [this.cityOptions.length > 0 ? JSON.stringify(this.cityOptions[0]) : null, [Validators.required]],
         street: [this.streetOptions.length > 0 ? JSON.stringify(this.streetOptions[0]) : null, [Validators.required]],
-        floor: [''],
-        entrance: ['']
+        floor: ['', [this.nonNegativeNumberValidator]],
+        entrance: ['', [this.nonNegativeNumberValidator]]
       }),
       2: this.fb.group({
         shop: [this.shopOptions.length > 0 ? JSON.stringify(this.shopOptions[0]) : null, [Validators.required]],
@@ -249,7 +245,6 @@ export class FoodComponent implements OnInit, OnDestroy {
       5: this.fb.group({})
     });
 
-    // ВАЖНО: Регистрируем форму в ServiceInfoService, как это делает VetComponent
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
     });
@@ -259,24 +254,25 @@ export class FoodComponent implements OnInit, OnDestroy {
     const rawValueFromForm = this.form.getRawValue();
 
     const allFields: { [key: string]: any } = {};
+
     Object.keys(rawValueFromForm).forEach(groupKey => {
       if (typeof rawValueFromForm[groupKey] === 'object' && rawValueFromForm[groupKey] !== null) {
         Object.assign(allFields, rawValueFromForm[groupKey]);
       }
     });
 
-    for (const key in allFields) {
-      if (allFields.hasOwnProperty(key)) {
-        let value = allFields[key];
+    ['cat', 'city', 'street', 'shop', 'deliveryType'].forEach(key => {
+      if (allFields[key]) {
         try {
-          const parsed = JSON.parse(value);
+          const parsed = JSON.parse(allFields[key]);
           if (parsed && typeof parsed === 'object' && parsed.hasOwnProperty('id')) {
             allFields[key] = parsed.id;
           }
         } catch (e) {
         }
       }
-    }
+    });
+
 
     if (Array.isArray(allFields['products'])) {
       allFields['products'] = allFields['products'].map((jsonString: string) => {
@@ -293,19 +289,24 @@ export class FoodComponent implements OnInit, OnDestroy {
       allFields['deliveryDate'] = date.toISOString().split('T')[0];
     }
 
+    if (allFields['floor'] !== '' && allFields['floor'] !== null) {
+      allFields['floor'] = Number(allFields['floor']);
+    } else {
+      allFields['floor'] = null;
+    }
+    if (allFields['entrance'] !== '' && allFields['entrance'] !== null) {
+      allFields['entrance'] = Number(allFields['entrance']);
+    } else {
+      allFields['entrance'] = null;
+    }
+
     return {
       mnemonic: this.idService,
-      fields: JSON.stringify(allFields)
+      fields: allFields
     };
   }
 
-  // Эти методы теперь не вызываются напрямую из HTML FoodComponent,
-  // но их можно использовать, если родительскому компоненту нужен доступ
-  // к валидации или подготовке данных FoodComponent.
 
-  /**
-   * Возвращает валидность текущего шага.
-   */
   public isCurrentStepValid(): boolean {
     const currentStepFormGroup = this.form.get(this.active.toString()) as UntypedFormGroup;
     if (currentStepFormGroup) {
@@ -314,9 +315,7 @@ export class FoodComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  /**
-   * Отмечает все контролы текущего шага как "тронутые", чтобы показать ошибки.
-   */
+
   public markCurrentStepAsTouched(): void {
     const currentStepFormGroup = this.form.get(this.active.toString()) as UntypedFormGroup;
     if (currentStepFormGroup) {
@@ -324,9 +323,7 @@ export class FoodComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Возвращает Payload для отправки на бэкенд (для использования родителем).
-   */
+
   public getFormPayload(): any {
     return this.getPayloadForBackend();
   }

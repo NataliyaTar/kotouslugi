@@ -1,6 +1,7 @@
 package ru.practice.kotouslugi.model;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -25,21 +26,32 @@ import java.util.Date;
 @Entity
 @Table(name = "requisition")
 public class Requisition implements Serializable {
-    @Id
-    @GeneratedValue
-    private int id;
-    @Transient
-    private String name;
-    private String mnemonic;
-    private RequisitionStatus status;
-    private Date created;
-    @JsonDeserialize(using = StringDeserializer.class)
-    private String fields;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    public static class StringDeserializer extends JsonDeserializer<String> {
-      @Override
-      public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+  @Transient
+  private String name;
+
+  private String mnemonic;
+
+  @Enumerated(EnumType.STRING)
+  private RequisitionStatus status;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date created;
+
+  @JsonDeserialize(using = Requisition.StringDeserializer.class)
+  @Column(name = "fields", columnDefinition = "TEXT")
+  private String fields;
+
+  public static class StringDeserializer extends JsonDeserializer<String> {
+    @Override
+    public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+      if (p.currentToken() == JsonToken.START_OBJECT) {
         return p.readValueAsTree().toString();
       }
+      return p.getValueAsString();
     }
+  }
 }
