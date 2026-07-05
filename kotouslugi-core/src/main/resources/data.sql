@@ -18,7 +18,7 @@ values (2,
         'Услуга «Укотоение» поможет подобрать кото-приют и котёнка',
         'hugs.png');
 
-/*-- cat
+/*-- cat */
 INSERT INTO cat (id, name, age, sex, breed)
 values (0,
         'Феликс',
@@ -30,7 +30,7 @@ values (1,
         'Муся',
         '1',
         'female',
-        'maine_coon');*/
+        'maine_coon');
 
 -- service
 INSERT INTO service(id, mnemonic, icon, title, description)
@@ -51,6 +51,15 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+/*
+Тут данные для ячейки нашей услуги
+*/
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'entertainment',
+        'relax2.png',
+        'Культура и развлечения',
+        'Культурный отдых и развлечения с близкими!');
 
 -- category
 INSERT INTO category
@@ -67,3 +76,7 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+/*Тут добавил нашу услугу в фильтр*/
+INSERT INTO service_category
+values (3, 2);
+
