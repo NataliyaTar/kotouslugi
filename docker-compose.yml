@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kotouslugi-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kotouslugi
+      POSTGRES_USER: kotouslugi
+      POSTGRES_PASSWORD: kotouslugi
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kotouslugi -d kotouslugi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: kotouslugi-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/kotouslugi
+      SPRING_DATASOURCE_USERNAME: kotouslugi
+      SPRING_DATASOURCE_PASSWORD: kotouslugi
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: kotouslugi-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "36847:80"
+
+volumes:
+  postgres_data:
