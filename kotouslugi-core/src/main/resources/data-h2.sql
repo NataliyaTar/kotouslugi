@@ -37,10 +37,10 @@ values (0,
         'Оцифруйте паспорт питомца: прививки, родословная, история болезней и контроль инбридинга');
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (1,
-        'drug_registry',
-        'drug_registry.png',
-        'Реестр ветеринарных препаратов',
-        'Проверьте подлинность ветпрепарата по коду партии и сообщите о подозрительной продукции');
+        'grooming_booking',
+        'relax2.png',
+        'Запись к грумеру',
+        'Запишите питомца в салон, выберите время и грумера, получите подтверждение и уведомления');
 INSERT INTO service(id, mnemonic, icon, title, description)
 values (2,
         'new_family',
@@ -79,25 +79,32 @@ INSERT INTO service_category
 values (3, 1);
 INSERT INTO service_category
 values (4, 2);
+-- remove legacy drug registry if left from old data
+DELETE FROM service_category
+WHERE category_id IN (SELECT id FROM service WHERE mnemonic = 'drug_registry');
+DELETE FROM service
+WHERE mnemonic = 'drug_registry';
 
--- manufacturers
-INSERT INTO manufacturer (id, name, inn, country, contact_info, type, trust_rating)
-values (0, 'КотоФарм', '7701234567', 'Россия', 'info@kotopharm.ru', 'MANUFACTURER', 4.8);
-INSERT INTO manufacturer (id, name, inn, country, contact_info, type, trust_rating)
-values (1, 'ВетИмпорт', '7709876543', 'Германия', 'sales@vetimport.de', 'IMPORTER', 4.5);
+-- keep grooming review merged into grooming booking page
+DELETE FROM service_category
+WHERE category_id IN (SELECT id FROM service WHERE mnemonic = 'grooming_review');
+DELETE FROM service
+WHERE mnemonic = 'grooming_review';
 
--- drugs
-INSERT INTO drug (id, manufacturer_id, trade_name, inn_name, form_type)
-values (0, 0, 'МурБиовак', 'инактивированная вакцина', 'раствор для инъекций');
-INSERT INTO drug (id, manufacturer_id, trade_name, inn_name, form_type)
-values (1, 1, 'КотоАнтигельминт', 'празиквантел', 'таблетки');
+-- grooming salons
+INSERT INTO grooming_salon (id, name, address, contact_phone, available_times, provides_groomers)
+values (0, 'Лапки-Ножницы', 'Москва, ул. Мур-мур, 7', '74951234567', '09:00,11:00,13:00,15:00,17:00', true);
+INSERT INTO grooming_salon (id, name, address, contact_phone, available_times, provides_groomers)
+values (1, 'Котополис Grooming', 'Москва, пр. Когтистый, 15', '74957654321', '10:00,12:00,14:00,16:00,18:00', true);
+INSERT INTO grooming_salon (id, name, address, contact_phone, available_times, provides_groomers)
+values (2, 'Пушистый стиль', 'Москва, ул. Хвостатая, 3', '74959876543', '10:30,13:30,16:30', false);
 
--- drug batches (коды для проверки в демо)
-INSERT INTO drug_batch (id, drug_id, batch_code, serial_number, expiry_date, status)
-values (0, 0, 'MBV-2026-001', 'SN-10001', '2027-12-31', 'ACTIVE');
-INSERT INTO drug_batch (id, drug_id, batch_code, serial_number, expiry_date, status)
-values (1, 0, 'MBV-2025-OLD', 'SN-09999', '2024-01-01', 'EXPIRED');
-INSERT INTO drug_batch (id, drug_id, batch_code, serial_number, expiry_date, status)
-values (2, 1, 'KAG-2026-042', 'SN-20042', '2028-06-30', 'ACTIVE');
-INSERT INTO drug_batch (id, drug_id, batch_code, serial_number, expiry_date, status)
-values (3, 1, 'KAG-RECALL-01', 'SN-20000', '2027-03-15', 'RECALLED');
+-- groomers
+INSERT INTO groomer (id, salon_id, full_name, specialization, rating)
+values (0, 0, 'Котова Анна Сергеевна', 'Стрижка длинношерстных', 4.9);
+INSERT INTO groomer (id, salon_id, full_name, specialization, rating)
+values (1, 0, 'Мяукин Петр Игоревич', 'Гигиенический уход', 4.7);
+INSERT INTO groomer (id, salon_id, full_name, specialization, rating)
+values (2, 1, 'Барсикова Елена Викторовна', 'Выставочный груминг', 4.8);
+INSERT INTO groomer (id, salon_id, full_name, specialization, rating)
+values (3, 1, 'Лапина Дарья Олеговна', 'Экспресс-уход', 4.6);

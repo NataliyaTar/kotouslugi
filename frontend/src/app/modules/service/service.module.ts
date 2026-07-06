@@ -4,7 +4,7 @@ import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
 import { AnimalPassportComponent } from './components/animal-passport/animal-passport.component';
-import { DrugRegistryComponent } from './components/drug-registry/drug-registry.component';
+import { GroomingBookingComponent } from './components/grooming-booking/grooming-booking.component';
 
 /**
  * Роутинг для услуг
@@ -31,6 +31,14 @@ const routes: Routes = [
         component: VetComponent
       },
       {
+        path: 'spa',
+        pathMatch: 'full',
+        data: {
+          idService: 'spa'
+        },
+        component: VetComponent
+      },
+      {
         path: 'animal_passport',
         pathMatch: 'full',
         data: {
@@ -39,12 +47,12 @@ const routes: Routes = [
         component: AnimalPassportComponent
       },
       {
-        path: 'drug_registry',
+        path: 'grooming_booking',
         pathMatch: 'full',
         data: {
-          idService: 'drug_registry'
+          idService: 'grooming_booking'
         },
-        component: DrugRegistryComponent
+        component: GroomingBookingComponent
       },
       // ToDo: your router for service
     ]

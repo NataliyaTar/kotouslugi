@@ -1,0 +1,77 @@
+<div class="container requests-page">
+  <div class="page-header">
+    <h3>Поданные заявки к грумеру</h3>
+    <a routerLink="/service/grooming_booking" class="back-link">Назад к записи</a>
+  </div>
+
+  @if (loading) {
+    <p class="hint">Загружаем данные...</p>
+  } @else {
+    <div class="field">
+      <div><p class="label">Котик</p></div>
+      <select [(ngModel)]="selectedCat" (change)="loadAppointments()">
+        @for (option of optionsCat; track $index) {
+          <option [value]="toJson(option)">{{ option.text }}</option>
+        }
+      </select>
+    </div>
+
+    @if (appointmentsLoading) {
+      <p class="hint">Загружаем заявки...</p>
+    } @else if (allAppointments.length) {
+      <div class="requests-list">
+        @for (item of allAppointments; track item.id) {
+          <article class="request-card shadow-block">
+            <div class="request-row">
+              <p class="request-title">Заявка №{{ item.id }}</p>
+              <span class="status-badge" [class]="getStatusClass(item.status)">
+                {{ getStatusLabel(item.status) }}
+              </span>
+            </div>
+            <p class="request-meta">{{ item.visitDate }} {{ item.visitTime }} • {{ item.packageType }}</p>
+            @if (item.salonResponse) {
+              <p class="request-response">{{ item.salonResponse }}</p>
+            }
+
+            @if (canReviewAppointment(item)) {
+              <button type="button" class="review-open-btn" (click)="openReviewForm(item.id)">
+                Оставить отзыв
+              </button>
+            }
+
+            @if (reviewTargetId === item.id) {
+              <div class="review-form">
+                <div class="field review-field">
+                  <div><p class="label">Оценка</p></div>
+                  <select [(ngModel)]="reviewRating">
+                    <option [value]="5">5</option>
+                    <option [value]="4">4</option>
+                    <option [value]="3">3</option>
+                    <option [value]="2">2</option>
+                    <option [value]="1">1</option>
+                  </select>
+                </div>
+
+                <div class="field review-field">
+                  <div><p class="label">Комментарий</p></div>
+                  <textarea [(ngModel)]="reviewComment" placeholder="Как прошло посещение"></textarea>
+                </div>
+
+                <button type="button" class="review-btn" (click)="submitReview()">Отправить отзыв</button>
+              </div>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="hint">Для выбранного котика заявок пока нет.</p>
+    }
+
+    @if (reviewError) {
+      <p class="review-error">{{ reviewError }}</p>
+    }
+    @if (reviewSuccess) {
+      <p class="review-success">{{ reviewSuccess }}</p>
+    }
+  }
+</div>

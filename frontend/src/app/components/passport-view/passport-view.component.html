@@ -48,7 +48,7 @@
               <div class="passport-table__main">
                 <span class="passport-table__label">{{ vac.vaccineName }}</span>
                 @if (vac.drugBatchCode) {
-                  <a class="passport-table__link" href="/service/drug_registry">{{ vac.drugBatchCode }}</a>
+                  <span class="passport-table__link">{{ vac.drugBatchCode }}</span>
                 }
               </div>
               <div class="passport-table__meta">

@@ -1,0 +1,57 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div><p class="label">Котик</p></div>
+        <select formControlName="cat" (change)="reloadAppointments()">
+          @for (option of optionsCat; track $index) {
+            <option [value]="toJson(option)">{{ option.text }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div><p class="label">Какое посещение оцениваете</p></div>
+        <select formControlName="appointmentId">
+          <option value="">— Выберите посещение —</option>
+          @for (item of appointments; track item.id) {
+            <option [value]="item.id">№{{ item.id }} — {{ item.visitDate }} {{ item.visitTime }}</option>
+          }
+        </select>
+      </div>
+
+      @if (!appointments.length) {
+        <p class="hint">Для выбранного котика нет подтвержденных посещений.</p>
+      }
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <div class="field">
+        <div><p class="label">Оценка</p></div>
+        <select formControlName="rating">
+          <option [value]="5">5</option>
+          <option [value]="4">4</option>
+          <option [value]="3">3</option>
+          <option [value]="2">2</option>
+          <option [value]="1">1</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Комментарий</p>
+          @if (getControl(1, 'comment').errors?.['required'] && getControl(1, 'comment').touched) {
+            <p class="error">Комментарий обязателен</p>
+          }
+        </div>
+        <textarea formControlName="comment" placeholder="Опишите впечатления от посещения"></textarea>
+      </div>
+    </div>
+
+    @if (active === 2) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+  </div>
+}

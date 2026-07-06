@@ -18,11 +18,63 @@ ON CONFLICT (id) DO NOTHING;
 -- services
 INSERT INTO service (id, mnemonic, icon, title, description) VALUES
 (0, 'animal_passport', 'passport.png', 'Единый реестр паспортов животных', 'Оцифруйте паспорт питомца: прививки, родословная, история болезней и контроль инбридинга'),
-(1, 'drug_registry', 'drug_registry.png', 'Реестр ветеринарных препаратов', 'Проверьте подлинность ветпрепарата по коду партии и сообщите о подозрительной продукции'),
+(1, 'grooming_booking', 'relax2.png', 'Запись к грумеру', 'Запишите питомца в салон, выберите время и грумера, получите подтверждение и уведомления'),
 (2, 'new_family', 'cupid.png', 'Регистрация брака', 'Вступайте в брак легко и быстро с котоуслугами'),
 (3, 'vet', 'sick.webp', 'Запись на прием к ветеринару', 'Подходи ответственно к своему здоровью. Здоровый ты - здоровая страна'),
 (4, 'spa', 'relax.png', 'SPA-процедуры', 'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры')
 ON CONFLICT (id) DO NOTHING;
+
+-- force replace old drug registry service on existing databases
+UPDATE service
+SET mnemonic = 'grooming_booking',
+    icon = 'relax2.png',
+    title = 'Запись к грумеру',
+    description = 'Запишите питомца в салон, выберите время и грумера, получите подтверждение и уведомления'
+WHERE id = 1;
+
+-- hard delete legacy drug registry service
+DELETE FROM service_category
+WHERE category_id IN (SELECT id FROM service WHERE mnemonic = 'drug_registry');
+DELETE FROM service
+WHERE mnemonic = 'drug_registry';
+
+-- keep grooming review merged into grooming booking page
+DELETE FROM service_category
+WHERE category_id IN (SELECT id FROM service WHERE mnemonic = 'grooming_review');
+DELETE FROM service
+WHERE mnemonic = 'grooming_review';
+
+-- ensure vet and spa services are present in legacy DBs
+INSERT INTO service (mnemonic, icon, title, description)
+SELECT 'vet', 'sick.webp', 'Запись на прием к ветеринару', 'Подходи ответственно к своему здоровью. Здоровый ты - здоровая страна'
+WHERE NOT EXISTS (SELECT 1 FROM service WHERE mnemonic = 'vet');
+INSERT INTO service (mnemonic, icon, title, description)
+SELECT 'spa', 'relax.png', 'SPA-процедуры', 'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры'
+WHERE NOT EXISTS (SELECT 1 FROM service WHERE mnemonic = 'spa');
+
+-- keep only one row per mnemonic (legacy DBs may have duplicates)
+DELETE FROM service_category
+WHERE category_id IN (
+    SELECT s.id
+    FROM service s
+             JOIN (
+        SELECT mnemonic, MIN(id) AS keep_id
+        FROM service
+        GROUP BY mnemonic
+        HAVING COUNT(*) > 1
+    ) d ON d.mnemonic = s.mnemonic
+    WHERE s.id <> d.keep_id
+);
+
+DELETE FROM service s
+USING (
+    SELECT mnemonic, MIN(id) AS keep_id
+    FROM service
+    GROUP BY mnemonic
+    HAVING COUNT(*) > 1
+) d
+WHERE s.mnemonic = d.mnemonic
+  AND s.id <> d.keep_id;
 
 -- categories
 INSERT INTO category (id, name) VALUES
@@ -43,22 +95,17 @@ SELECT 0, 1 WHERE NOT EXISTS (SELECT 1 FROM service_category WHERE category_id =
 INSERT INTO service_category (category_id, service_id)
 SELECT 1, 1 WHERE NOT EXISTS (SELECT 1 FROM service_category WHERE category_id = 1 AND service_id = 1);
 
--- manufacturers
-INSERT INTO manufacturer (id, name, inn, country, contact_info, type, trust_rating) VALUES
-(0, 'КотоФарм', '7701234567', 'Россия', 'info@kotopharm.ru', 'MANUFACTURER', 4.8),
-(1, 'ВетИмпорт', '7709876543', 'Германия', 'sales@vetimport.de', 'IMPORTER', 4.5)
+-- grooming salons
+INSERT INTO grooming_salon (id, name, address, contact_phone, available_times, provides_groomers) VALUES
+(0, 'Лапки-Ножницы', 'Москва, ул. Мур-мур, 7', '74951234567', '09:00,11:00,13:00,15:00,17:00', true),
+(1, 'Котополис Grooming', 'Москва, пр. Когтистый, 15', '74957654321', '10:00,12:00,14:00,16:00,18:00', true),
+(2, 'Пушистый стиль', 'Москва, ул. Хвостатая, 3', '74959876543', '10:30,13:30,16:30', false)
 ON CONFLICT (id) DO NOTHING;
 
--- drugs
-INSERT INTO drug (id, manufacturer_id, trade_name, inn_name, form_type) VALUES
-(0, 0, 'МурБиовак', 'инактивированная вакцина', 'раствор для инъекций'),
-(1, 1, 'КотоАнтигельминт', 'празиквантел', 'таблетки')
-ON CONFLICT (id) DO NOTHING;
-
--- drug batches
-INSERT INTO drug_batch (id, drug_id, batch_code, serial_number, expiry_date, status) VALUES
-(0, 0, 'MBV-2026-001', 'SN-10001', '2027-12-31', 'ACTIVE'),
-(1, 0, 'MBV-2025-OLD', 'SN-09999', '2024-01-01', 'EXPIRED'),
-(2, 1, 'KAG-2026-042', 'SN-20042', '2028-06-30', 'ACTIVE'),
-(3, 1, 'KAG-RECALL-01', 'SN-20000', '2027-03-15', 'RECALLED')
+-- groomers
+INSERT INTO groomer (id, salon_id, full_name, specialization, rating) VALUES
+(0, 0, 'Котова Анна Сергеевна', 'Стрижка длинношерстных', 4.9),
+(1, 0, 'Мяукин Петр Игоревич', 'Гигиенический уход', 4.7),
+(2, 1, 'Барсикова Елена Викторовна', 'Выставочный груминг', 4.8),
+(3, 1, 'Лапина Дарья Олеговна', 'Экспресс-уход', 4.6)
 ON CONFLICT (id) DO NOTHING;

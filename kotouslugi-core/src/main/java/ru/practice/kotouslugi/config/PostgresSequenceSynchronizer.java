@@ -19,9 +19,11 @@ public class PostgresSequenceSynchronizer implements ApplicationRunner {
             {"cat", "cat_seq"},
             {"service", "service_seq"},
             {"category", "category_seq"},
-            {"manufacturer", "manufacturer_seq"},
-            {"drug", "drug_seq"},
-            {"drug_batch", "drug_batch_seq"},
+            {"grooming_salon", "grooming_salon_seq"},
+            {"groomer", "groomer_seq"},
+            {"grooming_appointment", "grooming_appointment_seq"},
+            {"grooming_notification", "grooming_notification_seq"},
+            {"grooming_review", "grooming_review_seq"},
     };
 
     private final JdbcTemplate jdbcTemplate;

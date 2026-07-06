@@ -17,10 +17,10 @@ import java.util.Map;
 public class KotoService {
     private static final Map<String, Integer> SERVICE_ORDER = Map.of(
             "animal_passport", 0,
-            "drug_registry", 1,
-            "new_family", 2,
-            "vet", 3,
-            "spa", 4
+            "grooming_booking", 1,
+            "vet", 2,
+            "spa", 3,
+            "new_family", 4
     );
 
     private final KotoServiceRepository kotoServiceRepository;

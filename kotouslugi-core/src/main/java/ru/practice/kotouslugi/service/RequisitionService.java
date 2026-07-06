@@ -16,16 +16,16 @@ public class RequisitionService {
     private final RequisitionRepository requisitionRepository;
     private final KotoServiceRepository kotoServiceRepository;
     private final PassportService passportService;
-    private final DrugRegistryService drugRegistryService;
+    private final GroomingService groomingService;
 
     public RequisitionService(RequisitionRepository requisitionRepository,
                               KotoServiceRepository kotoServiceRepository,
                               PassportService passportService,
-                              DrugRegistryService drugRegistryService) {
+                              GroomingService groomingService) {
       this.requisitionRepository = requisitionRepository;
       this.kotoServiceRepository = kotoServiceRepository;
       this.passportService = passportService;
-      this.drugRegistryService = drugRegistryService;
+      this.groomingService = groomingService;
     }
 
     public List<Requisition> listRequisition() {
@@ -43,8 +43,8 @@ public class RequisitionService {
 
         if ("animal_passport".equals(save.getMnemonic())) {
             passportService.createFromRequisition(save);
-        } else if ("drug_registry".equals(save.getMnemonic())) {
-            drugRegistryService.processRequisition(save);
+        } else if ("grooming_booking".equals(save.getMnemonic())) {
+            groomingService.createAppointmentFromRequisition(save);
         }
 
         return save.getId();

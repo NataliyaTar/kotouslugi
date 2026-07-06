@@ -1,0 +1,146 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div><p class="label">Котик</p></div>
+        <select formControlName="cat" (change)="onCatChange()">
+          @for (option of optionsCat; track $index) {
+            <option [value]="toJson(option)">{{ option.text }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div><p class="label">Салон</p></div>
+        <select formControlName="salonId" (change)="onSalonOrDateChange()">
+          <option value="">— Выберите салон —</option>
+          @for (salon of salons; track salon.id) {
+            <option [value]="salon.id">{{ salon.name }} — {{ salon.address }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div><p class="label">Пакет услуг</p></div>
+        <select formControlName="packageType">
+          <option value="Экспресс">Экспресс</option>
+          <option value="Полный уход">Полный уход</option>
+          <option value="Выставочный">Выставочный</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div><p class="label">Дата посещения</p></div>
+        <input type="date" formControlName="visitDate" (change)="onSalonOrDateChange()">
+      </div>
+
+      <div class="field">
+        <div><p class="label">Время записи</p></div>
+        <select formControlName="visitTime">
+          <option value="">— Выберите время —</option>
+          @for (slot of slots; track slot.time) {
+            <option [value]="slot.time">{{ slot.time }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Контакт владельца</p>
+          @if (getControl(0, 'ownerContact').errors?.['pattern'] && getControl(0, 'ownerContact').touched) {
+            <p class="error">Введите 11 цифр</p>
+          }
+        </div>
+        <input formControlName="ownerContact" placeholder="79001234567">
+      </div>
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <div class="field">
+        <div>
+          <p class="label">Грумер</p>
+          @if (isGroomerRequired()) {
+            <p class="hint">Для этого салона выбор грумера обязателен</p>
+          }
+        </div>
+        <select formControlName="groomerId">
+          <option value="">— Назначить автоматически —</option>
+          @for (groomer of groomers; track groomer.id) {
+            <option [value]="groomer.id">{{ groomer.fullName }} ({{ groomer.specialization }})</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div><p class="label">Комментарий для салона</p></div>
+        <textarea formControlName="notes" placeholder="Например, чувствительная кожа, просим гипоаллергенный шампунь"></textarea>
+      </div>
+    </div>
+
+    @if (active === 2) {
+      <app-check-info [data]="getResult"></app-check-info>
+      <div class="actions-row">
+        <button type="button" class="review-open-btn" (click)="toggleReview()">
+          @if (reviewOpened) {
+            Скрыть раздел отзыва
+          } @else {
+            Оставить отзыв
+          }
+        </button>
+      </div>
+
+      @if (reviewOpened) {
+        <div class="reviews shadow-block">
+          <h5>Отзыв о посещении салона</h5>
+          @if (appointmentsLoading) {
+            <p class="hint">Загружаем посещения...</p>
+          } @else if (appointments.length) {
+            <div class="field review-field">
+              <div><p class="label">Запись</p></div>
+              <select [(ngModel)]="reviewAppointmentId" [ngModelOptions]="{standalone: true}">
+                <option value="">— Выберите посещение —</option>
+                @for (item of appointments; track item.id) {
+                  <option [value]="item.id">№{{ item.id }} — {{ item.visitDate }} {{ item.visitTime }}</option>
+                }
+              </select>
+            </div>
+            <div class="field review-field">
+              <div><p class="label">Оценка</p></div>
+              <select [(ngModel)]="reviewRating" [ngModelOptions]="{standalone: true}">
+                <option [value]="5">5</option>
+                <option [value]="4">4</option>
+                <option [value]="3">3</option>
+                <option [value]="2">2</option>
+                <option [value]="1">1</option>
+              </select>
+            </div>
+            <div class="field review-field">
+              <div><p class="label">Комментарий</p></div>
+              <textarea [(ngModel)]="reviewComment" [ngModelOptions]="{standalone: true}" placeholder="Как прошло посещение"></textarea>
+            </div>
+            <button type="button" class="review-btn" (click)="submitReview()">Отправить отзыв</button>
+          } @else {
+            <p class="hint">Нет завершенных посещений. Отзыв доступен только после даты визита.</p>
+          }
+          @if (reviewError) {
+            <p class="review-error">{{ reviewError }}</p>
+          }
+          @if (reviewSuccess) {
+            <p class="review-success">{{ reviewSuccess }}</p>
+          }
+        </div>
+      }
+    }
+
+  </div>
+
+  <a
+    class="tracking-fab"
+    [routerLink]="'/grooming-requests'"
+    [queryParams]="{ catId: getSelectedCatId() }"
+  >
+    Отследить мои заявки
+  </a>
+}
