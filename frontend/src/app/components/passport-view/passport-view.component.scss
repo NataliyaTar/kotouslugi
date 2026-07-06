@@ -1,0 +1,223 @@
+@use '../../../assets/styles/palette' as palette;
+
+.passport-card {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #fff;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    background: linear-gradient(86deg, #EDF2FE 0%, #F0FFF2 100%);
+    border-bottom: 1px solid rgba(153, 177, 230, 0.35);
+  }
+
+  &__title h4 {
+    margin: 0 0 4px;
+    color: palette.$color-summer-night;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: palette.$color-telegrey-scuro;
+    font-size: 13px;
+  }
+
+  &__badge {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(13, 76, 211, 0.12);
+    color: palette.$color-gosblue;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &.verified {
+      background: rgba(46, 125, 50, 0.12);
+      color: #2E7D32;
+    }
+  }
+
+  &__alert {
+    padding: 14px 24px;
+    background: rgba(238, 63, 88, 0.1);
+    border-bottom: 1px solid rgba(238, 63, 88, 0.2);
+
+    p {
+      margin: 0;
+      color: palette.$color-gosred;
+      font-size: 14px;
+      font-weight: 500;
+
+      + p {
+        margin-top: 6px;
+      }
+    }
+  }
+}
+
+.passport-section {
+  padding: 20px 24px;
+
+  + .passport-section {
+    border-top: 1px solid rgba(153, 177, 230, 0.25);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px;
+    color: palette.$color-gosblue;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 11px;
+    background: rgba(13, 76, 211, 0.1);
+    color: palette.$color-gosblue;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.passport-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px 24px;
+  margin: 0;
+
+  &__item {
+    dt {
+      margin: 0 0 4px;
+      color: palette.$color-telegrey-scuro;
+      font-size: 13px;
+    }
+
+    dd {
+      margin: 0;
+      color: palette.$color-summer-night;
+      font-size: 15px;
+      font-weight: 500;
+      word-break: break-word;
+    }
+  }
+}
+
+.passport-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &__row {
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: palette.$color-input;
+  }
+
+  &__main {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-bottom: 8px;
+  }
+
+  &__label {
+    color: palette.$color-summer-night;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  &__link {
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(13, 76, 211, 0.1);
+    color: palette.$color-gosblue;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__status {
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(238, 63, 88, 0.12);
+    color: palette.$color-gosred;
+    font-size: 12px;
+    font-weight: 600;
+
+    &.recovered {
+      background: rgba(46, 125, 50, 0.12);
+      color: #2E7D32;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    color: palette.$color-text-helper;
+    font-size: 13px;
+  }
+}
+
+.passport-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: palette.$color-input;
+  }
+
+  &__name {
+    color: palette.$color-summer-night;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: rgba(13, 76, 211, 0.1);
+    color: palette.$color-gosblue;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+.passport-empty {
+  margin: 0;
+  color: palette.$color-telegrey-scuro;
+  font-size: 14px;
+  font-style: italic;
+}

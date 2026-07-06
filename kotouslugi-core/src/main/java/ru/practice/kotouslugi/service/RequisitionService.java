@@ -15,11 +15,17 @@ import java.util.List;
 public class RequisitionService {
     private final RequisitionRepository requisitionRepository;
     private final KotoServiceRepository kotoServiceRepository;
+    private final PassportService passportService;
+    private final DrugRegistryService drugRegistryService;
 
     public RequisitionService(RequisitionRepository requisitionRepository,
-                              KotoServiceRepository kotoServiceRepository) {
+                              KotoServiceRepository kotoServiceRepository,
+                              PassportService passportService,
+                              DrugRegistryService drugRegistryService) {
       this.requisitionRepository = requisitionRepository;
       this.kotoServiceRepository = kotoServiceRepository;
+      this.passportService = passportService;
+      this.drugRegistryService = drugRegistryService;
     }
 
     public List<Requisition> listRequisition() {
@@ -34,6 +40,13 @@ public class RequisitionService {
         requisition.setStatus(RequisitionStatus.FILED);
         requisition.setCreated(new Date(System.currentTimeMillis()));
         Requisition save = requisitionRepository.save(requisition);
+
+        if ("animal_passport".equals(save.getMnemonic())) {
+            passportService.createFromRequisition(save);
+        } else if ("drug_registry".equals(save.getMnemonic())) {
+            drugRegistryService.processRequisition(save);
+        }
+
         return save.getId();
     }
 

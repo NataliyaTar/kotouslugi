@@ -32,16 +32,25 @@
 ::ng-deep {
   ngx-tcarousel {
     position: relative;
+    display: block;
   }
 
-  .d .carousel {
+  ngx-tcarousel .carousel,
+  ngx-tcarousel .d .carousel {
     position: absolute;
+    top: auto !important;
+    left: auto !important;
     bottom: 12px;
     right: 12px;
     margin: 0 !important;
+    z-index: 2;
 
     .timer {
       display: none;
+    }
+
+    .indicators {
+      display: none !important;
     }
 
     .indicators .indicator {

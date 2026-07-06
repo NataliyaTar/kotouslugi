@@ -1,0 +1,65 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Код партии препарата</p>
+          @if (getControl(0, 'batchCode').errors?.['required'] && getControl(0, 'batchCode').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="batchCode" placeholder="MBV-2026-001">
+      </div>
+      <div class="verify-row">
+        <button type="button" class="verify-btn" [disabled]="verifying || !getControl(0, 'batchCode').value" (click)="verifyDrug()">
+          @if (verifying) {
+            Проверка...
+          } @else {
+            Проверить в реестре
+          }
+        </button>
+      </div>
+
+      @if (verificationResult) {
+        <div class="verification-result shadow-block" [class]="getStatusClass()">
+          <h5>{{ verificationResult.message }}</h5>
+          @if (verificationResult.tradeName) {
+            <p><span class="label">Препарат:</span> {{ verificationResult.tradeName }}</p>
+            <p><span class="label">Производитель:</span> {{ verificationResult.manufacturerName }}</p>
+            <p><span class="label">Серия:</span> {{ verificationResult.serialNumber }}</p>
+            @if (verificationResult.expiryDate) {
+              <p><span class="label">Срок годности:</span> {{ verificationResult.expiryDate | date:'dd.MM.yyyy' }}</p>
+            }
+          }
+        </div>
+      }
+
+      <p class="hint demo-codes">Демо-коды для проверки: MBV-2026-001 (активен), MBV-2025-OLD (просрочен), KAG-RECALL-01 (отозван), FAKE-123 (не найден)</p>
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <div class="field">
+        <div>
+          <p class="label">Описание нарушения (необязательно)</p>
+        </div>
+        <textarea formControlName="reportDescription" placeholder="Опишите подозрение на поддельный или нелегальный препарат"></textarea>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Телефон для связи</p>
+          @if (getControl(1, 'reporterContact').errors?.['pattern'] && getControl(1, 'reporterContact').touched) {
+            <p class="error">Введите 11 цифр</p>
+          }
+        </div>
+        <input formControlName="reporterContact" placeholder="79001234567">
+      </div>
+      <p class="hint">Обращение будет зарегистрировано и направлено на рассмотрение</p>
+    </div>
+
+    @if (active === 2) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+  </div>
+}

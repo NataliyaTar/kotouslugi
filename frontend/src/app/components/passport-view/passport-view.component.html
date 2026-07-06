@@ -1,0 +1,113 @@
+@if (passport) {
+  <article class="passport-card shadow-block">
+    <header class="passport-card__header">
+      <div class="passport-card__title">
+        <h4>{{ passport.catName }}</h4>
+        <p class="passport-card__subtitle">Паспорт № {{ passport.id }}</p>
+      </div>
+      <span class="passport-card__badge" [class.verified]="passport.verified">
+        {{ passport.verified ? 'Верифицирован' : 'В реестре' }}
+      </span>
+    </header>
+
+    @if (passport.inbreedingWarnings?.length) {
+      <div class="passport-card__alert">
+        @for (warning of passport.inbreedingWarnings; track $index) {
+          <p>{{ warning }}</p>
+        }
+      </div>
+    }
+
+    <section class="passport-section">
+      <h5 class="passport-section__title">Основные данные</h5>
+      <dl class="passport-grid">
+        <div class="passport-grid__item">
+          <dt>Кличка</dt>
+          <dd>{{ display(passport.catName) }}</dd>
+        </div>
+        <div class="passport-grid__item">
+          <dt>Номер чипа</dt>
+          <dd>{{ display(passport.chipNumber) }}</dd>
+        </div>
+        <div class="passport-grid__item">
+          <dt>Питомник</dt>
+          <dd>{{ display(passport.kennelName) }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="passport-section">
+      <h5 class="passport-section__title">
+        Прививки
+        <span class="passport-section__count">{{ passport.vaccinations?.length || 0 }}</span>
+      </h5>
+      @if (passport.vaccinations?.length) {
+        <div class="passport-table">
+          @for (vac of passport.vaccinations; track vac.id) {
+            <div class="passport-table__row">
+              <div class="passport-table__main">
+                <span class="passport-table__label">{{ vac.vaccineName }}</span>
+                @if (vac.drugBatchCode) {
+                  <a class="passport-table__link" href="/service/drug_registry">{{ vac.drugBatchCode }}</a>
+                }
+              </div>
+              <div class="passport-table__meta">
+                <span>{{ vac.vaccinationDate | date:'dd.MM.yyyy' }}</span>
+                <span>{{ display(vac.veterinarian) }}</span>
+                <span>{{ display(vac.clinic) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="passport-empty">Записей о прививках нет</p>
+      }
+    </section>
+
+    <section class="passport-section">
+      <h5 class="passport-section__title">
+        Родословная
+        <span class="passport-section__count">{{ passport.pedigreeLinks?.length || 0 }}</span>
+      </h5>
+      @if (passport.pedigreeLinks?.length) {
+        <ul class="passport-list">
+          @for (link of passport.pedigreeLinks; track link.id) {
+            <li>
+              <span class="passport-list__name">{{ link.relativeCatName }}</span>
+              <span class="passport-list__tag">{{ getRelationLabel(link.relationType) }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="passport-empty">Родственные связи не указаны</p>
+      }
+    </section>
+
+    <section class="passport-section">
+      <h5 class="passport-section__title">
+        История болезней
+        <span class="passport-section__count">{{ passport.illnesses?.length || 0 }}</span>
+      </h5>
+      @if (passport.illnesses?.length) {
+        <div class="passport-table">
+          @for (ill of passport.illnesses; track ill.id) {
+            <div class="passport-table__row">
+              <div class="passport-table__main">
+                <span class="passport-table__label">{{ ill.diagnosis }}</span>
+                <span class="passport-table__status" [class.recovered]="ill.recovered">
+                  {{ ill.recovered ? 'Выздоровел' : 'На лечении' }}
+                </span>
+              </div>
+              <div class="passport-table__meta">
+                <span>{{ ill.recordDate | date:'dd.MM.yyyy' }}</span>
+                <span>{{ display(ill.treatment) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="passport-empty">Записей о болезнях нет</p>
+      }
+    </section>
+  </article>
+}
