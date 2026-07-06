@@ -1,0 +1,18 @@
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+
+COPY pom.xml .
+COPY kotouslugi-api/pom.xml kotouslugi-api/
+COPY kotouslugi-core/pom.xml kotouslugi-core/
+COPY kotouslugi-report-aggregate/pom.xml kotouslugi-report-aggregate/
+
+COPY kotouslugi-api/src kotouslugi-api/src
+COPY kotouslugi-core/src kotouslugi-core/src
+
+RUN mvn -q -pl kotouslugi-api -am package -DskipTests
+
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/kotouslugi-api/target/kotouslugi-api-*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]

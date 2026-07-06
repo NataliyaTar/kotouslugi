@@ -21,8 +21,21 @@ node.js версии v18.19.1 и angular-cli - 17.3.1
 Удалять существующие файлы в папке `assets` нельзя! Добавлять свои - можно
 
 # Как запустить бэк
+
+Проект использует **PostgreSQL** (данные сохраняются между перезапусками).
+
+## PostgreSQL (обязательно перед бэком)
+
+```bash
+docker compose up -d
+```
+
+Подробнее: [docs/POSTGRES.md](./docs/POSTGRES.md)
+
+Параметры БД: `localhost:5432`, база `kotouslugi`, user/password `kotouslugi`.
+
 Перед тем, как приступить к работе, необходимо установить на компьютер:
-Intelliji IDEA, openJDK 17 или выше.
+Intelliji IDEA, openJDK 17 или выше, Docker (для PostgreSQL).
 
 1. Открываем проект как Maven project.
 2. Качаем зависимости (Справа экрана вкладка Maven, вверху кнопка со стрелочкой вниз `Download sources and documentation`)

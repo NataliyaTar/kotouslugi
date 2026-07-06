@@ -3,6 +3,7 @@ package ru.practice.kotouslugi.model;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,13 +34,18 @@ public class Requisition implements Serializable {
     private String mnemonic;
     private RequisitionStatus status;
     private Date created;
+    @Column(columnDefinition = "TEXT")
     @JsonDeserialize(using = StringDeserializer.class)
     private String fields;
 
     public static class StringDeserializer extends JsonDeserializer<String> {
       @Override
       public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        return p.readValueAsTree().toString();
+        JsonNode node = p.readValueAsTree();
+        if (node.isTextual()) {
+          return node.asText();
+        }
+        return node.toString();
       }
     }
 }
