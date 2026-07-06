@@ -1,0 +1,56 @@
+<div class="container search-page">
+  <div class="page-header">
+    <h3>Поиск в реестре паспортов</h3>
+    <a routerLink="/service/animal_passport" class="back-link">Назад к заявке</a>
+  </div>
+
+  <section class="registry-panel shadow-block">
+    <div class="registry-search">
+      <input
+        class="registry-search__input"
+        type="text"
+        [(ngModel)]="searchQuery"
+        [ngModelOptions]="{standalone: true}"
+        placeholder="Номер паспорта или номер чипа"
+        (keydown)="onSearchKeydown($event)">
+      <button
+        type="button"
+        class="registry-search__btn"
+        [disabled]="searching || !searchQuery.trim()"
+        (click)="searchPassport()">
+        {{ searching ? 'Поиск...' : 'Найти' }}
+      </button>
+      @if (searched || searchQuery) {
+        <button type="button" class="registry-search__clear" (click)="clearSearch()">Сбросить</button>
+      }
+    </div>
+    <p class="registry-hint">Примеры: <code>102</code> (номер паспорта), <code>985112000123456</code> (номер чипа)</p>
+    @if (searchError) {
+      <p class="registry-error">{{ searchError }}</p>
+    }
+
+    @if (searched && !searching && !searchResults.length) {
+      <p class="registry-empty">Паспорт не найден. Проверьте запрос.</p>
+    }
+
+    @if (searchResults.length > 1) {
+      <div class="registry-results">
+        <p class="registry-results__label">Найдено: {{ searchResults.length }}</p>
+        @for (passport of searchResults; track passport.id) {
+          <button
+            type="button"
+            class="registry-result"
+            [class.active]="viewPassport?.id === passport.id"
+            (click)="selectPassport(passport)">
+            <span class="registry-result__name">{{ passport.catName }}</span>
+            <span class="registry-result__meta">№ {{ passport.id }} · {{ passport.chipNumber || 'без чипа' }}</span>
+          </button>
+        }
+      </div>
+    }
+
+    @if (viewPassport) {
+      <app-passport-view [passport]="viewPassport"></app-passport-view>
+    }
+  </section>
+</div>

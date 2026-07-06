@@ -2,60 +2,6 @@
   <app-throbber></app-throbber>
 } @else {
   <div class="fields-wrapper" [formGroup]="form">
-    <section class="registry-panel shadow-block">
-      <div class="registry-panel__head">
-        <h5>Поиск в реестре паспортов</h5>
-      </div>
-
-      <div class="registry-search">
-        <input
-          class="registry-search__input"
-          type="text"
-          [(ngModel)]="searchQuery"
-          [ngModelOptions]="{standalone: true}"
-          placeholder="Номер паспорта или номер чипа"
-          (keydown)="onSearchKeydown($event)">
-        <button
-          type="button"
-          class="registry-search__btn"
-          [disabled]="searching || !searchQuery.trim()"
-          (click)="searchPassport()">
-          {{ searching ? 'Поиск...' : 'Найти' }}
-        </button>
-        @if (searched || searchQuery) {
-          <button type="button" class="registry-search__clear" (click)="clearSearch()">Сбросить</button>
-        }
-      </div>
-      <p class="registry-hint">Примеры: <code>102</code> (номер паспорта), <code>985112000123456</code> (номер чипа)</p>
-      @if (searchError) {
-        <p class="registry-error">{{ searchError }}</p>
-      }
-
-      @if (searched && !searching && !searchResults.length) {
-        <p class="registry-empty">Паспорт не найден. Проверьте запрос или подайте новую заявку ниже.</p>
-      }
-
-      @if (searchResults.length > 1) {
-        <div class="registry-results">
-          <p class="registry-results__label">Найдено: {{ searchResults.length }}</p>
-          @for (passport of searchResults; track passport.id) {
-            <button
-              type="button"
-              class="registry-result"
-              [class.active]="viewPassport?.id === passport.id"
-              (click)="selectPassport(passport)">
-              <span class="registry-result__name">{{ passport.catName }}</span>
-              <span class="registry-result__meta">№ {{ passport.id }} · {{ passport.chipNumber || 'без чипа' }}</span>
-            </button>
-          }
-        </div>
-      }
-
-      @if (viewPassport) {
-        <app-passport-view [passport]="viewPassport"></app-passport-view>
-      }
-    </section>
-
     <section class="request-panel shadow-block">
       <div class="request-panel__head">
         <h5>Новая заявка в реестр</h5>
@@ -106,7 +52,7 @@
       <div class="field">
         <div>
           <p class="label">Код партии препарата</p>
-          <p class="hint">Проверьте препарат в <a href="/service/drug_registry">реестре ветпрепаратов</a></p>
+          <p class="hint">Укажите код партии из ветеринарного сертификата или упаковки</p>
         </div>
         <input formControlName="drugBatchCode" placeholder="MBV-2026-001">
       </div>
@@ -190,4 +136,6 @@
       }
     </section>
   </div>
+
+  <a class="search-fab" routerLink="/passport-registry-search">Поиск в реестре</a>
 }

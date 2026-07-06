@@ -29,6 +29,18 @@ export const routes: Routes = [
     loadChildren: () => import('./modules/orders/orders.module').then(mod => mod.OrdersModule)
   },
   {
+    path: 'grooming-requests',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/grooming-requests/grooming-requests.component')
+      .then(mod => mod.GroomingRequestsComponent)
+  },
+  {
+    path: 'passport-registry-search',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/passport-registry-search/passport-registry-search.component')
+      .then(mod => mod.PassportRegistrySearchComponent)
+  },
+  {
     path: 'service',
     loadChildren: () => import('./modules/service/service.module').then(mod => mod.ServiceModule)
   },
