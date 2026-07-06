@@ -1,0 +1,74 @@
+// Файл не трогаем
+
+.banner-wrapper {
+  flex: 0 0 100%;
+  min-height: 174px;
+  border-radius: 12px;
+  padding: 12px;
+
+  .image {
+    height: 100px;
+    margin-right: 12px;
+  }
+
+  .text {
+    margin-top: 8px;
+  }
+
+  @media all and (min-width: 1216px) {
+    padding: 12px 32px;
+
+    .image {
+      height: 150px;
+      margin-right: 32px;
+    }
+
+    .text {
+      margin-top: 16px;
+    }
+  }
+}
+
+::ng-deep {
+  ngx-tcarousel {
+    position: relative;
+    display: block;
+  }
+
+  ngx-tcarousel .carousel,
+  ngx-tcarousel .d .carousel {
+    position: absolute;
+    top: auto !important;
+    left: auto !important;
+    bottom: 12px;
+    right: 12px;
+    margin: 0 !important;
+    z-index: 2;
+
+    .timer {
+      display: none;
+    }
+
+    .indicators {
+      display: none !important;
+    }
+
+    .indicators .indicator {
+      width: 20px !important;
+      height: 20px !important;
+      padding: 0 !important;
+
+      &:before {
+        border-radius: 50% !important;
+        padding: 0 !important;
+      }
+
+      &.active:before {
+        width: 20px !important;
+        height: 20px !important;
+        border: 2px solid #0D4CD3;
+      }
+    }
+  }
+}
+

@@ -1,0 +1,16 @@
+<!--Файл не трогаем-->
+
+@for (step of data; let i = $index; track i) {
+  <div class="group">
+    @for (item of step; track $index) {
+      @if (item['title']) {
+        <h5 class="title">{{item['title']}}</h5>
+      } @else {
+        <div class="field">
+          <p class="name">{{item['name']}}:</p>
+          <p>{{item['value']}}</p>
+        </div>
+      }
+    }
+  </div>
+}

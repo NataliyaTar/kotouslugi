@@ -1,0 +1,94 @@
+// Файл не трогаем
+
+.search-wrapper {
+  background: linear-gradient(182.54deg, #1F50E8 20.95%, #7996F0 134.42%);
+  padding: 48px 0;
+
+  .search-part {
+    .image {
+      display: none;
+    }
+
+    .search {
+      .tags {
+        margin-bottom: 28px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+
+        .tag {
+          padding: 8px 12px;
+          background: #ffffff2b;
+          border-radius: 8px 8px 8px 4px;
+          color: #FFFFFF;
+        }
+      }
+    }
+  }
+
+  .create-cat {
+    display: block;
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 24px;
+  }
+
+  @media all and (min-width: 1216px) {
+    .search-part {
+      .image {
+        display: inline-block;
+        width: 100px;
+        margin-right: 32px;
+      }
+
+      .search {
+        width: calc(100% - 100px - 32px);
+      }
+    }
+
+    .create-cat {
+      max-width: 350px;
+      margin-top: 0;
+      margin-left: 64px;
+    }
+  }
+}
+
+.carousel-wrapper {
+  max-width: 800px;
+  margin-top: 48px;
+}
+
+.services-wrapper {
+  margin-top: 48px;
+
+  .help {
+    margin-top: 16px;
+  }
+
+  .services {
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .not-allowed, .not-found {
+    margin-top: 32px;
+    text-align: center;
+
+    .image {
+      max-width: 300px;
+      margin-bottom: 24px;
+    }
+
+    .text {
+      margin-top: 12px;
+    }
+  }
+
+  @media all and (min-width: 1216px) {
+    .help {
+      margin-top: 0;
+    }
+  }
+}

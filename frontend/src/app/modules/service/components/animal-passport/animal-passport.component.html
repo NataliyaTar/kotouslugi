@@ -1,0 +1,193 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <section class="registry-panel shadow-block">
+      <div class="registry-panel__head">
+        <h5>Поиск в реестре паспортов</h5>
+      </div>
+
+      <div class="registry-search">
+        <input
+          class="registry-search__input"
+          type="text"
+          [(ngModel)]="searchQuery"
+          [ngModelOptions]="{standalone: true}"
+          placeholder="Номер паспорта или номер чипа"
+          (keydown)="onSearchKeydown($event)">
+        <button
+          type="button"
+          class="registry-search__btn"
+          [disabled]="searching || !searchQuery.trim()"
+          (click)="searchPassport()">
+          {{ searching ? 'Поиск...' : 'Найти' }}
+        </button>
+        @if (searched || searchQuery) {
+          <button type="button" class="registry-search__clear" (click)="clearSearch()">Сбросить</button>
+        }
+      </div>
+      <p class="registry-hint">Примеры: <code>102</code> (номер паспорта), <code>985112000123456</code> (номер чипа)</p>
+      @if (searchError) {
+        <p class="registry-error">{{ searchError }}</p>
+      }
+
+      @if (searched && !searching && !searchResults.length) {
+        <p class="registry-empty">Паспорт не найден. Проверьте запрос или подайте новую заявку ниже.</p>
+      }
+
+      @if (searchResults.length > 1) {
+        <div class="registry-results">
+          <p class="registry-results__label">Найдено: {{ searchResults.length }}</p>
+          @for (passport of searchResults; track passport.id) {
+            <button
+              type="button"
+              class="registry-result"
+              [class.active]="viewPassport?.id === passport.id"
+              (click)="selectPassport(passport)">
+              <span class="registry-result__name">{{ passport.catName }}</span>
+              <span class="registry-result__meta">№ {{ passport.id }} · {{ passport.chipNumber || 'без чипа' }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (viewPassport) {
+        <app-passport-view [passport]="viewPassport"></app-passport-view>
+      }
+    </section>
+
+    <section class="request-panel shadow-block">
+      <div class="request-panel__head">
+        <h5>Новая заявка в реестр</h5>
+        <p>Заполните данные и отправьте паспорт на регистрацию</p>
+      </div>
+
+      <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите питомца</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat" (change)="onCatChange()">
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem('cat', $index)">{{ option.text }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Номер чипа</p>
+          @if (getControl(0, 'chipNumber').errors?.['required'] && getControl(0, 'chipNumber').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="chipNumber" placeholder="985112000123456">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Питомник / заводчик</p>
+        </div>
+        <input formControlName="kennelName" placeholder="Питомник «Мурлыка»">
+      </div>
+    </div>
+
+      <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <div class="field">
+        <div>
+          <p class="label">Название вакцины</p>
+          @if (getControl(1, 'vaccineName').errors?.['required'] && getControl(1, 'vaccineName').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="vaccineName" placeholder="МурБиовак">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Код партии препарата</p>
+          <p class="hint">Проверьте препарат в <a href="/service/drug_registry">реестре ветпрепаратов</a></p>
+        </div>
+        <input formControlName="drugBatchCode" placeholder="MBV-2026-001">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Дата прививки</p>
+          @if (getControl(1, 'vaccinationDate').errors?.['required'] && getControl(1, 'vaccinationDate').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="vaccinationDate" type="date">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Ветеринар</p>
+        </div>
+        <input formControlName="veterinarian" placeholder="Иванов И.И.">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Клиника</p>
+        </div>
+        <input formControlName="clinic" placeholder="Ветклиника «Котодок»">
+      </div>
+    </div>
+
+      <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+      <div class="field">
+        <div>
+          <p class="label">Родственник (необязательно)</p>
+        </div>
+        <select formControlName="relativeCat">
+          <option value="">— Не указан —</option>
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem('cat', $index)">{{ option.text }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Тип родства</p>
+        </div>
+        <select formControlName="relationType">
+          @for (rel of relationOptions; track $index) {
+            <option [value]="getItem('relation', $index)">{{ rel.text }}</option>
+          }
+        </select>
+      </div>
+      <p class="hint">Связи помогают выявить риск инбридинга при разведении</p>
+    </div>
+
+      <div class="field-wrapper" [hidden]="active !== 3" formGroupName="3">
+      <div class="field">
+        <div>
+          <p class="label">Диагноз (необязательно)</p>
+        </div>
+        <input formControlName="diagnosis" placeholder="Ринотрахеит">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Проведённое лечение</p>
+        </div>
+        <textarea formControlName="treatment" placeholder="Опишите лечение"></textarea>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Дата записи</p>
+        </div>
+        <input formControlName="recordDate" type="date">
+      </div>
+      <div class="field checkbox-field">
+        <label>
+          <input type="checkbox" formControlName="recovered">
+          Выздоровел
+        </label>
+      </div>
+    </div>
+
+      @if (active === 4) {
+        <app-check-info [data]="getResult"></app-check-info>
+      }
+    </section>
+  </div>
+}

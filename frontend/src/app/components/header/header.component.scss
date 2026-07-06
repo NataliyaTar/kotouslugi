@@ -1,0 +1,30 @@
+// Файл не трогаем
+
+@use '../../../assets/styles/palette' as palette;
+
+header {
+  padding: 12px 0;
+  background-color: #fff;
+  box-shadow: 0 2px 2px #9daccf14;
+  position: relative;
+
+  .header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .logo {
+      .blue {
+        color: #0065B1;
+      }
+
+      .red {
+        color: palette.$color-gosred;
+      }
+    }
+
+    .cats {
+      margin-right: 24px;
+    }
+  }
+}

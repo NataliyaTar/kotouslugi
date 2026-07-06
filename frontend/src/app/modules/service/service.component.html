@@ -1,0 +1,20 @@
+<!--Файл не трогаем-->
+
+<div class="container service-wrapper">
+  <section>
+    <app-steps [steps]="steps" [activeStep]="active"></app-steps>
+  </section>
+
+  <section class="form-wrapper">
+    <router-outlet></router-outlet>
+  </section>
+
+  <section class="buttons-wrapper">
+    <button [disabled]="active === 0" (click)="prev()">Назад</button>
+    @if (active < steps?.length - 1) {
+      <button [disabled]="!isValidStep()" (click)="next()">Далее</button>
+    } @else if (active === steps?.length - 1) {
+      <button (click)="save()">Сохранить</button>
+    }
+  </section>
+</div>
