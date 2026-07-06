@@ -52,6 +52,38 @@ docker compose down -v  # остановить + сбросить БД
 
 ---
 
+## Подключение к БД
+
+Самый простой вариант — через Docker `psql`:
+
+```bash
+docker exec -it kotouslugi-postgres psql -U kotouslugi -d kotouslugi
+```
+
+Если подключаешься из клиента (DBeaver/DataGrip/pgAdmin), параметры такие:
+
+- Host: `localhost`
+- Port: `5432`
+- Database: `kotouslugi`
+- User: `kotouslugi`
+- Password: `kotouslugi`
+- SSL: `disable` / `prefer` (обычно `disable` локально)
+
+Проверка, что контейнер БД жив:
+
+```bash
+docker compose ps
+```
+
+Внутри `psql` можно проверить так:
+
+```sql
+SELECT * FROM cat;
+SELECT * FROM service;
+```
+
+---
+
 ## Тестовые данные
 
 ### Коты
