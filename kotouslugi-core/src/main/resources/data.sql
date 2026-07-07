@@ -17,6 +17,12 @@ values (2,
         'Хотите завести котёнка?',
         'Услуга «Укотоение» поможет подобрать кото-приют и котёнка',
         'hugs.png');
+INSERT INTO banner (id, bg, title, text, imgurl)
+values (3,
+        'linear-gradient(86deg, #FFF9E6 0%, #FFEFD5 100%)',
+        'Кот заскучал дома?',
+        'Услуга «Мяузыка» поможет записать питомца в музыкальный кружок и найти новое хобби',
+        'music.png');
 
 /*-- cat
 INSERT INTO cat (id, name, age, sex, breed)
@@ -51,6 +57,18 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'exhibition',
+        'cool.png',
+        'Участие в выставке',
+        'Покажите своего котика во всей красе на официальной выставке');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (4,
+        'breeding_partner',
+        'love.png',
+        'Подбор партнёра для разведения',
+        'Найдём вашему котику идеальную пару среди зарегистрированных питомцев');
 
 -- category
 INSERT INTO category
