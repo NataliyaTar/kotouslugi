@@ -1,11 +1,7 @@
 @use '../../../../../assets/styles/palette' as palette;
 
-// вёрстка полей использует общие глобальные стили .field/.field-wrapper (см. vet/new_family);
-// стили file-контрола и чекбокса — те же переопределения, что и в exhibition.component.scss
-// (глобальный input.scss стилизует все <input>, включая file и checkbox, под текстовые поля)
 
 .file-control {
-  // ровно 2 прямых потомка .field — не ломает глобальный justify-content: space-between
   display: flex;
   flex-direction: column;
 }

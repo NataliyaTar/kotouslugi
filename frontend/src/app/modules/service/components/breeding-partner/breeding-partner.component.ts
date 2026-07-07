@@ -35,22 +35,16 @@ export enum FormMap {
 })
 export class BreedingPartnerComponent implements OnInit, OnDestroy {
 
-  public loading = true; // загружена ли информация для страницы
-  public form: UntypedFormGroup; // форма
-  public active: number; // активный шаг формы
-  public optionsCat: IValueCat[]; // список котов
-  public breedOptions = this.constantService.breedOptions; // список пород (переиспользуем существующий справочник)
+  public loading = true;
+  public form: UntypedFormGroup;
+  public active: number;
+  public optionsCat: IValueCat[];
+  public breedOptions = this.constantService.breedOptions;
 
-  private idService: string; // мнемоника услуги
-  private steps: IStep[]; // шаги формы
+  private idService: string;
+  private steps: IStep[];
   private subscriptions: Subscription[] = [];
 
-  /**
-   * Возвращает преобразованное значение формы для отображения заполненных данных.
-   * Чекбокс "только с родословной" — реальный критерий поиска (в отличие от чекбокса
-   * согласия в exhibition.component.ts), поэтому показываем его, но не как булево
-   * true/false, а человеческим "Да"/"Нет".
-   */
   public get getResult() {
     const rawValue = this.form.getRawValue();
     const previewValue = {
@@ -80,9 +74,6 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     })
   }
 
-  /**
-   * Запрашиваем отформатированный список котов
-   */
   private getCatOption(): void {
     this.constantService.getCatOptionsAll().pipe(
       take(1)
@@ -93,17 +84,12 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Получаем мнемонику формы, запрашиваем шаги формы
-   * @private
-   */
   private prepareService(): void {
     this.route.data.pipe(
       take(1)
     ).subscribe(res => {
       this.idService = res['idService'];
 
-      // запрашиваем шаги формы
       this.serviceInfo.getSteps(this.idService).pipe(
         take(1)
       ).subscribe(res => {
@@ -120,10 +106,6 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Инициализация формы
-   * @private
-   */
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
@@ -149,11 +131,6 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  /**
-   * Возвращает json в виде строки
-   * @param type
-   * @param index
-   */
   public getItem(type: 'cat' | 'breed', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
@@ -161,22 +138,15 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     return JSON.stringify(this.breedOptions[index]);
   }
 
-  /**
-   * Запоминаем имена выбранных файлов в контроле формы (для превью и валидации).
-   * Сама отправка бинарных файлов на бэкенд — отдельная задача (TODO: подключить API).
-   * @param event
-   */
+  // Реальная отправка файлов на бэкенд — отдельная задача (TODO: подключить API):
+  // текущий общий OrderService.saveOrder умеет отправлять только JSON, поэтому пока
+  // сохраняем в контрол только имена файлов (для превью и валидации)
   public onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const names = input.files ? Array.from(input.files).map(f => f.name).join(', ') : '';
     this.getControl(0, 'photos').setValue(names);
   }
 
-  /**
-   * Возвращает контрол формы
-   * @param step
-   * @param id
-   */
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
   }

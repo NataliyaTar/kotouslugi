@@ -33,10 +33,10 @@ export enum FormMap {
 })
 export class ExhibitionComponent implements OnInit, OnDestroy {
 
-  public loading = true; // загружена ли информация для страницы
-  public form: UntypedFormGroup; // форма
-  public active: number; // активный шаг формы
-  public optionsCat: IValueCat[]; // список котов
+  public loading = true;
+  public form: UntypedFormGroup;
+  public active: number;
+  public optionsCat: IValueCat[];
 
   // TODO: подключить API — список выставок пока захардкожен, эндпоинта на бэке ещё нет
   public exhibitionOptions = [
@@ -52,14 +52,10 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     { id: 'veteran', text: 'Ветераны' },
   ];
 
-  private idService: string; // мнемоника услуги
-  private steps: IStep[]; // шаги формы
+  private idService: string;
+  private steps: IStep[];
   private subscriptions: Subscription[] = [];
 
-  /**
-   * Возвращает преобразованное значение формы для отображения заполненных данных.
-   * Согласие с правилами (checkbox) в предпросмотр не выводим — булево "true" пользователю ни о чём не говорит.
-   */
   public get getResult() {
     const rawValue = this.form.getRawValue();
     const previewValue = {
@@ -89,9 +85,6 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     })
   }
 
-  /**
-   * Запрашиваем отформатированный список котов
-   */
   private getCatOption(): void {
     this.constantService.getCatOptionsAll().pipe(
       take(1)
@@ -102,17 +95,12 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Получаем мнемонику формы, запрашиваем шаги формы
-   * @private
-   */
   private prepareService(): void {
     this.route.data.pipe(
       take(1)
     ).subscribe(res => {
       this.idService = res['idService'];
 
-      // запрашиваем шаги формы
       this.serviceInfo.getSteps(this.idService).pipe(
         take(1)
       ).subscribe(res => {
@@ -129,10 +117,6 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Инициализация формы
-   * @private
-   */
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
@@ -157,11 +141,6 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  /**
-   * Возвращает json в виде строки
-   * @param type
-   * @param index
-   */
   public getItem(type: 'cat' | 'exhibition' | 'exhibitionClass', index: number): string {
     if (type === 'cat') {
       return JSON.stringify(this.optionsCat[index]);
@@ -172,24 +151,15 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     return JSON.stringify(this.exhibitionClassOptions[index]);
   }
 
-  /**
-   * Запоминаем имена выбранных файлов в контроле формы (для превью и валидации).
-   * Сама отправка бинарных файлов на бэкенд — отдельная задача (TODO: подключить API),
-   * т.к. текущий общий OrderService.saveOrder умеет отправлять только JSON.
-   * @param event
-   * @param controlName
-   */
+  // Реальная отправка файлов на бэкенд — отдельная задача (TODO: подключить API):
+  // текущий общий OrderService.saveOrder умеет отправлять только JSON, поэтому пока
+  // сохраняем в контрол только имена файлов (для превью и валидации)
   public onFilesSelected(event: Event, controlName: 'documents' | 'photos'): void {
     const input = event.target as HTMLInputElement;
     const names = input.files ? Array.from(input.files).map(f => f.name).join(', ') : '';
     this.getControl(1, controlName).setValue(names);
   }
 
-  /**
-   * Возвращает контрол формы
-   * @param step
-   * @param id
-   */
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
