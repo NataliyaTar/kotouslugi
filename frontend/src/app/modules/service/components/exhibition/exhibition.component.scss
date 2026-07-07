@@ -1,11 +1,7 @@
 @use '../../../../../assets/styles/palette' as palette;
 
-// вёрстка полей использует общие глобальные стили .field/.field-wrapper (см. vet/new_family),
-// здесь только переопределения под file/checkbox — глобальный input.scss стилизует
-// вообще все <input>, включая file и checkbox, под текстовые поля (width:100%, height:52px)
 
 .file-input {
-  // скрываем системную кнопку "Выбрать файл", но оставляем доступной для label/скринридеров
   position: absolute;
   width: 1px;
   height: 1px;
@@ -18,8 +14,6 @@
 }
 
 .file-control {
-  // ровно 2 прямых потомка .field (этот блок и div с подписью) — не ломает
-  // глобальный justify-content: space-between у .field, рассчитанный на 2 элемента
   display: flex;
   flex-direction: column;
 }
