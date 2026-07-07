@@ -1,15 +1,13 @@
 package ru.practice.kotouslugi.model;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.sql.Date;
 
 @Getter
 @Setter
@@ -26,4 +24,7 @@ public class Cat {
     private String age;
     private String sex;
     private String breed;
+   @Column(nullable = false)
+   private String politicalStatus = "NONE";
+   private Date lastVoteDate;
 }
