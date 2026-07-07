@@ -40,7 +40,7 @@ public class PassportDetail {
   @Column(nullable = false, length = 100)
   private String ownerEmail;
 
-  @Column(nullable = false, length = 256)
+  @Column(nullable = false, length = 255)
   private String photoUrl;
 
   @Column(columnDefinition = "TEXT")
