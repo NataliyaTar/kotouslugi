@@ -43,7 +43,10 @@
       </div>
     </div>
 
-    @if (active === 1) {
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+    </div>
+
+    @if (active === 2) {
       <app-check-info [data]="getResult"></app-check-info>
     }
   </div>
