@@ -20,16 +20,16 @@ public class PassportDetail {
 
   @Id
   @GeneratedValue
-  private int id;
+  private Long id;
 
   @OneToOne
   @JoinColumn(nullable = false)
-  private Requisition requisition; // Связь с заявкой (внешний ключ requisition_id)
+  private Requisition requisition;
 
   @Column(nullable = false, unique = true, length = 20)
-  private String passportNumber; // Формат RF-CAT-XXXXXX
+  private String passportNumber;
 
-  private LocalDate issueDate; // Заполняется, когда статус станет READY
+  private LocalDate issueDate;
 
   @Column(nullable = false, length = 50)
   private String country = "РФ";
