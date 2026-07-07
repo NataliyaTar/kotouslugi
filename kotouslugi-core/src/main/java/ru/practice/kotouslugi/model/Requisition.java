@@ -33,6 +33,8 @@ public class Requisition implements Serializable {
     private String mnemonic;
     private RequisitionStatus status;
     private Date created;
+    private int catId;
+    private PassportDetail passportDetail;
     @JsonDeserialize(using = StringDeserializer.class)
     private String fields;
 
