@@ -13,40 +13,47 @@ import java.util.List;
 
 @Service
 public class RequisitionService {
-    private final RequisitionRepository requisitionRepository;
-    private final KotoServiceRepository kotoServiceRepository;
+  private final RequisitionRepository requisitionRepository;
+  private final KotoServiceRepository kotoServiceRepository;
+  private final EntertainmentBookingService entertainmentBookingService;
 
-    public RequisitionService(RequisitionRepository requisitionRepository,
-                              KotoServiceRepository kotoServiceRepository) {
-      this.requisitionRepository = requisitionRepository;
-      this.kotoServiceRepository = kotoServiceRepository;
+  public RequisitionService(RequisitionRepository requisitionRepository,
+                            KotoServiceRepository kotoServiceRepository,
+                            EntertainmentBookingService entertainmentBookingService) {
+    this.requisitionRepository = requisitionRepository;
+    this.kotoServiceRepository = kotoServiceRepository;
+    this.entertainmentBookingService = entertainmentBookingService;
+  }
+
+  public List<Requisition> listRequisition() {
+    List<Requisition> result = new LinkedList<>();
+    Iterable<Requisition> requisitions = requisitionRepository.findAll();
+    requisitions.forEach(r -> r.setName(kotoServiceRepository.findTitleByServiceMnemonic(r.getMnemonic())));
+    requisitions.forEach(result::add);
+    return result;
+  }
+
+  public int createRequisition(Requisition requisition) throws ServiceException {
+    if (entertainmentBookingService.supports(requisition.getMnemonic())) {
+      entertainmentBookingService.registerAppointment(requisition.getFields());
     }
 
-    public List<Requisition> listRequisition() {
-        List<Requisition> result = new LinkedList<>();
-        Iterable<Requisition> requisitions = requisitionRepository.findAll();
-        requisitions.forEach(r -> r.setName(kotoServiceRepository.findTitleByServiceMnemonic(r.getMnemonic())));
-        requisitions.forEach(result::add);
-        return result;
-    }
+    requisition.setStatus(RequisitionStatus.FILED);
+    requisition.setCreated(new Date(System.currentTimeMillis()));
+    Requisition save = requisitionRepository.save(requisition);
+    return save.getId();
+  }
 
-    public int createRequisition(Requisition requisition) {
-        requisition.setStatus(RequisitionStatus.FILED);
-        requisition.setCreated(new Date(System.currentTimeMillis()));
-        Requisition save = requisitionRepository.save(requisition);
-        return save.getId();
-    }
+  public Boolean updateRequisition(Requisition updRequisition) throws ServiceException {
+    String id = String.valueOf(updRequisition.getId());
+    if (id.isEmpty() || id.equals("null"))
+      throw new ServiceException("Не указан id заявки");
+    Integer idRequisite = Integer.parseInt(id);
+    Requisition requisition = requisitionRepository.findById(idRequisite).orElse(null);
+    if (requisition == null)
+      throw new ServiceException("Указанная заявка не найдена: " + idRequisite);
 
-    public Boolean updateRequisition(Requisition updRequisition) throws ServiceException {
-        String id = String.valueOf(updRequisition.getId());
-        if (id.isEmpty() || id.equals("null"))
-            throw new ServiceException("Не указан id заявки");
-        Integer idRequisite = Integer.parseInt(id);
-        Requisition requisition = requisitionRepository.findById(idRequisite).orElse(null);
-        if (requisition == null)
-            throw new ServiceException("Указанная заявка не найдена: " + idRequisite);
-
-        requisitionRepository.save(updRequisition);
-        return true;
-    }
+    requisitionRepository.save(updRequisition);
+    return true;
+  }
 }
