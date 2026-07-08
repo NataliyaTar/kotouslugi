@@ -1,5 +1,6 @@
 package ru.practice.kotouslugi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,33 +20,35 @@ import java.time.LocalDate;
 public class PassportDetail {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @OneToOne
   @JoinColumn(nullable = false)
   private Requisition requisition;
 
-  @Column(nullable = false, unique = true, length = 20)
+  @Column(name = "passportNumber", nullable = false, unique = true, length = 20)
   private String passportNumber;
 
+  @Column(name = "issueDate")
   private LocalDate issueDate;
 
-  @Column(nullable = false, length = 50)
+
+  @Column(name = "country", nullable = false, length = 50)
   private String country = "РФ";
 
-  @Column(nullable = false, length = 20)
+  @Column(name = "ownerPhone", nullable = false, length = 20)
   private String ownerPhone;
 
-  @Column(nullable = false, length = 100)
+  @Column(name = "ownerEmail", nullable = false, length = 100)
   private String ownerEmail;
 
-  @Column(nullable = false, length = 255)
+  @Column(name = "photoUrl", nullable = false, length = 255)
   private String photoUrl;
 
-  @Column(columnDefinition = "TEXT")
+  @Column(name = "specialMarks", columnDefinition = "TEXT")
   private String specialMarks;
 
-  @Column(length = 50)
+  @Column(name = "chipNumber", length = 50)
   private String chipNumber;
 }
