@@ -67,3 +67,13 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+
+-- fine (штрафы котов)
+INSERT INTO fine (id, cat_id, reason, amount, status, created)
+values (0, 0, 'Порча мебели когтями', 500, 'UNPAID', '2024-06-01 10:00:00');
+INSERT INTO fine (id, cat_id, reason, amount, status, created)
+values (1, 0, 'Охота на мышей без лицензии', 1000, 'UNPAID', '2024-06-02 12:30:00');
+INSERT INTO fine (id, cat_id, reason, amount, status, created)
+values (2, 1, 'Нарушение тишины после 23:00 (громкое мяуканье)', 300, 'PAID', '2024-06-03 09:15:00');
+INSERT INTO fine (id, cat_id, reason, amount, status, created)
+values (3, 1, 'Несанкционированная парковка на клавиатуре хозяина', 250, 'UNPAID', '2024-06-04 18:45:00');
