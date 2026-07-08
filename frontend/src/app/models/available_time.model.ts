@@ -1,5 +1,6 @@
 export interface IAvailableTime {
-  placeID: number;
-  serviceID: number;
-  time: string;
+  id: number;
+  venueId: number;
+  availableSlots: string;
+  price: number;
 }

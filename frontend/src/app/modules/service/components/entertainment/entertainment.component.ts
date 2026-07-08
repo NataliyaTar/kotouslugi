@@ -6,22 +6,28 @@ import {
   Validators
 } from '@angular/forms';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
-import { Subscription, take } from 'rxjs';
+import {pipe, Subscription, take} from 'rxjs';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
 import { IValueCat, TSex } from '@models/cat.model';
 import { IStep } from '@models/step.model';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
-import {JsonPipe} from "@angular/common";
+import {CurrencyPipe, DatePipe, JsonPipe} from "@angular/common";
 import {CatService} from "@services/cat/cat.service";
 import {IPlace} from "@models/place.model";
+import {IServices} from "@models/event_services.model";
+import {IAvailableTime} from "@models/available_time.model";
 
 
 export enum FormMap {
-  cat  = 'Кличка',
+  cat = 'Кличка',
   telephone = 'Телефон для связи',
   email = 'Email для связи',
+  place = 'Место',
+  event = 'Мероприятие',
+  time = 'Время посещения',
+  price = 'Стоимость услуги'
 }
 
 @Component({
@@ -32,6 +38,8 @@ export enum FormMap {
     CheckInfoComponent,
     JsonPipe,
     ThrobberComponent,
+    DatePipe,
+    CurrencyPipe,
   ],
   templateUrl: './entertainment.component.html',
   styleUrl: './entertainment.component.scss'
@@ -43,7 +51,10 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
-  public placeOptions: IPlace[];
+  public placeOptions: IPlace[]; // список доступных мест для посещения
+  public eventOptions: IServices[]; //список мероприятий
+  public availableSlotsOptions: string[]; //список доступных времени
+  public price: string; //цена услуги
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
@@ -60,7 +71,6 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
-    private catService: CatService,
     private constantService: ConstantsService,
   ) {
   }
@@ -103,6 +113,40 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
     )
   }
 
+  //Метод получения списка меропритий
+  private getEventsOptionsAll(eventID: number): void {
+    this.constantService.getEventsOptionsAll(eventID).pipe(
+      take(1)).subscribe((res: IServices[]) => {
+
+        this.eventOptions = res;
+      }
+    )
+  }
+
+  //Метод получения списка возможного времени посещения
+  private getAvailableSlotsOption(placeID: number): void {
+    this.constantService.getAvailableTimeListAll(placeID).pipe(
+      take(1)).subscribe((res: IAvailableTime) => {
+
+        this.availableSlotsOptions = res.availableSlots.split(',');
+
+        this.price = `${res.price} ₽`;
+
+        this.getControl(1, 'price').setValue(this.price);
+    }
+    )
+  }
+
+  public formatDate(date: string): string {
+    return new Date(date).toLocaleString('ru-RU', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
   /**
    * Получаем мнемонику формы, запрашиваем шаги формы
    * @private
@@ -143,10 +187,47 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
       }),
       1: this.fb.group(
         {
-          place: [JSON.stringify(this.placeOptions[0]), [Validators.required]]
+          place: ['', [Validators.required]],
+          event:['', [Validators.required]],
+          time: ['', [Validators.required]],
+          price:[''],
         }
       )
     });
+
+    this.getControl(1, 'place').valueChanges.subscribe(value => {
+      // очищаем мероприятие
+      this.getControl(1, 'event').reset();
+
+      // очищаем время
+      this.getControl(1, 'time').reset();
+
+      // очищаем списки
+      this.eventOptions = [];
+      this.availableSlotsOptions = [];
+      this.price = '';
+
+      this.getControl(1, 'price').setValue('');
+
+      const place = JSON.parse(value);
+
+      this.getEventsOptionsAll(place.id)
+    })
+
+    this.getControl(1, 'event').valueChanges.subscribe(value => {
+
+      // очищаем время
+      this.getControl(1, 'time').reset();
+
+      this.availableSlotsOptions = [];
+      this.price = '';
+
+      this.getControl(1, 'price').setValue('');
+
+      const event = JSON.parse(value);
+
+      this.getAvailableSlotsOption(event.id)
+    })
 
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
@@ -160,11 +241,27 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
    * @param type
    * @param index
    */
-  public getItem(type: 'cat' | 'place', index: number): string {
+  public getItem(type: 'cat' | 'place' | 'event' | 'time', index: number): string {
       if (type === 'cat') return JSON.stringify(this.optionsCat[index]);
 
       /*Получаем список всех мест*/
-      return JSON.stringify(this.placeOptions[index])
+      else if (type === 'place') {
+        return JSON.stringify({
+          text: this.placeOptions[index].name,
+          ...this.placeOptions[index]
+        });
+      }
+
+      else if (type === 'event') {
+        return JSON.stringify({
+          text: this.eventOptions[index].name,
+          ...this.eventOptions[index]
+        });
+      }
+
+    return JSON.stringify({
+      text: this.formatDate(this.availableSlotsOptions[index])
+    });
   }
 
   /**
