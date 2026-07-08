@@ -32,8 +32,8 @@ export enum FormMap {
     JsonPipe,
     ThrobberComponent,
   ],
-  templateUrl: './ entertainment.component.html',
-  styleUrl: './ entertainment.component.scss'
+  templateUrl: './entertainment.component.html',
+  styleUrl: './entertainment.component.scss'
 })
 
 export class EntertainmentComponent implements OnInit, OnDestroy {
