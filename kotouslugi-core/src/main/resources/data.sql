@@ -80,3 +80,26 @@ values (2, 2);
 INSERT INTO service_category
 values (3, 2);
 
+INSERT INTO venue (id, name) values (0, 'Художественный музей им. Крамского');
+INSERT INTO venue (id, name) values (1, 'Кинотеатр "Спартак"');
+INSERT INTO venue (id, name) values (2, 'Театр оперы и балета');
+
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (0, 0, 'Выставка "Русский пейзаж 19-го века"', 300.00, '2026-08-08T10:00:00,2026-08-08T14:00:00,2026-08-09T12:00:00');
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (1, 0, 'Экскурсия "Шедевры Крамского"', 350.00, '2026-08-09T15:00:00,2026-08-10T11:00:00,2026-08-10T16:00:00');
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (2, 0, 'Экскурсия "Археологические древности юга России"', 350.00, '2026-08-11T13:00:00,2026-08-11T17:00:00,2026-08-12T10:00:00');
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (3, 1, 'Гарри Поттер и философский камень', 400.00, '2026-08-08T18:00:00,2026-08-08T20:30:00,2026-08-09T15:00:00');
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (4, 1, 'Майкл', 400.00, '2026-08-09T19:00:00,2026-08-10T17:00:00,2026-08-10T21:00:00');
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (5, 1, 'Кот в сапогах: Последнее желание', 400.00, '2026-08-11T11:00:00,2026-08-11T14:00:00,2026-08-12T12:30:00');
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (6, 2, 'Балет "Лебединое озеро"', 800.00, '2026-08-08T19:00:00,2026-08-09T18:00:00,2026-08-10T19:00:00');
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (7, 2, 'Опера "Евгений Онегин"', 800.00, '2026-08-11T18:30:00,2026-08-12T18:30:00,2026-08-13T18:30:00');
+INSERT INTO events_catalog (id, venue_id, name, price, available_slots)
+values (8, 2, 'Детский спектакль "Золушка"', 500.00, '2026-08-09T11:00:00,2026-08-10T11:00:00,2026-08-11T11:00:00');
+
