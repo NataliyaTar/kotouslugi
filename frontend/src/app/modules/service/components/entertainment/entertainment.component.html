@@ -49,11 +49,14 @@
         <div>
           <!-- Тут пока заглушка -->
           <p class="label">Выберите место</p>
+          @if (getControl(1, 'place').errors?.['required'] && getControl(1, 'place').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
         </div>
-          <select name="" id="">
-            <option value="">Кинотеатр "Спартак"</option>
-            <option value="">Зоопарк "Воронежский"</option>
-            <option value="">Музей "Современное искусство"</option>
+          <select formControlName="place" (invalid)="getControl(1, 'place').invalid">
+            @for (option of placeOptions; track $index) {
+              <option [value]="getItem('place', $index)">{{option.name}}</option>
+            }
           </select>
       </div>
 
@@ -63,9 +66,6 @@
           <p class="label">Выберите мероприятие</p>
         </div>
         <select name="" id="">
-          <option value="">Мероприятие 1</option>
-          <option value="">Мероприятие 2</option>
-          <option value="">Мероприятие 3</option>
         </select>
       </div>
 
@@ -75,9 +75,6 @@
           <p class="label">Выберите время посещщения</p>
         </div>
         <select name="" id="">
-          <option value="">15:00</option>
-          <option value="">16:00</option>
-          <option value="">17:00</option>
         </select>
       </div>
     </div>

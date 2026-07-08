@@ -15,6 +15,7 @@ import { IStep } from '@models/step.model';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 import {JsonPipe} from "@angular/common";
 import {CatService} from "@services/cat/cat.service";
+import {IPlace} from "@models/place.model";
 
 
 export enum FormMap {
@@ -42,6 +43,7 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
+  public placeOptions: IPlace[];
 
   private idService: string; // мнемоника услуги
   private steps: IStep[]; // шаги формы
@@ -65,6 +67,7 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.getCatOption();
+    this.getPlacesOption();
   }
 
   public ngOnDestroy() {
@@ -84,6 +87,20 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
 
       this.prepareService();
     });
+  }
+
+  /*
+  * Запрашиваем отформатированный список мест развлечений
+  * */
+
+  private getPlacesOption(): void {
+    this.constantService.getPlaceOptionsAll().pipe(
+      take(1)).subscribe((res: IPlace[]) => {
+        this.placeOptions = res;
+
+        this.prepareService();
+      }
+    )
   }
 
   /**
@@ -124,7 +141,11 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
         telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
         email: ['', [Validators.email]]
       }),
-      /*тут пока только первый шаг формы*/
+      1: this.fb.group(
+        {
+          place: [JSON.stringify(this.placeOptions[0]), [Validators.required]]
+        }
+      )
     });
 
     this.serviceInfo.servicesForms$.next({
@@ -139,9 +160,11 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
    * @param type
    * @param index
    */
-  public getItem(type: 'cat', index: number): string {
-      return JSON.stringify(this.optionsCat[index]);
-    /*Тут пока только котики*/
+  public getItem(type: 'cat' | 'place', index: number): string {
+      if (type === 'cat') return JSON.stringify(this.optionsCat[index]);
+
+      /*Получаем список всех мест*/
+      return JSON.stringify(this.placeOptions[index])
   }
 
   /**
