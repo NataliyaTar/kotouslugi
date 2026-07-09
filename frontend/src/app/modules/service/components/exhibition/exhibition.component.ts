@@ -151,9 +151,7 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     return JSON.stringify(this.exhibitionClassOptions[index]);
   }
 
-  // Реальная отправка файлов на бэкенд — отдельная задача (TODO: подключить API):
-  // текущий общий OrderService.saveOrder умеет отправлять только JSON, поэтому пока
-  // сохраняем в контрол только имена файлов (для превью и валидации)
+  // TODO: подключить апи — пока сохраняем только имена файлов, не сами файлы
   public onFilesSelected(event: Event, controlName: 'documents' | 'photos'): void {
     const input = event.target as HTMLInputElement;
     const names = input.files ? Array.from(input.files).map(f => f.name).join(', ') : '';
