@@ -51,6 +51,12 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'fine_payment',
+        'corner.webp',
+        'Просмотр и оплата штрафов',
+        'Быстрый поиск и оплата штрафов вашего кота');
 
 -- category
 INSERT INTO category
@@ -59,6 +65,8 @@ INSERT INTO category
 values (1, 'Медицина');
 INSERT INTO category
 values (2, 'Отдых и развлечение');
+INSERT INTO category
+values (3, 'Правопорядок');
 
 -- service_to_category
 INSERT INTO service_category
@@ -67,15 +75,5 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
-
--- fine (штрафы котов)
--- created = CURRENT_TIMESTAMP: дата ставится реальная — момент запуска приложения.
--- DATEADD сдвигает на несколько дней назад, чтобы штрафы выглядели выписанными в разные дни.
-INSERT INTO fine (id, cat_id, reason, amount, status, created)
-values (0, 0, 'Порча мебели когтями', 500, 'UNPAID', DATEADD('DAY', -10, CURRENT_TIMESTAMP));
-INSERT INTO fine (id, cat_id, reason, amount, status, created)
-values (1, 0, 'Охота на мышей без лицензии', 1000, 'UNPAID', DATEADD('DAY', -7, CURRENT_TIMESTAMP));
-INSERT INTO fine (id, cat_id, reason, amount, status, created)
-values (2, 1, 'Нарушение тишины после 23:00 (громкое мяуканье)', 300, 'PAID', DATEADD('DAY', -5, CURRENT_TIMESTAMP));
-INSERT INTO fine (id, cat_id, reason, amount, status, created)
-values (3, 1, 'Несанкционированная парковка на клавиатуре хозяина', 250, 'UNPAID', DATEADD('DAY', -2, CURRENT_TIMESTAMP));
+INSERT INTO service_category
+values (3, 3);

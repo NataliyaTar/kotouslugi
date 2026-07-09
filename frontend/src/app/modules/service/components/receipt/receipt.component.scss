@@ -1,0 +1,26 @@
+.receipt {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: white;
+}
+
+.receipt h2,
+.receipt h3 {
+  text-align: center;
+}
+
+.fine {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.success {
+  color: green;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+}
