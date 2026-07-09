@@ -1,0 +1,37 @@
+<div class="receipt">
+
+  <h2>Электронный чек</h2>
+
+  <p><b>Номер чека:</b> {{ receipt.number }}</p>
+
+  <p><b>Дата:</b> {{ receipt.date }}</p>
+
+  <p><b>Кот:</b> {{ receipt.cat }}</p>
+
+  <p><b>Документ:</b> {{ receipt.document }}</p>
+
+  <hr>
+
+  <h3>Оплаченные штрафы</h3>
+
+  @for (fine of receipt.fines; track fine.number) {
+
+    <div class="fine">
+
+      <span>{{ fine.number }}</span>
+
+      <span>{{ fine.amount }} ₽</span>
+
+    </div>
+
+  }
+
+  <hr>
+
+  <h2>Итого: {{ receipt.total }} ₽</h2>
+
+  <p class="success">
+    ✔ Оплачено
+  </p>
+
+</div>

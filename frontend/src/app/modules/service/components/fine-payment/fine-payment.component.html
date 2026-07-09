@@ -1,0 +1,123 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+
+  <div class="fields-wrapper" [formGroup]="form">
+
+    <!-- Шаг 1 -->
+    <div class="field-wrapper"
+         [hidden]="active !== 0"
+         formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0,'cat').errors?.['required']
+          && getControl(0,'cat').touched) {
+            <p class="error">
+              Поле обязательно для заполнения
+            </p>
+          }
+        </div>
+        <select formControlName="cat">
+          @for (cat of optionsCat; track $index) {
+            <option [value]="getItem($index)">
+              {{cat.text}}
+            </option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">
+            Номер документа
+          </p>
+          @if (getControl(0,'document').errors
+          && getControl(0,'document').touched) {
+            @if (getControl(0,'document').errors?.['required']) {
+              <p class="error">
+                Поле обязательно
+              </p>
+            }
+            @if (getControl(0,'document').errors?.['minlength']) {
+              <p class="error">
+                Минимум 5 символов
+              </p>
+            }
+          }
+        </div>
+        <input
+          formControlName="document"
+          placeholder="Введите номер документа">
+      </div>
+    </div>
+
+    <!-- Шаг 2 -->
+    <div
+      class="field-wrapper"
+      [hidden]="active !== 1"
+      formGroupName="1">
+      <h3>Найденные штрафы</h3>
+      <div class="fines-list">
+        @for (fine of fines; track fine.id) {
+          <div class="fine-card">
+            <label class="fine-title">
+              <input
+                type="checkbox"
+                [(ngModel)]="fine.selected"
+                [ngModelOptions]="{standalone: true}"
+                (change)="changeFine()">
+              <strong>{{ fine.number }}</strong>
+            </label>
+            <p><b>Дата:</b> {{ fine.date }}</p>
+            <p><b>Причина:</b> {{ fine.reason }}</p>
+            <p><b>Сумма:</b> {{ fine.amount }} ₽</p>
+            <p><b>Срок оплаты:</b> {{ fine.dueDate }}</p>
+            <p><b>Статус:</b> {{ fine.status }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="payment-panel">
+        <h3>Итого к оплате: {{ totalAmount }} ₽</h3>
+        <button
+          type="button"
+          (click)="paySelected()">
+          Оплатить выбранные
+        </button>
+      </div>
+
+      @if (paymentError) {
+        <p class="error">
+          ❌Выберите хотя бы один штраф
+        </p>
+      }
+
+
+      @if (paymentSuccess) {
+        <p class="success">
+          ✔ Оплата выполнена успешно
+        </p>
+        <button
+          type="button"
+          (click)="openReceipt()">
+          Посмотреть чек
+        </button>
+      }
+
+
+
+    </div>
+
+    <!-- Шаг 3 -->
+
+    @if (active === 2) {
+
+      <app-check-info
+        [data]="getResult">
+      </app-check-info>
+
+    }
+
+  </div>
+
+}
