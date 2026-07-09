@@ -4,7 +4,6 @@ import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
 import { FinePaymentComponent } from './components/fine-payment/fine-payment.component';
-import { ReceiptComponent } from './components/receipt/receipt.component';
 
 /**
  * Роутинг для услуг
@@ -37,14 +36,6 @@ const routes: Routes = [
           idService: 'fine_payment'
         },
         component: FinePaymentComponent
-      },
-      {
-        path: 'receipt',
-        pathMatch: 'full',
-        data: {
-          idService: 'receipt'
-        },
-        component: ReceiptComponent
       }
       // ToDo: your router for service
     ]

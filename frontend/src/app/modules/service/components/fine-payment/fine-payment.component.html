@@ -59,21 +59,31 @@
       <h3>Найденные штрафы</h3>
       <div class="fines-list">
         @for (fine of fines; track fine.id) {
-          <div class="fine-card">
-            <label class="fine-title">
-              <input
-                type="checkbox"
-                [(ngModel)]="fine.selected"
-                [ngModelOptions]="{standalone: true}"
-                (change)="changeFine()">
-              <strong>{{ fine.number }}</strong>
-            </label>
-            <p><b>Дата:</b> {{ fine.date }}</p>
-            <p><b>Причина:</b> {{ fine.reason }}</p>
-            <p><b>Сумма:</b> {{ fine.amount }} ₽</p>
-            <p><b>Срок оплаты:</b> {{ fine.dueDate }}</p>
-            <p><b>Статус:</b> {{ fine.status }}</p>
-          </div>
+
+          @if (fine.status === 'Не оплачен') {
+
+            <div class="fine-card">
+
+              <label class="fine-checkbox">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="fine.selected"
+                  [ngModelOptions]="{standalone: true}"
+                  (change)="changeFine()">
+              </label>
+
+              <h4>{{ fine.number }}</h4>
+
+              <p><b>Дата:</b> {{ fine.date }}</p>
+              <p><b>Причина:</b> {{ fine.reason }}</p>
+              <p><b>Сумма:</b> {{ fine.amount }} ₽</p>
+              <p><b>Срок оплаты:</b> {{ fine.dueDate }}</p>
+              <p><b>Статус:</b> {{ fine.status }}</p>
+
+            </div>
+
+          }
+
         }
       </div>
 
@@ -86,6 +96,7 @@
         </button>
       </div>
 
+
       @if (paymentError) {
         <p class="error">
           ❌Выберите хотя бы один штраф
@@ -97,26 +108,64 @@
         <p class="success">
           ✔ Оплата выполнена успешно
         </p>
-        <button
-          type="button"
-          (click)="openReceipt()">
-          Посмотреть чек
-        </button>
       }
-
-
-
     </div>
 
-    <!-- Шаг 3 -->
+    <!-- Шаг 3 Вывод чека -->
+    <div class="receipt"
+         [hidden]="active !== 2">
+      <h2>Электронный чек</h2>
+      <p><b>Номер чека:</b> {{ receipt.number }}</p>
+      <p><b>Дата:</b> {{ receipt.date }}</p>
+      <p><b>Кот:</b> {{ receipt.cat }}</p>
+      <p><b>Документ:</b> {{ receipt.document }}</p>
+      <hr>
+      <h3>Оплаченные штрафы</h3>
+      @for (fine of receipt.fines; track fine.number) {
+        <div class="fine">
+          <span>{{ fine.number }}</span>
+          <span>{{ fine.amount }} ₽</span>
+        </div>
+      }
+      <hr>
+      <h2>Итого: {{ receipt.total }} ₽</h2>
+      <p class="success">
+        ✔ Оплачено
+      </p>
+    </div>
 
-    @if (active === 2) {
+    <!-- Шаг 4 История оплат -->
+    <div class="history-wrapper"
+         [hidden]="active !== 3">
+      <h3>История оплаты штрафов</h3>
+      @if (paymentHistory.length === 0) {
+        <p>Оплаченных штрафов пока нет.</p>
+      } @else {
+        @for (fine of paymentHistory; track fine.id) {
+          <div class="fine-card">
+            <h4>{{ fine.number }}</h4>
+            <p><b>Причина:</b> {{ fine.reason }}</p>
+            <p><b>Сумма:</b> {{ fine.amount }} ₽</p>
+            <p><b>Оплачен:</b> {{ fine.paidDate | date:'dd.MM.yyyy HH:mm' }}</p>
+            <p><b>Статус:</b> {{ fine.status }}</p>
+          </div>
+        }
+      }
+    </div>
+
+
+    <!-- Шаг N -->
+
+    @if (active === 4) {
 
       <app-check-info
         [data]="getResult">
       </app-check-info>
 
     }
+
+
+
 
   </div>
 
