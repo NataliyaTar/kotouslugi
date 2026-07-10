@@ -77,3 +77,16 @@ INSERT INTO service_category
 values (2, 2);
 INSERT INTO service_category
 values (3, 3);
+
+-- fine (штрафы котов). cat_id = 1 — первый добавленный кот.
+INSERT INTO fine (id, cat_id, reason, amount, status, created)
+values (1, 1, 'Порча мебели когтями', 500, 'UNPAID', DATEADD('DAY', -10, CURRENT_TIMESTAMP));
+INSERT INTO fine (id, cat_id, reason, amount, status, created)
+values (2, 1, 'Охота на мышей без лицензии', 1000, 'UNPAID', DATEADD('DAY', -7, CURRENT_TIMESTAMP));
+INSERT INTO fine (id, cat_id, reason, amount, status, created)
+values (3, 1, 'Нарушение тишины после 23:00 (громкое мяуканье)', 300, 'UNPAID', DATEADD('DAY', -5, CURRENT_TIMESTAMP));
+INSERT INTO fine (id, cat_id, reason, amount, status, created)
+values (4, 1, 'Несанкционированная парковка на клавиатуре хозяина', 250, 'PAID', DATEADD('DAY', -2, CURRENT_TIMESTAMP));
+
+-- сид использует id 1-4, поэтому сдвигаем счётчик новых штрафов, чтобы не было конфликта id
+ALTER SEQUENCE fine_seq RESTART WITH 100;

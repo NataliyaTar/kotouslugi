@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { FineService } from '@services/fine/fine.service';
+import { IReceipt } from '@models/fine.model';
 
 @Component({
   selector: 'app-receipt',
@@ -8,22 +10,18 @@ import { Component } from '@angular/core';
 })
 export class ReceiptComponent {
 
-  receipt = {
-    number: 'CHK-10001',
-    date: '08.06.2026',
-    cat: 'Барсик',
-    document: '123456789',
-    fines: [
-      {
-        number: 'ШТ-10001',
-        amount: 500
-      },
-      {
-        number: 'ШТ-10002',
-        amount: 1200
-      }
-    ],
-    total: 1700
-  };
+  // чек последней оплаты (если открыли напрямую — пустой)
+  public receipt: IReceipt;
+
+  constructor(private fineService: FineService) {
+    this.receipt = this.fineService.receipt || {
+      number: '-',
+      date: '-',
+      cat: '-',
+      document: '-',
+      fines: [],
+      total: 0
+    };
+  }
 
 }

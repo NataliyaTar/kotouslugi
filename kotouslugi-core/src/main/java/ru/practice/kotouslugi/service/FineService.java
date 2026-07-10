@@ -3,6 +3,7 @@ package ru.practice.kotouslugi.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import ru.practice.kotouslugi.dao.CatRepository;
 import ru.practice.kotouslugi.dao.FineRepository;
 import ru.practice.kotouslugi.model.Fine;
 import ru.practice.kotouslugi.model.enums.FineStatus;
@@ -15,10 +16,12 @@ import java.util.Optional;
 @Service
 public class FineService {
     private final FineRepository fineRepository;
+    private final CatRepository catRepository;
     private static final Logger logger = LoggerFactory.getLogger(FineService.class);
 
-    public FineService(FineRepository fineRepository) {
+    public FineService(FineRepository fineRepository, CatRepository catRepository) {
       this.fineRepository = fineRepository;
+      this.catRepository = catRepository;
     }
 
     public List<Fine> listFines() {
@@ -38,6 +41,20 @@ public class FineService {
     }
 
     public Long addFine(Fine fine) {
+        // проверки перед начислением
+        if (fine.getCatId() == null || catRepository.findById(fine.getCatId()).isEmpty()) {
+            logger.error("Начисление штрафа: кот не найден, catId = " + fine.getCatId());
+            return null;
+        }
+        if (fine.getAmount() == null || fine.getAmount() <= 0) {
+            logger.error("Начисление штрафа: некорректная сумма = " + fine.getAmount());
+            return null;
+        }
+        if (fine.getReason() == null || fine.getReason().isBlank()) {
+            logger.error("Начисление штрафа: не указана причина");
+            return null;
+        }
+
         try {
             fine.setStatus(FineStatus.UNPAID);
             fine.setCreated(new Date());

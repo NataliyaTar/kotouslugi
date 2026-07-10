@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, FormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, take } from 'rxjs';
+import { Subscription, take, forkJoin } from 'rxjs';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ConstantsService } from '@services/constants/constants.service';
+import { FineService } from '@services/fine/fine.service';
 import { IValueCat } from '@models/cat.model';
 import { IStep } from '@models/step.model';
 
@@ -13,6 +14,18 @@ export enum FormMap {
   cat = 'Кот',
   document = 'Номер документа',
   fines = 'Выбранные штрафы'
+}
+
+// Штраф в том виде, в каком его показывает шаблон
+interface IDisplayFine {
+  id: number;
+  number: string;
+  date: string;
+  reason: string;
+  amount: number;
+  dueDate: string;
+  status: string;
+  selected: boolean;
 }
 
 @Component({
@@ -34,49 +47,8 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
   public active = 0;
   public optionsCat: IValueCat[] = [];
 
-  // ЗАМЕНИТЬ!!!
-  public fines = [
-    {
-      id: 1,
-      number: 'ШТ-10001',
-      date: '12.05.2026',
-      reason: 'Превышение скорости',
-      amount: 500,
-      dueDate: '25.07.2026',
-      status: 'Не оплачен',
-      selected: false
-    },
-    {
-      id: 2,
-      number: 'ШТ-10002',
-      date: '18.05.2026',
-      reason: 'Неправильная парковка',
-      amount: 1200,
-      dueDate: '30.07.2026',
-      status: 'Не оплачен',
-      selected: false
-    },
-    {
-      id: 3,
-      number: 'ШТ-10002',
-      date: '18.05.2026',
-      reason: 'Неправильная парковка',
-      amount: 1200,
-      dueDate: '30.07.2026',
-      status: 'Не оплачен',
-      selected: false
-    },
-    {
-      id: 4,
-      number: 'ШТ-10002',
-      date: '18.05.2026',
-      reason: 'Неправильная парковка',
-      amount: 1200,
-      dueDate: '30.07.2026',
-      status: 'Не оплачен',
-      selected: false
-    }
-  ];
+  // штрафы выбранного кота (приходят с бэкенда)
+  public fines: IDisplayFine[] = [];
 
   public totalAmount = 0;
   public paymentSuccess = false;
@@ -99,6 +71,7 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private constantService: ConstantsService,
+    private fineService: FineService,
     private router: Router
   ) {}
 
@@ -138,6 +111,10 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
         this.subscriptions.push(
           this.serviceInfo.activeStep.subscribe(step => {
             this.active = step?.[this.idService] || 0;
+            // при переходе на шаг «штрафы» подгружаем их для выбранного кота
+            if (this.active === 1) {
+              this.loadFines();
+            }
           })
         );
 
@@ -195,6 +172,54 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
       .reduce((sum, fine) => sum + fine.amount, 0);
   }
 
+  // загрузка штрафов выбранного кота с бэкенда
+  private loadFines(): void {
+    const raw = this.form?.get('0.cat')?.value;
+    if (!raw) {
+      return;
+    }
+
+    let catId: number;
+    try {
+      catId = JSON.parse(raw).id;
+    } catch (e) {
+      return;
+    }
+
+    this.fineService.getFinesByCat(catId)
+      .pipe(take(1))
+      .subscribe(res => {
+        // показываем только неоплаченные штрафы
+        this.fines = res
+          .filter(fine => fine.status !== 'PAID')
+          .map(fine => ({
+            id: fine.id,
+            number: 'ШТ-' + fine.id,
+            date: this.formatDate(fine.created),
+            reason: fine.reason,
+            amount: fine.amount,
+            dueDate: this.formatDate(fine.created, 20),
+            status: 'Не оплачен',
+            selected: false
+          }));
+        this.paymentSuccess = false;
+        this.calculateTotal();
+      });
+  }
+
+  // дата в формате дд.мм.гггг (addDays — сдвиг для срока оплаты)
+  private formatDate(iso: string, addDays = 0): string {
+    const d = new Date(iso);
+    if (addDays) {
+      d.setDate(d.getDate() + addDays);
+    }
+    return d.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
   //оплата штрафов
   public paySelected(): void {
 
@@ -207,17 +232,29 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
 
     this.paymentError = false;
 
-    selected.forEach(fine => {
-      fine.status = 'Оплачен';
-      fine.selected = false;
-    });
+    // реально оплачиваем каждый выбранный штраф на бэкенде
+    forkJoin(selected.map(fine => this.fineService.payFine(fine.id)))
+      .subscribe(() => {
+        const raw = this.form.get('0.cat')?.value;
+        this.fineService.receipt = {
+          number: 'CHK-' + Date.now().toString().slice(-5),
+          date: this.formatDate(new Date().toISOString()),
+          cat: raw ? JSON.parse(raw).text : '',
+          document: this.form.get('0.document')?.value || '',
+          fines: selected.map(fine => ({ number: fine.number, amount: fine.amount })),
+          total: selected.reduce((sum, fine) => sum + fine.amount, 0)
+        };
 
-    this.calculateTotal();
-    this.paymentSuccess = true;
+        selected.forEach(fine => {
+          fine.status = 'Оплачен';
+          fine.selected = false;
+        });
 
+        this.calculateTotal();
+        this.paymentSuccess = true;
 
-
-    alert('Оплата прошла успешно!');
+        alert('Оплата прошла успешно!');
+      });
 
   }
 
