@@ -33,7 +33,7 @@ public class CatPassportService {
       .build();
 
     catPassportRepository.save(passportDetail);
-    passportDTO.setId(passportDTO.getId());
+    passportDTO.setId(passportDetail.getId());
     return passportDTO;
 
   }
