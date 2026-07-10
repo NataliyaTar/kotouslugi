@@ -39,8 +39,13 @@
       <div class="field">
         <div>
           <p class="label">Email владельца</p>
-          @if (getControl(1, 'ownerEmail').errors?.['email'] && getControl(1, 'ownerEmail').touched) {
-            <p class="error">Введите корректный email</p>
+          @if (getControl(1, 'ownerEmail').errors && getControl(1, 'ownerEmail').touched) {
+            @if (getControl(1, 'ownerEmail').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(1, 'ownerEmail').errors?.['email']) {
+              <p class="error">Введите корректный email</p>
+            }
           }
         </div>
         <input formControlName="ownerEmail" type="email" placeholder="abc@dfg.ru">
@@ -92,6 +97,9 @@
       <div class="field">
         <div>
           <p class="label">Ссылка на фото</p>
+          @if (getControl(2, 'photoUrl').errors?.['required'] && getControl(2, 'photoUrl').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
         </div>
         <input formControlName="photoUrl" placeholder="https://...">
       </div>

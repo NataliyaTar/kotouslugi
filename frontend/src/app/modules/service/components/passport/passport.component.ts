@@ -95,14 +95,14 @@ export class PassportComponent implements OnInit, OnDestroy {
       }),
       1: this.fb.group({
         ownerPhone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
-        ownerEmail: ['', [Validators.email]],
+        ownerEmail: ['', [Validators.required, Validators.email]],
       }),
       2: this.fb.group({
         passportNumber: ['', [Validators.required, Validators.pattern(/^[\d]{4} [\d]{6}$/)]],
         issueDate:      ['', [Validators.required, this.issueDateValidator]],
         chipNumber:     [''],
         specialMarks:   [''],
-        photoUrl:       [''],
+        photoUrl:       ['', [Validators.required]],
       }),
     });
 
@@ -110,7 +110,7 @@ export class PassportComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  /**
+  /*
    * Дата выдачи не должна быть в будущем
    */
   private issueDateValidator(control: FormControl) {
