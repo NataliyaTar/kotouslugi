@@ -1,0 +1,52 @@
+<article class="passport-card shadow-block">
+  <header class="passport-card__header">
+    <div>
+      <p class="passport-card__label">Паспорт</p>
+      <h4 class="passport-card__title">{{ passport.catName }}</h4>
+    </div>
+    <div class="passport-card__country">{{ passport.country }}</div>
+  </header>
+
+  <div class="passport-card__body">
+    @if (passport.photoUrl) {
+      <div class="passport-card__photo">
+        <img [src]="passport.photoUrl" [alt]="'Фото ' + passport.catName">
+      </div>
+    }
+
+    <dl class="passport-card__fields">
+      <div class="passport-card__row">
+        <dt>Серия и номер</dt>
+        <dd>{{ passport.passportNumber }}</dd>
+      </div>
+      <div class="passport-card__row">
+        <dt>Дата выдачи</dt>
+        <dd>{{ formatDate(passport.issueDate) }}</dd>
+      </div>
+      <div class="passport-card__row">
+        <dt>Телефон владельца</dt>
+        <dd>{{ passport.ownerPhone }}</dd>
+      </div>
+      <div class="passport-card__row">
+        <dt>Email владельца</dt>
+        <dd>{{ passport.ownerEmail }}</dd>
+      </div>
+      @if (passport.chipNumber) {
+        <div class="passport-card__row">
+          <dt>Номер чипа</dt>
+          <dd>{{ passport.chipNumber }}</dd>
+        </div>
+      }
+      @if (passport.specialMarks) {
+        <div class="passport-card__row">
+          <dt>Особые отметки</dt>
+          <dd>{{ passport.specialMarks }}</dd>
+        </div>
+      }
+    </dl>
+  </div>
+
+  <footer class="passport-card__footer">
+    <span>Выдан: {{ formatDate(passport.approvedAt) }}</span>
+  </footer>
+</article>

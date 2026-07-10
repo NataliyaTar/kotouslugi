@@ -1,0 +1,93 @@
+@use '../../../assets/styles/palette' as palette;
+
+.passport-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid palette.$color-divider;
+  background: linear-gradient(180deg, #ffffff 0%, palette.$color-azzurro-alice 100%);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid palette.$color-divider;
+  }
+
+  &__label {
+    color: palette.$color-text-helper;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  &__title {
+    color: palette.$color-summer-night;
+  }
+
+  &__country {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: palette.$color-gosblue;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &__body {
+    display: grid;
+    gap: 20px;
+  }
+
+  &__photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid palette.$color-divider;
+    background: #fff;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__fields {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 12px;
+
+    dt {
+      color: palette.$color-text-helper;
+      font-size: 14px;
+    }
+
+    dd {
+      color: palette.$color-summer-night;
+      font-weight: 500;
+      margin: 0;
+      word-break: break-word;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid palette.$color-divider;
+    color: palette.$color-text-helper;
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
+}

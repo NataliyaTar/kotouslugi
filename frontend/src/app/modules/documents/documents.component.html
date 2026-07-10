@@ -1,0 +1,26 @@
+<div class="container page-wrapper">
+  @if (loading) {
+    <app-throbber></app-throbber>
+  } @else if (error) {
+    <app-error></app-error>
+  } @else {
+    <h3>Документы</h3>
+    <p class="page-description">
+      Здесь хранятся ваши документы.
+    </p>
+
+    <div class="documents-grid">
+      @for (passport of passports; track passport.requisitionId) {
+        <app-passport-card [passport]="passport"></app-passport-card>
+      } @empty {
+        <div class="empty-state col-2 col-lg-12">
+          <img src="../../../assets/png/cats/work2.png" class="image" alt="">
+          <h3>Пока нет документов</h3>
+          <p class="text">
+            Добавьте документы на портале — и они появятся здесь.
+          </p>
+        </div>
+      }
+    </div>
+  }
+</div>
