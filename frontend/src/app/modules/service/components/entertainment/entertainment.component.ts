@@ -26,7 +26,7 @@ export enum FormMap {
   email = 'Email для связи',
   place = 'Место',
   event = 'Мероприятие',
-  time = 'Время посещения',
+  visitDatetime = 'Время посещения',
   price = 'Стоимость услуги'
 }
 
@@ -64,7 +64,13 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
    * Возвращает преобразованное значение формы для отображения заполненных данных
    */
   public get getResult() {
-    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
+    const data = structuredClone(this.form.getRawValue());
+
+    if (data[1]?.visitDatetime) {
+      data[1].visitDatetime = this.formatDate(data[1].visitDatetime);
+    }
+
+    return this.serviceInfo.prepareDataForPreview(data, this.steps, FormMap);
   }
 
   constructor(
@@ -108,7 +114,6 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
       take(1)).subscribe((res: IPlace[]) => {
         this.placeOptions = res;
 
-        this.prepareService();
       }
     )
   }
@@ -138,10 +143,14 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
   }
 
   public formatDate(date: string): string {
+    if (!date) {
+      return '';
+    }
+
     return new Date(date).toLocaleString('ru-RU', {
-      weekday: 'long',
-      day: 'numeric',
+      day: '2-digit',
       month: 'long',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -189,45 +198,45 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
         {
           place: ['', [Validators.required]],
           event:['', [Validators.required]],
-          time: ['', [Validators.required]],
+          visitDatetime: ['', [Validators.required]],
           price:[''],
         }
       )
     });
 
-    this.getControl(1, 'place').valueChanges.subscribe(value => {
-      // очищаем мероприятие
-      this.getControl(1, 'event').reset();
+    this.subscriptions.push(
+      this.getControl(1, 'place').valueChanges.subscribe(value => {
+        this.getControl(1, 'event').reset();
+        this.getControl(1, 'visitDatetime').reset();
 
-      // очищаем время
-      this.getControl(1, 'time').reset();
+        this.eventOptions = [];
+        this.availableSlotsOptions = [];
+        this.price = '';
 
-      // очищаем списки
-      this.eventOptions = [];
-      this.availableSlotsOptions = [];
-      this.price = '';
+        this.getControl(1, 'price').setValue('');
 
-      this.getControl(1, 'price').setValue('');
+        const place = JSON.parse(value);
 
-      const place = JSON.parse(value);
+        this.getEventsOptionsAll(place.id);
+      })
+    );
 
-      this.getEventsOptionsAll(place.id)
-    })
+    this.subscriptions.push(
+      this.getControl(1, 'event').valueChanges.subscribe(value => {
+        this.getControl(1, 'visitDatetime').reset();
 
-    this.getControl(1, 'event').valueChanges.subscribe(value => {
+        this.availableSlotsOptions = [];
+        this.price = '';
 
-      // очищаем время
-      this.getControl(1, 'time').reset();
+        this.getControl(1, 'price').setValue('');
 
-      this.availableSlotsOptions = [];
-      this.price = '';
+        if (!value) return;
 
-      this.getControl(1, 'price').setValue('');
+        const event = JSON.parse(value);
 
-      const event = JSON.parse(value);
-
-      this.getAvailableSlotsOption(event.id)
-    })
+        this.getAvailableSlotsOption(event.id);
+      })
+    );
 
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
@@ -241,7 +250,7 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
    * @param type
    * @param index
    */
-  public getItem(type: 'cat' | 'place' | 'event' | 'time', index: number): string {
+  public getItem(type: 'cat' | 'place' | 'event' | 'visitDatetime', index: number): string {
       if (type === 'cat') return JSON.stringify(this.optionsCat[index]);
 
       /*Получаем список всех мест*/
@@ -259,9 +268,7 @@ export class EntertainmentComponent implements OnInit, OnDestroy {
         });
       }
 
-    return JSON.stringify({
-      text: this.formatDate(this.availableSlotsOptions[index])
-    });
+    return this.availableSlotsOptions[index];
   }
 
   /**

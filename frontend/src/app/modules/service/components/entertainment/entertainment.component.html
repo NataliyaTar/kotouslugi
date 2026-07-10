@@ -77,9 +77,9 @@
         <div>
           <p class="label">Выберите время посещения</p>
         </div>
-        <select formControlName="time" (invalid)="getControl(1, 'time').invalid">
+        <select formControlName="visitDatetime" (invalid)="getControl(1, 'visitDatetime').invalid">
           @for (option of availableSlotsOptions; track $index) {
-            <option [value]="getItem('time', $index)">{{ formatDate(option) }}</option>
+            <option [value]="getItem('visitDatetime', $index)">{{ formatDate(option) }}</option>
           }
         </select>
       </div>
