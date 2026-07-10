@@ -53,4 +53,16 @@ public class BreedingController extends BaseController {
       return null;
     });
   }
+  @DeleteMapping(value = "/profile/delete", produces = "application/json")
+  @ResponseBody
+  @Operation(summary = "Удалить анкету кошки", tags = {"Вязка кошек"}, responses = {
+    @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+  )
+  public ResponseEntity<Void> deleteProfile(@RequestParam Long profileId) {
+    return this.<Void>wrapper((s) -> {
+      breedingService.deleteProfile(profileId);
+      return null;
+    });
+  }
 }

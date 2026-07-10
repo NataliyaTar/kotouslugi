@@ -48,4 +48,11 @@ public class BreedingService {
     request.setStatus(status);
     breedingRequestRepository.save(request);
   }
+  public void deleteProfile(Long profileId) {
+    Breeding breeding = breedingRepository.findById(profileId)
+      .orElseThrow(() -> new RuntimeException("Анкета не найдена"));
+
+    breedingRepository.delete(breeding);
+  }
 }
+

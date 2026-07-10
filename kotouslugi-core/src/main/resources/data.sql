@@ -67,3 +67,22 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+
+-- breeding (анкеты для вязки)
+-- Кошка Муся, британка из Москвы (Ищет британца от 1 до 5 лет)
+INSERT INTO breeding_profiles (id, breed, gender, city, age, has_pedigree, target_breed, target_city, min_age, max_age, status)
+VALUES (1, 'Британская', 'FEMALE', 'Москва', 2, true, 'Британская', 'Москва', 1, 5, 'ACTIVE');
+
+-- Кот Борис, британец из Москвы
+INSERT INTO breeding_profiles (id, breed, gender, city, age, has_pedigree, target_breed, target_city, min_age, max_age, status)
+VALUES (2, 'Британская', 'MALE', 'Москва', 3, true, 'Британская', 'Москва', 1, 5, 'ACTIVE');
+
+-- Кот Барсик, мейн-кун из Воронежа
+INSERT INTO breeding_profiles (id, breed, gender, city, age, has_pedigree, target_breed, target_city, min_age, max_age, status)
+VALUES (3, 'Мейн-кун', 'MALE', 'Воронеж', 4, false, 'Мейн-кун', 'Воронеж', 2, 6, 'ACTIVE');
+
+
+-- breeding_requests (тестовый запрос на вязку)
+-- Кот Борис (ID 2) отправляет предложение кошке Мусе (ID 1)
+INSERT INTO breeding_requests (id, sender_profile_id, receiver_profile_id, status)
+VALUES (1, 2, 1, 'PENDING');
