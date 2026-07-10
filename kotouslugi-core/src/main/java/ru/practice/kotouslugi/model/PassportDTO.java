@@ -9,10 +9,11 @@ import java.time.LocalDate;
 @Data
 public class PassportDTO {
   private Long id;
-  private Integer requisition;
+  private Integer requisition; //тут в дто передается именно id-шник requisition, не путайтесь
   private String passportNumber;
   private LocalDate issueDate;
-  private String country = "PФ";
+  @Builder.Default
+  private String country = "РФ";
   private String ownerPhone;
   private String ownerEmail;
   private String photoUrl;

@@ -3,12 +3,16 @@ package ru.practice.kotouslugi.model;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.aspectj.weaver.loadtime.definition.Definition;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
 import jakarta.persistence.*;
@@ -36,8 +40,9 @@ public class Requisition implements Serializable {
     private Long catId;
     @OneToOne(mappedBy = "requisition", cascade = CascadeType.ALL)
     private PassportDetail passportDetail;
+    @Column(columnDefinition = "TEXT")
     @JsonDeserialize(using = StringDeserializer.class)
-    private String fields;
+    private String fields; //сделал по совету нейронки, если че сорян
 
     public static class StringDeserializer extends JsonDeserializer<String> {
       @Override

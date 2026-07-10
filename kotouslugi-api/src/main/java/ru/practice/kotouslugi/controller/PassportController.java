@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practice.kotouslugi.model.ApprovePassportDTO;
 import ru.practice.kotouslugi.model.PassportDTO;
 import ru.practice.kotouslugi.service.CatPassportService;
 
@@ -23,4 +24,9 @@ public class PassportController extends BaseController{
     return wrapper((p) -> catPassportService.addCatPassport(passportDTO));
   }
 
+  @PostMapping("/approve/{id}")
+  public ResponseEntity<Object> test(@PathVariable Integer id){
+    ApprovePassportDTO approvePassportDTO = new ApprovePassportDTO(id);
+    return wrapper((n) -> catPassportService.approvePassport(approvePassportDTO));
+  }
 }

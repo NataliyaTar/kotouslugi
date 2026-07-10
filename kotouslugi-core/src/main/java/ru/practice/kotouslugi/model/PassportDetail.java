@@ -24,7 +24,7 @@ public class PassportDetail {
   private Long id;
 
   @OneToOne
-  @JoinColumn(nullable = false)
+  @JoinColumn()
   private Requisition requisition;
 
   @Column(name = "passportNumber", nullable = false, unique = true, length = 20)

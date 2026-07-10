@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
+import ru.practice.kotouslugi.model.ApprovePassportDTO;
 import ru.practice.kotouslugi.model.PassportDetail;
 import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.model.PassportDTO;
+import ru.practice.kotouslugi.model.enums.RequisitionStatus;
+
 @Service
 public class CatPassportService {
   @Autowired
@@ -38,4 +41,23 @@ public class CatPassportService {
 
   }
 
+  public PassportDTO approvePassport(ApprovePassportDTO approvePassportDTO){
+    Requisition req = requisitionRepository.findById(approvePassportDTO.getRequestionId())
+      .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id "));
+    if (!req.getMnemonic().equals("passport") && req.getStatus() != RequisitionStatus.DONE);
+
+    PassportDTO passportDTO = PassportDTO.builder().
+      id(req.getPassportDetail().getId()).
+      requisition(req.getPassportDetail().getRequisition().getId()).
+      passportNumber(req.getPassportDetail().getPassportNumber()).
+      issueDate(req.getPassportDetail().getIssueDate()).
+      ownerPhone(req.getPassportDetail().getOwnerPhone()).
+      ownerEmail(req.getPassportDetail().getOwnerEmail()).
+      photoUrl(req.getPassportDetail().getPhotoUrl()).
+      specialMarks(req.getPassportDetail().getSpecialMarks()).
+      chipNumber(req.getPassportDetail().getChipNumber())
+      .build();
+    req.setStatus(RequisitionStatus.ACCEPTED);
+      return passportDTO;
+  }
 }

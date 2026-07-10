@@ -33,6 +33,9 @@ public class RequisitionService {
     public int createRequisition(Requisition requisition) {
         requisition.setStatus(RequisitionStatus.FILED);
         requisition.setCreated(new Date(System.currentTimeMillis()));
+      if (requisition.getPassportDetail() != null) {
+        requisition.getPassportDetail().setRequisition(requisition);
+      }
         Requisition save = requisitionRepository.save(requisition);
         return save.getId();
     }
