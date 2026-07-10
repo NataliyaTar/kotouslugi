@@ -26,29 +26,6 @@
           }
         </select>
       </div>
-      <div class="field">
-        <div>
-          <p class="label">
-            Номер документа
-          </p>
-          @if (getControl(0,'document').errors
-          && getControl(0,'document').touched) {
-            @if (getControl(0,'document').errors?.['required']) {
-              <p class="error">
-                Поле обязательно
-              </p>
-            }
-            @if (getControl(0,'document').errors?.['minlength']) {
-              <p class="error">
-                Минимум 5 символов
-              </p>
-            }
-          }
-        </div>
-        <input
-          formControlName="document"
-          placeholder="Введите номер документа">
-      </div>
     </div>
 
     <!-- Шаг 2 -->
@@ -118,7 +95,6 @@
       <p><b>Номер чека:</b> {{ receipt.number }}</p>
       <p><b>Дата:</b> {{ receipt.date }}</p>
       <p><b>Кот:</b> {{ receipt.cat }}</p>
-      <p><b>Документ:</b> {{ receipt.document }}</p>
       <hr>
       <h3>Оплаченные штрафы</h3>
       @for (fine of receipt.fines; track fine.number) {
