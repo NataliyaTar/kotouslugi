@@ -2,6 +2,7 @@ package ru.practice.kotouslugi.service;
 
 
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
@@ -11,6 +12,9 @@ import ru.practice.kotouslugi.model.PassportDetail;
 import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.model.PassportDTO;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
+
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class CatPassportService {
@@ -41,23 +45,36 @@ public class CatPassportService {
 
   }
 
-  public PassportDTO approvePassport(ApprovePassportDTO approvePassportDTO){
+  public PassportDTO
+  approvePassport(ApprovePassportDTO approvePassportDTO){
     Requisition req = requisitionRepository.findById(approvePassportDTO.getRequestionId())
-      .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id "));
-    if (!req.getMnemonic().equals("passport") && req.getStatus() != RequisitionStatus.DONE);
+      .orElseThrow(() -> new ServiceException("Requisition not found with id "));
 
-    PassportDTO passportDTO = PassportDTO.builder().
-      id(req.getPassportDetail().getId()).
-      requisition(req.getPassportDetail().getRequisition().getId()).
-      passportNumber(req.getPassportDetail().getPassportNumber()).
-      issueDate(req.getPassportDetail().getIssueDate()).
-      ownerPhone(req.getPassportDetail().getOwnerPhone()).
-      ownerEmail(req.getPassportDetail().getOwnerEmail()).
-      photoUrl(req.getPassportDetail().getPhotoUrl()).
-      specialMarks(req.getPassportDetail().getSpecialMarks()).
-      chipNumber(req.getPassportDetail().getChipNumber())
-      .build();
-    req.setStatus(RequisitionStatus.ACCEPTED);
+    if (req.getMnemonic().equals("passport") && req.getStatus() == RequisitionStatus.FILED){
+      req.setStatus(RequisitionStatus.DONE);
+
+
+      PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
+        .orElseThrow(() -> new ServiceException("Not found passportDetail with id " + req.getPassportDetail().getId()));
+
+      PassportDTO passportDTO = PassportDTO.builder()
+        .id(passportDetail.getId())
+        .requisition(passportDetail.getRequisition().getId())
+        .passportNumber(passportDetail.getPassportNumber())
+        .issueDate(passportDetail.getIssueDate())
+        .ownerPhone(passportDetail.getOwnerPhone())
+        .ownerEmail(passportDetail.getOwnerEmail())
+        .photoUrl(passportDetail.getPhotoUrl())
+        .specialMarks(passportDetail.getSpecialMarks())
+        .chipNumber(passportDetail.getChipNumber())
+        .build();
+      requisitionRepository.save(req);
       return passportDTO;
+
+    }else {
+      throw new ServiceException("Invalid order mnemonic or status");
+    }
   }
+
+
 }

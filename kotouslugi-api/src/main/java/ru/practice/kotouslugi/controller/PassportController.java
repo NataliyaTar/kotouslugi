@@ -24,9 +24,8 @@ public class PassportController extends BaseController{
     return wrapper((p) -> catPassportService.addCatPassport(passportDTO));
   }
 
-  @PostMapping("/approve/{id}")
-  public ResponseEntity<Object> test(@PathVariable Integer id){
-    ApprovePassportDTO approvePassportDTO = new ApprovePassportDTO(id);
-    return wrapper((n) -> catPassportService.approvePassport(approvePassportDTO));
+  @PostMapping("/approve")
+  public ResponseEntity<Object> test(@RequestBody ApprovePassportDTO requestionId){
+    return wrapper((n) -> catPassportService.approvePassport(requestionId));
   }
 }

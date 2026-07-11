@@ -2,14 +2,10 @@ package ru.practice.kotouslugi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
-
+@Data
 @Getter
 @Setter
 @Entity
@@ -24,7 +20,7 @@ public class PassportDetail {
   private Long id;
 
   @OneToOne
-  @JoinColumn()
+  @JoinColumn(nullable = false)
   private Requisition requisition;
 
   @Column(name = "passportNumber", nullable = false, unique = true, length = 20)
