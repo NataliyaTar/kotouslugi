@@ -24,8 +24,11 @@ public class PassportController extends BaseController{
     return wrapper((p) -> catPassportService.addCatPassport(passportDTO));
   }
 
-  @PostMapping("/approve")
-  public ResponseEntity<Object> test(@RequestBody ApprovePassportDTO requestionId){
+  @PostMapping(value = "/approve", produces = "application/json")
+  @Operation(summary = "Подтвердить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
+    @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
+  public ResponseEntity<Object> approvePassport(@RequestBody ApprovePassportDTO requestionId){
     return wrapper((n) -> catPassportService.approvePassport(requestionId));
   }
 }
