@@ -13,6 +13,7 @@ import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.model.PassportDTO;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,8 +46,7 @@ public class CatPassportService {
 
   }
 
-  public PassportDTO
-  approvePassport(ApprovePassportDTO approvePassportDTO){
+  public PassportDTO approvePassport(ApprovePassportDTO approvePassportDTO){
     Requisition req = requisitionRepository.findById(approvePassportDTO.getRequestionId())
       .orElseThrow(() -> new ServiceException("Requisition not found with id "));
 
@@ -68,6 +68,7 @@ public class CatPassportService {
         .specialMarks(passportDetail.getSpecialMarks())
         .chipNumber(passportDetail.getChipNumber())
         .build();
+      req.setApprovedAt(new Date(System.currentTimeMillis()));
       requisitionRepository.save(req);
       return passportDTO;
 

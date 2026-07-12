@@ -38,6 +38,8 @@ public class Requisition implements Serializable {
     private RequisitionStatus status;
     private Date created;
     private Long catId;
+    @Column(nullable = true)
+    private Date approvedAt;
     @OneToOne(mappedBy = "requisition", cascade = CascadeType.ALL)
     private PassportDetail passportDetail;
     @Column(columnDefinition = "TEXT")
