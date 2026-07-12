@@ -1,0 +1,107 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat">
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem('cat', $index)">{{option.text}}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Город</p>
+          @if (getControl(0, 'city').errors?.['required'] && getControl(0, 'city').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="city" placeholder="Например, Москва">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Окрас</p>
+          @if (getControl(0, 'color').errors?.['required'] && getControl(0, 'color').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="color" placeholder="Например, чёрный дымчатый">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Номер родословной (при наличии)</p>
+        </div>
+        <input formControlName="pedigreeNumber" placeholder="Например, RU12345">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Фотографии кота</p>
+        </div>
+        <!-- TODO: подключить API — сейчас реально не загружается на бэкенд, только запоминается имя файла -->
+        <div class="file-control">
+          <label for="breeding-photos" class="file-label">Выбрать файлы</label>
+          <input id="breeding-photos" class="file-input" type="file" multiple accept="image/*"
+                 (change)="onFilesSelected($event)">
+          <p class="file-name">{{getControl(0, 'photos').value || ' '}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <div class="field">
+        <div>
+          <p class="label">Порода партнёра</p>
+          @if (getControl(1, 'partnerBreed').errors?.['required'] && getControl(1, 'partnerBreed').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="partnerBreed">
+          @for (option of breedOptions; track $index) {
+            <option [value]="getItem('breed', $index)">{{option.text}}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Возраст партнёра</p>
+          @if (getControl(1, 'partnerAge').errors?.['required'] && getControl(1, 'partnerAge').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="partnerAge" placeholder="Например, 1-3 года">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Город партнёра</p>
+          @if (getControl(1, 'partnerCity').errors?.['required'] && getControl(1, 'partnerCity').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="partnerCity" placeholder="Например, Москва">
+      </div>
+      <div class="field">
+        <label class="checkbox-field">
+          <input type="checkbox" formControlName="partnerPedigreeRequired">
+          Только с родословной
+        </label>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Комментарий</p>
+        </div>
+        <textarea formControlName="comment" placeholder="Дополнительные пожелания к партнёру"></textarea>
+      </div>
+    </div>
+
+    @if (active === 2) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+  </div>
+}

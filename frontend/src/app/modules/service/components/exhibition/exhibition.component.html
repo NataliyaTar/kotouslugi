@@ -1,0 +1,122 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите выставку</p>
+          @if (getControl(0, 'exhibition').errors?.['required'] && getControl(0, 'exhibition').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <!-- TODO: подключить API — список выставок пока захардкожен -->
+        <select formControlName="exhibition">
+          @for (option of exhibitionOptions; track $index) {
+            <option [value]="getItem('exhibition', $index)">{{option.text}}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat">
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem('cat', $index)">{{option.text}}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Класс участия</p>
+          @if (getControl(0, 'exhibitionClass').errors?.['required'] && getControl(0, 'exhibitionClass').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="exhibitionClass">
+          @for (option of exhibitionClassOptions; track $index) {
+            <option [value]="getItem('exhibitionClass', $index)">{{option.text}}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Окрас</p>
+          @if (getControl(0, 'color').errors?.['required'] && getControl(0, 'color').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="color" placeholder="Например, чёрный дымчатый">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Телефон для связи</p>
+          @if (getControl(0, 'telephone').errors && getControl(0, 'telephone').touched) {
+            @if (getControl(0, 'telephone').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(0, 'telephone').errors?.['pattern']) {
+              <p class="error">Введите 11 цифр</p>
+            }
+          }
+        </div>
+        <input formControlName="telephone" placeholder="12345678901">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Email для связи</p>
+          @if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
+            <p class="error">Введите корректный email</p>
+          }
+        </div>
+        <input formControlName="email" type="email" placeholder="abc@dfg.ru">
+      </div>
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <div class="field">
+        <div>
+          <p class="label">Документы (ветеринарный паспорт, родословная, справки о прививках)</p>
+          @if (getControl(1, 'documents').errors?.['required'] && getControl(1, 'documents').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <!-- TODO: подключить API — сейчас реально не загружается на бэкенд, только запоминается имя файла -->
+        <div class="file-control">
+          <label for="exhibition-documents" class="file-label">Выбрать файлы</label>
+          <input id="exhibition-documents" class="file-input" type="file" multiple
+                 (change)="onFilesSelected($event, 'documents')">
+          <p class="file-name">{{getControl(1, 'documents').value || ' '}}</p>
+        </div>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Фотографии кота (при необходимости)</p>
+        </div>
+        <div class="file-control">
+          <label for="exhibition-photos" class="file-label">Выбрать файлы</label>
+          <input id="exhibition-photos" class="file-input" type="file" multiple accept="image/*"
+                 (change)="onFilesSelected($event, 'photos')">
+          <p class="file-name">{{getControl(1, 'photos').value || ' '}}</p>
+        </div>
+      </div>
+      <div class="field">
+        <label class="checkbox-field">
+          <input type="checkbox" formControlName="agreement">
+          Согласен(на) с правилами выставки
+        </label>
+        @if (getControl(1, 'agreement').errors?.['required'] && getControl(1, 'agreement').touched) {
+          <p class="error">Нужно подтвердить согласие с правилами</p>
+        }
+      </div>
+    </div>
+
+    @if (active === 2) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+  </div>
+}
