@@ -39,7 +39,7 @@ public class PassportDetail {
   @Column(name = "ownerEmail", nullable = false, length = 100)
   private String ownerEmail;
 
-  @Column(name = "photoUrl", nullable = false, length = 255)
+  @Column(name = "photoUrl", nullable = false, length = 500)
   private String photoUrl;
 
   @Column(name = "specialMarks", columnDefinition = "TEXT")
