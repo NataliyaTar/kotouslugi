@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
-import ru.practice.kotouslugi.model.ApprovePassportDTO;
-import ru.practice.kotouslugi.model.PassportDetail;
-import ru.practice.kotouslugi.model.Requisition;
-import ru.practice.kotouslugi.model.PassportDTO;
+import ru.practice.kotouslugi.model.*;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
 import java.util.Date;
@@ -77,5 +74,35 @@ public class CatPassportService {
     }
   }
 
+  public PassportDTO rejectPassport(RejectPassportDTO rejectPassportDTO){
+    Requisition req = requisitionRepository.findById(rejectPassportDTO.getRequestionId())
+      .orElseThrow(() -> new ServiceException("Requisition not found with id "));
+
+    if (req.getMnemonic().equals("passport") && req.getStatus() == RequisitionStatus.FILED){
+      req.setStatus(RequisitionStatus.REJECTED);
+
+
+      PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
+        .orElseThrow(() -> new ServiceException("Not found passportDetail with id " + req.getPassportDetail().getId()));
+
+      PassportDTO passportDTO = PassportDTO.builder()
+        .id(passportDetail.getId())
+        .requisition(passportDetail.getRequisition().getId())
+        .passportNumber(passportDetail.getPassportNumber())
+        .issueDate(passportDetail.getIssueDate())
+        .ownerPhone(passportDetail.getOwnerPhone())
+        .ownerEmail(passportDetail.getOwnerEmail())
+        .photoUrl(passportDetail.getPhotoUrl())
+        .specialMarks(passportDetail.getSpecialMarks())
+        .chipNumber(passportDetail.getChipNumber())
+        .build();
+      req.setDecisionAt(new Date(System.currentTimeMillis()));
+      requisitionRepository.save(req);
+      return passportDTO;
+
+    }else {
+      throw new ServiceException("Invalid order mnemonic or status");
+    }
+  }
 
 }

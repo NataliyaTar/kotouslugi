@@ -39,7 +39,7 @@ public class Requisition implements Serializable {
     private Date created;
     private Long catId;
     @Column(nullable = true)
-    private Date approvedAt;
+    private Date decisionAt;
     @OneToOne(mappedBy = "requisition", cascade = CascadeType.ALL)
     private PassportDetail passportDetail;
     @Column(columnDefinition = "TEXT")
