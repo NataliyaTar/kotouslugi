@@ -65,7 +65,7 @@ public class CatPassportService {
         .specialMarks(passportDetail.getSpecialMarks())
         .chipNumber(passportDetail.getChipNumber())
         .build();
-      req.setApprovedAt(new Date(System.currentTimeMillis()));
+      req.setDecisionAt(new Date(System.currentTimeMillis()));
       requisitionRepository.save(req);
       return passportDTO;
 

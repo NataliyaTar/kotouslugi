@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.ApprovePassportDTO;
 import ru.practice.kotouslugi.model.PassportDTO;
+import ru.practice.kotouslugi.model.RejectPassportDTO;
 import ru.practice.kotouslugi.service.CatPassportService;
 
 @RestController
@@ -28,7 +29,14 @@ public class PassportController extends BaseController{
   @Operation(summary = "Подтвердить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
     @ApiResponse(responseCode = "200", description = "OK"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
-  public ResponseEntity<Object> approvePassport(@RequestBody ApprovePassportDTO requestionId){
+  public ResponseEntity<PassportDTO> approvePassport(@RequestBody ApprovePassportDTO requestionId){
     return wrapper((n) -> catPassportService.approvePassport(requestionId));
+  }
+  @PostMapping(value = "/reject", produces = "application/json")
+  @Operation(summary = "Отклонить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
+    @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
+  public ResponseEntity<PassportDTO> rejectPassport(@RequestBody RejectPassportDTO rejectPassportDTO){
+    return wrapper((p) -> catPassportService.rejectPassport(rejectPassportDTO));
   }
 }
