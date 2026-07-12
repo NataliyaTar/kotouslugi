@@ -1,0 +1,312 @@
+<section class="driving-license">
+  @if (loading) {
+    <app-throbber></app-throbber>
+  } @else {
+    <!-- ХИРО-СЕКЦИЯ -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1>
+          <img
+            src="assets/png/cats/driving_cat.png"
+            alt="Кот за рулем"
+            class="hero-image"
+          />
+          Получение водительских прав для котов
+        </h1>
+        <p class="subtitle">Пройдите обучение, сдайте экзамен и получите права!</p>
+      </div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div class="content-container">
+
+      <!-- МЕНЮ-КНОПКИ -->
+      <div class="menu-buttons-wrapper">
+        <div class="menu-buttons">
+          <button class="btn-primary" (click)="showSection('form')">📝 Подать заявку</button>
+          <button class="btn-secondary" (click)="showSection('status')">📋 Статус</button>
+          <button class="btn-secondary" (click)="showSection('feedback')">⭐ Отзывы</button>
+          <button class="btn-secondary" (click)="showSection('statistics')">📊 Статистика</button>
+        </div>
+      </div>
+
+      <!-- ШАГИ (отображаются только при активной форме) -->
+      @if (showForm) {
+        <div class="steps-wrapper">
+          <!-- Шаги приходят из service.component.html через app-steps -->
+        </div>
+      }
+
+      <!-- ФОРМА ПОДАЧИ ЗАЯВКИ -->
+      @if (showForm) {
+        <div class="section-block shadow-block form-container">
+          <div class="fields-wrapper" [formGroup]="form">
+
+            <!-- Шаг 1: Информация о котике -->
+            <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+
+              <!-- Нет котов -->
+              @if (!hasCats) {
+                <div class="no-cats-message">
+                  <div class="no-cats-content">
+                    <img src="../../../assets/png/cats/sad.png" class="no-cats-image" alt="Грустный кот">
+                    <h3>Упс...</h3>
+                    <p class="text">У вас нет ни одного котика, <a [routerLink]="'/add-cat'">зарегистрируйте</a> его на портале</p>
+                    <button class="btn-primary" (click)="navigateToAddCat()">
+                      Зарегистрировать кота
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <!-- Выбор кота -->
+                <div class="field">
+                  <div>
+                    <p class="label">Выберите кота *</p>
+                    @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+                      <p class="error">Поле обязательно для заполнения</p>
+                    }
+                  </div>
+                  <select formControlName="cat">
+                    @for (option of optionsCat; track $index) {
+                      <option [value]="getItem('cat', $index)">{{option.text}}</option>
+                    }
+                  </select>
+                </div>
+
+                <!-- Возраст кота (автоматически) -->
+                <div class="field">
+                  <div>
+                    <p class="label">Возраст (лет) *</p>
+                    @if (getControl(0, 'catAge').errors?.['required'] && getControl(0, 'catAge').touched) {
+                      <p class="error">Поле обязательно для заполнения</p>
+                    }
+                    @if (getControl(0, 'catAge').errors?.['min'] && getControl(0, 'catAge').touched) {
+                      <p class="error">Минимум 1 год</p>
+                    }
+                    @if (getControl(0, 'catAge').errors?.['max'] && getControl(0, 'catAge').touched) {
+                      <p class="error">Максимум 25 лет</p>
+                    }
+                  </div>
+                  <input formControlName="catAge" type="number" min="1" max="25" placeholder="Автоматически" readonly class="readonly" />
+                </div>
+              }
+            </div>
+
+            <!-- Шаг 2: Категория прав -->
+            <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+              <div class="field">
+                <div>
+                  <p class="label">Категория прав *</p>
+                  @if (getControl(1, 'category').errors?.['required'] && getControl(1, 'category').touched) {
+                    <p class="error">Выберите категорию</p>
+                  }
+                </div>
+                <select formControlName="category">
+                  <option value="">Выберите категорию</option>
+                  @for (cat of categories; track $index) {
+                    <option [value]="cat.value">{{ cat.label }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <!-- Шаг 3: Дата экзамена -->
+            <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+              <div class="field">
+                <div>
+                  <p class="label">Дата экзамена *</p>
+                  @if (getControl(2, 'examDate').errors?.['required'] && getControl(2, 'examDate').touched) {
+                    <p class="error">Выберите дату</p>
+                  }
+                </div>
+                <input formControlName="examDate" type="date" [min]="minDate" />
+              </div>
+
+              <div class="field">
+                <div>
+                  <p class="label">Время экзамена *</p>
+                  @if (getControl(2, 'examTime').errors?.['required'] && getControl(2, 'examTime').touched) {
+                    <p class="error">Выберите время</p>
+                  }
+                </div>
+                <select formControlName="examTime">
+                  <option value="">Выберите время</option>
+                  <option value="09:00">09:00</option>
+                  <option value="10:00">10:00</option>
+                  <option value="11:00">11:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="15:00">15:00</option>
+                  <option value="16:00">16:00</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Шаг 4: Проверка данных -->
+            @if (active === 3 && hasCats) {
+              <app-check-info [data]="getResult"></app-check-info>
+            }
+
+            <!-- Подтверждение -->
+            @if (showConfirmation) {
+              <div class="confirmation">
+                <div class="success-icon">✅</div>
+                <h3>Заявка успешно подана!</h3>
+                <p>Номер заявки: <strong>{{ submittedApplication?.id?.slice(0, 8) }}</strong></p>
+                <button class="btn-primary" (click)="showSection('status')">Проверить статус</button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ПРОВЕРКА СТАТУСА -->
+      @if (showStatus) {
+        <div class="section-block shadow-block">
+          <h2>📋 Проверка статуса заявки</h2>
+
+          <div class="search-box">
+            <input
+              type="text"
+              [(ngModel)]="searchId"
+              placeholder="Введите ID заявки"
+              [class.invalid]="searchPerformed && !selectedApplication"
+            />
+            <button (click)="searchApplication()">Найти</button>
+          </div>
+
+          @if (searchPerformed) {
+            @if (selectedApplication) {
+              <div class="application-info">
+                <div class="info-header">
+                  <h3>🐱 {{ selectedApplication.catName }}</h3>
+                  <span class="status-badge" [style.background]="getStatusColor(selectedApplication.status)">
+                    {{ selectedApplication.status }}
+                  </span>
+                </div>
+                <div class="info-details">
+                  <p><strong>ID:</strong> {{ selectedApplication.id?.slice(0, 8) }}</p>
+                  <p><strong>Возраст:</strong> {{ selectedApplication.catAge }} лет</p>
+                  <p><strong>Категория:</strong> {{ selectedApplication.category }}</p>
+                  <p><strong>Экзамен:</strong> {{ selectedApplication.examDate | date:'dd.MM.yyyy' }} в {{ selectedApplication.examTime }}</p>
+                  <p><strong>Дата подачи:</strong> {{ selectedApplication.createdAt | date:'dd.MM.yyyy HH:mm' }}</p>
+                </div>
+              </div>
+            } @else {
+              <div class="not-found">
+                <p>❌ Заявка с таким ID не найдена</p>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- ОТЗЫВЫ -->
+      @if (showFeedback) {
+        <div class="section-block shadow-block">
+          <h2>⭐ Оставить отзыв об автошколе</h2>
+
+          @if (!feedbackSubmitted) {
+            <form [formGroup]="feedbackForm" (ngSubmit)="submitFeedback()">
+              <div class="form-group">
+                <label for="schoolName">Название автошколы *</label>
+                <input
+                  type="text"
+                  id="schoolName"
+                  formControlName="schoolName"
+                  placeholder="Введите название"
+                  [class.invalid]="feedbackForm.get('schoolName')?.invalid && feedbackForm.get('schoolName')?.touched"
+                />
+                @if (feedbackForm.get('schoolName')?.invalid && feedbackForm.get('schoolName')?.touched) {
+                  <div class="error">Введите название</div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="rating">Оценка (1-5) *</label>
+                <select id="rating" formControlName="rating">
+                  <option value="1">⭐ - Ужасно</option>
+                  <option value="2">⭐⭐ - Плохо</option>
+                  <option value="3">⭐⭐⭐ - Нормально</option>
+                  <option value="4">⭐⭐⭐⭐ - Хорошо</option>
+                  <option value="5">⭐⭐⭐⭐⭐ - Отлично</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="comment">Комментарий *</label>
+                <textarea
+                  id="comment"
+                  formControlName="comment"
+                  placeholder="Напишите ваш отзыв..."
+                  rows="4"
+                  [class.invalid]="feedbackForm.get('comment')?.invalid && feedbackForm.get('comment')?.touched"
+                ></textarea>
+                @if (feedbackForm.get('comment')?.invalid && feedbackForm.get('comment')?.touched) {
+                  <div class="error">Введите комментарий</div>
+                }
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="showSection('')">Отмена</button>
+                <button type="submit" class="btn-primary" [disabled]="feedbackForm.invalid">
+                  Отправить отзыв
+                </button>
+              </div>
+            </form>
+          }
+
+          @if (feedbackSubmitted) {
+            <div class="confirmation">
+              <div class="success-icon">⭐</div>
+              <h3>Спасибо за ваш отзыв!</h3>
+              <p>Он поможет другим котам выбрать автошколу</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- СТАТИСТИКА -->
+      @if (showStatistics) {
+        <div class="section-block shadow-block">
+          <h2>📊 Статистика</h2>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <h4>📈 Рейтинг автошкол</h4>
+              <div class="stat-list">
+                @for (school of topSchools; track $index) {
+                  <div class="stat-row">
+                    <span>{{ school.schoolName }}</span>
+                    <span class="rating">⭐ {{ school.averageRating.toFixed(1) }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <h4>📊 Выдано прав по категориям</h4>
+              <div class="stat-list">
+                <div class="stat-row">
+                  <span>Категория A</span>
+                  <span>{{ categoryStats['A'] || 0 }}</span>
+                </div>
+                <div class="stat-row">
+                  <span>Категория B</span>
+                  <span>{{ categoryStats['B'] || 0 }}</span>
+                </div>
+                <div class="stat-row">
+                  <span>Категория C</span>
+                  <span>{{ categoryStats['C'] || 0 }}</span>
+                </div>
+                <div class="stat-row">
+                  <span>Категория D</span>
+                  <span>{{ categoryStats['D'] || 0 }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

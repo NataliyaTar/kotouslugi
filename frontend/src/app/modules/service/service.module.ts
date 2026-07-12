@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
+import { DrivingLicenseComponent } from './components/driving-license/driving-license.component';
 
 /**
  * Роутинг для услуг
@@ -27,6 +28,14 @@ const routes: Routes = [
           idService: 'vet'
         },
         component: VetComponent
+      },
+      {
+        path: 'driving-license',
+        pathMatch: 'full',
+        data: {
+          idService: 'driving-license'
+        },
+        component: DrivingLicenseComponent
       },
       // ToDo: your router for service
     ]
