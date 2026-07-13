@@ -5,6 +5,8 @@ import ru.practice.kotouslugi.dao.BreedingRepository;
 import ru.practice.kotouslugi.dao.BreedingRequestRepository;
 import ru.practice.kotouslugi.model.Breeding;
 import ru.practice.kotouslugi.model.BreedingRequest;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -27,8 +29,8 @@ public class BreedingService {
 
   public List<Breeding> findMatches(Long profileId) {
     Breeding myCat = breedingRepository.findById(profileId)
-      .orElseThrow(() -> new RuntimeException("Анкета не найдена"));
-
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Анкета не найдена"));
+    
     return breedingRepository.findByBreedAndCityAndGenderNot(
       myCat.getBreed(),
       myCat.getCity(),
