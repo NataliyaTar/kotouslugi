@@ -17,14 +17,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cat {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String name;
-    private Integer age;
-    private String sex;
-    private String breed;
-   @Column(nullable = false)
-   private String politicalStatus = "NONE";
-   private Date lastVoteDate;
+  @Id
+  @GeneratedValue
+  private Long id;
+  private String name;
+  private String age;
+  private String sex;
+  private String breed;
 }

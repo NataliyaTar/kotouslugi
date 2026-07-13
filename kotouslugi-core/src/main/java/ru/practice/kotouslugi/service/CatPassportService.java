@@ -2,6 +2,8 @@ package ru.practice.kotouslugi.service;
 
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.Id;
+import lombok.Data;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,13 +15,13 @@ import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-
+@Data
 @Service
 public class CatPassportService {
-  @Autowired
-  private CatPassportRepository catPassportRepository;
-  @Autowired
-  private RequisitionRepository requisitionRepository;
+
+  private final CatPassportRepository catPassportRepository;
+
+  private final RequisitionRepository requisitionRepository;
 
   public PassportDTO addCatPassport(PassportDTO passportDTO){
 
@@ -43,28 +45,19 @@ public class CatPassportService {
 
   }
 
-  public PassportDTO approvePassport(ApprovePassportDTO approvePassportDTO){
-    Requisition req = requisitionRepository.findById(approvePassportDTO.getRequestionId())
+  public PassportDTO approvePassport(DecisionPassportDTO decisionPassportDTO){
+    Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequestionId())
       .orElseThrow(() -> new ServiceException("Requisition not found with id "));
 
-    if (req.getMnemonic().equals("passport") && req.getStatus() == RequisitionStatus.FILED){
+    if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
       req.setStatus(RequisitionStatus.DONE);
 
 
       PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
         .orElseThrow(() -> new ServiceException("Not found passportDetail with id " + req.getPassportDetail().getId()));
 
-      PassportDTO passportDTO = PassportDTO.builder()
-        .id(passportDetail.getId())
-        .requisition(passportDetail.getRequisition().getId())
-        .passportNumber(passportDetail.getPassportNumber())
-        .issueDate(passportDetail.getIssueDate())
-        .ownerPhone(passportDetail.getOwnerPhone())
-        .ownerEmail(passportDetail.getOwnerEmail())
-        .photoUrl(passportDetail.getPhotoUrl())
-        .specialMarks(passportDetail.getSpecialMarks())
-        .chipNumber(passportDetail.getChipNumber())
-        .build();
+      PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
+
       req.setDecisionAt(new Date(System.currentTimeMillis()));
       requisitionRepository.save(req);
       return passportDTO;
@@ -74,8 +67,8 @@ public class CatPassportService {
     }
   }
 
-  public PassportDTO rejectPassport(RejectPassportDTO rejectPassportDTO){
-    Requisition req = requisitionRepository.findById(rejectPassportDTO.getRequestionId())
+  public PassportDTO rejectPassport(DecisionPassportDTO decisionPassportDTO){
+    Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequestionId())
       .orElseThrow(() -> new ServiceException("Requisition not found with id "));
 
     if (req.getMnemonic().equals("passport") && req.getStatus() == RequisitionStatus.FILED){
@@ -85,17 +78,8 @@ public class CatPassportService {
       PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
         .orElseThrow(() -> new ServiceException("Not found passportDetail with id " + req.getPassportDetail().getId()));
 
-      PassportDTO passportDTO = PassportDTO.builder()
-        .id(passportDetail.getId())
-        .requisition(passportDetail.getRequisition().getId())
-        .passportNumber(passportDetail.getPassportNumber())
-        .issueDate(passportDetail.getIssueDate())
-        .ownerPhone(passportDetail.getOwnerPhone())
-        .ownerEmail(passportDetail.getOwnerEmail())
-        .photoUrl(passportDetail.getPhotoUrl())
-        .specialMarks(passportDetail.getSpecialMarks())
-        .chipNumber(passportDetail.getChipNumber())
-        .build();
+      PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
+
       req.setDecisionAt(new Date(System.currentTimeMillis()));
       requisitionRepository.save(req);
       return passportDTO;

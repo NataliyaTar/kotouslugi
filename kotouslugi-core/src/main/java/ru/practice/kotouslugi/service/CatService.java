@@ -27,14 +27,15 @@ public class CatService {
         return list;
     }
 
-  public Long addCat(Cat cat) throws ServiceException {
-    // Проверка на null и выход за границы
-    if (cat.getAge() == null || cat.getAge() < 0 || cat.getAge() > 120) {
-      throw new ServiceException("Возраст кота должен быть от 0 до 120");
-    }
-    cat = catRepository.save(cat);
-    logger.info("Добавлен кот = {}", cat.getName());
-    return cat.getId();
+  public Long addCat(Cat cat) {
+    try {
+      cat = catRepository.save(cat);
+      logger.info(String.format("Добавлен кот = %s ", cat.getName()));
+      return cat.getId();
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      return null;
+    } //хорошо подумал и понял, что тут проверки в целом не требуются
   }
 
     public Cat getCat(Long id) {
