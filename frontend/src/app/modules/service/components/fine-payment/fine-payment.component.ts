@@ -54,7 +54,6 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
   public totalAmount = 0;
   public paymentSuccess = false;
   public paymentError = false;
-  public showHistory = false;
   public paymentHistory: any[] = [];
 
   // чек (заполняется при оплате)
@@ -71,9 +70,7 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   public get getResult() {
-
     const rawValue = this.form.getRawValue();
-
     return this.serviceInfo.prepareDataForPreview(
       {
         0: rawValue[0],
@@ -143,24 +140,18 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
 
   //Форма
   private initForm(): void {
-
     this.form = this.fb.group({
-
       0: this.fb.group({
         cat: [
           JSON.stringify(this.optionsCat[0]),
           [Validators.required]
         ]
       }),
-
       1: this.fb.group({
         fines: ['']
       }),
-
       2: this.fb.group({}), // чек
-
       3: this.fb.group({}), // история оплат
-
       4: this.fb.group({})  // проверка
     });
 
@@ -207,7 +198,7 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
       .subscribe(res => {
         // показываем только неоплаченные штрафы
         this.fines = res
-          .filter(fine => fine.status !== 'PAID')
+          .filter(fine => fine.status === 'UNPAID')
           .map(fine => ({
             id: fine.id,
             number: 'ШТ-' + fine.id,
@@ -217,6 +208,18 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
             dueDate: this.formatDate(fine.created, 20),
             status: 'Не оплачен',
             selected: false
+          }));
+        // История оплат
+        this.paymentHistory = res
+          .filter(fine => fine.status === 'PAID')
+          .map(fine => ({
+            id: fine.id,
+            number: 'ШТ-' + fine.id,
+            date: this.formatDate(fine.created),
+            reason: fine.reason,
+            amount: fine.amount,
+            status: 'Оплачен',
+            paidDate: new Date(fine.created)
           }));
         this.paymentSuccess = false;
         this.calculateTotal();
@@ -239,6 +242,11 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
   //оплата штрафов
   public paySelected(): void {
     const selected = this.fines.filter(fine => fine.selected);
+
+    this.form.get('1.fines')?.setValue(
+      selected.map(f => `ШТ-${f.id} (${f.amount} ₽)`).join(', ')
+    );
+
     if (!selected.length) {
       this.paymentError = true;
       return;
@@ -268,11 +276,10 @@ export class FinePaymentComponent implements OnInit, OnDestroy {
 
         this.calculateTotal();
         this.paymentSuccess = true;
-        alert('Оплата прошла успешно!');
       });
   }
 
-  //меняемчекбокс
+
   public changeFine(): void {
     this.calculateTotal();
     if (this.totalAmount > 0) {
