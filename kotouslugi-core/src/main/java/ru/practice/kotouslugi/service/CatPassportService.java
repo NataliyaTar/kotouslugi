@@ -12,9 +12,8 @@ import ru.practice.kotouslugi.dao.RequisitionRepository;
 import ru.practice.kotouslugi.model.*;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
 @Data
 @Service
 public class CatPassportService {
@@ -22,6 +21,18 @@ public class CatPassportService {
   private final CatPassportRepository catPassportRepository;
 
   private final RequisitionRepository requisitionRepository;
+
+  public List<PassportDTO> getPassports(){
+    List<Requisition> requisitionsList = requisitionRepository.findAll();
+    ArrayList<PassportDTO> passportDTOList = new ArrayList<>();
+    requisitionsList.forEach(
+      requisition -> {
+        if (RequisitionStatus.DONE.equals(requisition.getStatus())){
+          passportDTOList.add(BuildPassportDTO.buildPassportDTO(requisition.getPassportDetail()));
+        }
+      });
+    return passportDTOList;
+  }
 
   public PassportDTO addCatPassport(PassportDTO passportDTO){
 

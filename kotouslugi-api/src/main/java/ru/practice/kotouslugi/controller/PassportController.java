@@ -9,6 +9,8 @@ import ru.practice.kotouslugi.model.DecisionPassportDTO;
 import ru.practice.kotouslugi.model.PassportDTO;
 import ru.practice.kotouslugi.service.CatPassportService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/passport")
 public class PassportController extends BaseController{
@@ -37,6 +39,14 @@ public class PassportController extends BaseController{
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<PassportDTO> rejectPassport(@RequestBody DecisionPassportDTO decisionPassportDTO){
     return wrapper((p) -> catPassportService.rejectPassport(decisionPassportDTO));
+  }
+
+  @PostMapping(value = "/getAll", produces = "application/json")
+  @Operation(summary = "Отклонить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
+    @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
+  public ResponseEntity<List<PassportDTO>> getAllPassports(){
+    return wrapper((d) -> catPassportService.getPassports());
   }
 }
 
