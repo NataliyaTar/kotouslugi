@@ -5,7 +5,12 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "feedback")
+@Table(name = "feedback",
+  indexes = {
+    @Index(name = "idx_fb_service_related", columnList = "service_type, related_id"),
+    @Index(name = "idx_fb_created", columnList = "created_at")
+  }
+)
 @Getter
 @Setter
 @Builder

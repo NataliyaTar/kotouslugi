@@ -5,7 +5,13 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "political_party")
+@Table(name = "political_party",
+  indexes = {
+    @Index(name = "idx_pp_name", columnList = "name", unique = true),
+    @Index(name = "idx_pp_active", columnList = "is_active, id"),
+    @Index(name = "idx_pp_candidate", columnList = "candidate_cat_id")
+  }
+)
 @Getter
 @Setter
 @Builder

@@ -12,7 +12,14 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "passport_detail")
+@Table(name = "passport_detail",
+  indexes = {
+    @Index(name = "idx_pd_passport_num", columnList = "passportNumber", unique = true),
+    @Index(name = "idx_pd_requisition", columnList = "requisition_id", unique = true),
+    @Index(name = "idx_pd_owner_email", columnList = "ownerEmail"),
+    @Index(name = "idx_pd_issue_date", columnList = "issueDate")
+  }
+)
 public class PassportDetail {
 
   @Id

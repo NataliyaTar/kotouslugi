@@ -5,7 +5,11 @@ import lombok.*;
 import java.util.Date;
 
 @Entity // Обязательно для JPA-сущностей
-@Table(name = "voting_point")
+@Table(name = "voting_point",
+  indexes = {
+    @Index(name = "idx_vp_name", columnList = "name")
+  }
+)
 @Getter
 @Setter
 @Builder

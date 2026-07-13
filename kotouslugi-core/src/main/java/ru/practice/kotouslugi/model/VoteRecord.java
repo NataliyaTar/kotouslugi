@@ -5,7 +5,16 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "vote_record")
+@Table(name = "vote_record",
+  indexes = {
+    @Index(name = "idx_vr_cat_period", columnList = "cat_id, election_period", unique = true),
+    @Index(name = "idx_vr_party", columnList = "party_id"),
+    @Index(name = "idx_vr_period", columnList = "election_period"),
+    @Index(name = "idx_vr_period_source", columnList = "election_period, vote_source"),
+    @Index(name = "idx_vr_voting_point", columnList = "voting_point_id"),
+    @Index(name = "idx_vr_vote_date", columnList = "vote_date")
+  }
+)
 @Getter
 @Setter
 @Builder
