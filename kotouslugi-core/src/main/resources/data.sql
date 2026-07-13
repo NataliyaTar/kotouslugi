@@ -67,3 +67,21 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+
+-- license_category (категории водительских прав с минимальным возрастом)
+INSERT INTO license_category (id, code, name, min_age) VALUES (0,  'A',  'Мотоциклы',              2);
+INSERT INTO license_category (id, code, name, min_age) VALUES (1,  'A1', 'Лёгкие мотоциклы',       1);
+INSERT INTO license_category (id, code, name, min_age) VALUES (2,  'B',  'Легковые автомобили',    2);
+INSERT INTO license_category (id, code, name, min_age) VALUES (3,  'B1', 'Квадроциклы и трициклы', 2);
+INSERT INTO license_category (id, code, name, min_age) VALUES (4,  'C',  'Грузовые автомобили',    3);
+INSERT INTO license_category (id, code, name, min_age) VALUES (5,  'C1', 'Лёгкие грузовики',       2);
+INSERT INTO license_category (id, code, name, min_age) VALUES (6,  'D',  'Автобусы',               4);
+INSERT INTO license_category (id, code, name, min_age) VALUES (7,  'D1', 'Микроавтобусы',          3);
+INSERT INTO license_category (id, code, name, min_age) VALUES (8,  'BE', 'Легковые с прицепом',    2);
+INSERT INTO license_category (id, code, name, min_age) VALUES (9,  'CE', 'Грузовые с прицепом',    3);
+INSERT INTO license_category (id, code, name, min_age) VALUES (10, 'DE', 'Автобусы с прицепом',    4);
+
+-- driving_school (автошколы)
+INSERT INTO driving_school (id, name, overall_rating, max_per_slot) VALUES (0, 'Автошкола №1', 0.0, 3);
+INSERT INTO driving_school (id, name, overall_rating, max_per_slot) VALUES (1, 'Автошкола №2', 0.0, 2);
+INSERT INTO driving_school (id, name, overall_rating, max_per_slot) VALUES (2, 'Автошкола №3', 0.0, 5);
