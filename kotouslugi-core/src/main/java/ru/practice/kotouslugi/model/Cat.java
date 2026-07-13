@@ -21,7 +21,7 @@ public class Cat {
     @GeneratedValue
     private Long id;
     private String name;
-    private String age;
+    private Integer age;
     private String sex;
     private String breed;
    @Column(nullable = false)
