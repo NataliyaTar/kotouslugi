@@ -18,7 +18,7 @@ import ru.practice.kotouslugi.service.FineService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/fine")
+@RequestMapping("/api/v1/fine")
 @Tag(name = "FineController", description = "Методы для работы со штрафами котов")
 public class FineController extends BaseController {
     private final FineService fineService;

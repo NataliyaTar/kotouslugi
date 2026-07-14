@@ -8,7 +8,7 @@ import { IFine, IReceipt } from '@models/fine.model';
 })
 export class FineService {
 
-  private fineApi = '/api/fine/';
+  private fineApi = '/api/v1/fine/';
 
   // чек последней оплаты (читает страница чека)
   public receipt: IReceipt = null;

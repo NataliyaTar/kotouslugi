@@ -1,5 +1,6 @@
 package ru.practice.kotouslugi.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class FineService {
             logger.error("Начисление штрафа: некорректная сумма = " + fine.getAmount());
             return null;
         }
-        if (fine.getReason() == null || fine.getReason().isBlank()) {
+        if (StringUtils.isEmpty(fine.getReason())) {
             logger.error("Начисление штрафа: не указана причина");
             return null;
         }
@@ -69,12 +70,11 @@ public class FineService {
 
     // "Оплата" штрафа: находим по id, ставим статус PAID, сохраняем
     public Fine payFine(Long id) {
-        Optional<Fine> found = fineRepository.findById(id);
-        if (found.isEmpty()) {
-            return null;
-        }
-        Fine fine = found.get();
-        fine.setStatus(FineStatus.PAID);
-        return fineRepository.save(fine);
+        return fineRepository.findById(id)
+            .map(fine -> {
+                fine.setStatus(FineStatus.PAID);
+                return fineRepository.save(fine);
+            })
+            .orElse(null);
     }
 }
