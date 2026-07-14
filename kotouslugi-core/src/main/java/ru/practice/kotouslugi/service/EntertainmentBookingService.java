@@ -38,6 +38,16 @@ public class EntertainmentBookingService {
   }
 
   public void registerAppointment(String fieldsJson) throws ServiceException {
+    EventEntity event = findEvent(fieldsJson);
+    String visitDatetime = extractVisitDatetime(fieldsJson);
+    checkSlotAvailable(event, visitDatetime);
+    Venue venue = findVenue(event);
+
+    Appointment appointment = buildAppointment(fieldsJson, event, venue, visitDatetime);
+    appointmentRepository.save(appointment);
+  }
+
+  private EventEntity findEvent(String fieldsJson) throws ServiceException {
     JsonNode eventIdNode = findField(fieldsJson, "eventId");
     if (eventIdNode == null) {
       eventIdNode = findField(fieldsJson, "event");
@@ -47,9 +57,11 @@ public class EntertainmentBookingService {
       throw new ServiceException("Выберите мероприятие для посещения");
     }
 
-    EventEntity event = eventRepository.findById(eventId)
+    return eventRepository.findById(eventId)
       .orElseThrow(() -> new ServiceException("Выбранное мероприятие не найдено"));
+  }
 
+  private String extractVisitDatetime(String fieldsJson) throws ServiceException {
     JsonNode datetimeNode = findField(fieldsJson, "visitDatetime");
     if (datetimeNode == null) {
       datetimeNode = findField(fieldsJson, "time");
@@ -57,56 +69,66 @@ public class EntertainmentBookingService {
     if (datetimeNode == null || datetimeNode.isNull() || datetimeNode.asText().isBlank()) {
       throw new ServiceException("Выберите время посещения");
     }
-    String visitDatetime = datetimeNode.asText();
+    return datetimeNode.asText();
+  }
 
+  private void checkSlotAvailable(EventEntity event, String visitDatetime) throws ServiceException {
     boolean slotAvailable = Arrays.stream(event.getAvailableSlots().split(","))
       .map(String::trim)
       .anyMatch(slot -> slot.equals(visitDatetime));
     if (!slotAvailable) {
       throw new ServiceException("Выбранное время посещения недоступно");
     }
+  }
 
-    Venue venue = venueRepository.findById(event.getVenueId())
+  private Venue findVenue(EventEntity event) throws ServiceException {
+    return venueRepository.findById(event.getVenueId())
       .orElseThrow(() -> new ServiceException("Место проведения не найдено"));
+  }
 
-    JsonNode emailNode = findField(fieldsJson, "email");
-    String ownerEmail = emailNode != null && !emailNode.isNull() ? emailNode.asText() : null;
+  private Appointment buildAppointment(String fieldsJson, EventEntity event, Venue venue, String visitDatetime)
+    throws ServiceException {
+    return Appointment.builder()
+      .venueName(venue.getName())
+      .eventName(event.getName())
+      .visitDatetime(parseVisitDatetime(visitDatetime))
+      .totalCost(event.getPrice())
+      .status(AppointmentStatus.CONFIRMED)
+      .ownerEmail(extractOwnerEmail(fieldsJson))
+      .petName(extractPetName(fieldsJson))
+      .ownerPhone(extractOwnerPhone(fieldsJson))
+      .build();
+  }
 
-    String petName = null;
-    JsonNode catNode = findField(fieldsJson, "cat");
-    if (catNode != null && !catNode.isNull()) {
-      try {
-        JsonNode catObject = objectMapper.readTree(catNode.asText());
-        if (catObject.has("text")) {
-          petName = catObject.get("text").asText();
-        }
-      } catch (Exception e) {
-        throw new ServiceException("Некорректные данные о коте: " + e.getMessage());
-      }
-    }
-
-    JsonNode telephoneNode = findField(fieldsJson, "telephone");
-    String ownerPhone = telephoneNode != null && !telephoneNode.isNull() ? telephoneNode.asText() : null;
-
-    LocalDateTime parsedVisitDatetime;
+  private LocalDateTime parseVisitDatetime(String visitDatetime) throws ServiceException {
     try {
-      parsedVisitDatetime = LocalDateTime.parse(visitDatetime);
+      return LocalDateTime.parse(visitDatetime);
     } catch (Exception e) {
       throw new ServiceException("Некорректный формат времени посещения: " + visitDatetime);
     }
+  }
 
-    Appointment appointment = Appointment.builder()
-      .venueName(venue.getName())
-      .eventName(event.getName())
-      .visitDatetime(parsedVisitDatetime)
-      .totalCost(event.getPrice())
-      .status(AppointmentStatus.CONFIRMED)
-      .ownerEmail(ownerEmail)
-      .petName(petName)
-      .ownerPhone(ownerPhone)
-      .build();
+  private String extractOwnerEmail(String fieldsJson) throws ServiceException {
+    JsonNode emailNode = findField(fieldsJson, "email");
+    return emailNode != null && !emailNode.isNull() ? emailNode.asText() : null;
+  }
 
-    appointmentRepository.save(appointment);
+  private String extractOwnerPhone(String fieldsJson) throws ServiceException {
+    JsonNode telephoneNode = findField(fieldsJson, "telephone");
+    return telephoneNode != null && !telephoneNode.isNull() ? telephoneNode.asText() : null;
+  }
+
+  private String extractPetName(String fieldsJson) throws ServiceException {
+    JsonNode catNode = findField(fieldsJson, "cat");
+    if (catNode == null || catNode.isNull()) {
+      return null;
+    }
+    try {
+      JsonNode catObject = objectMapper.readTree(catNode.asText());
+      return catObject.has("text") ? catObject.get("text").asText() : null;
+    } catch (Exception e) {
+      throw new ServiceException("Некорректные данные о коте: " + e.getMessage());
+    }
   }
 
   private Integer extractId(JsonNode node) throws ServiceException {
@@ -122,6 +144,7 @@ public class EntertainmentBookingService {
         return null;
       }
       try {
+
         return Integer.parseInt(text);
       } catch (NumberFormatException ignored) {
 
