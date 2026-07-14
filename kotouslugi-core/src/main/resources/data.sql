@@ -85,6 +85,11 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+INSERT INTO exhibitions (name, date, city, system, organizer, cost, deadline)
+VALUES ('Международная выставка «Кубок Пушистых»', '15.08.2026', 'Москва', 'WCF', 'Клуб Котофей', '2500 руб.', '10.08.2026');
+
+INSERT INTO exhibitions (name, date, city, system, organizer, cost, deadline)
+VALUES ('Всероссийский смотр «Усы и Лапы»', '20.09.2026', 'Санкт-Петербург', 'FIFe', 'ЛенКотоСоюз', '1800 руб.', '15.09.2026');
 
 -- breeding (анкеты для вязки)
 -- Кошка Муся, британка из Москвы (Ищет британца от 1 до 5 лет)
