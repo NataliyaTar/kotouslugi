@@ -1,52 +1,87 @@
 package ru.practice.kotouslugi.service;
 
-import org.springframework.stereotype.Service;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practice.kotouslugi.dao.KotoServiceRepository;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
 import ru.practice.kotouslugi.exception.ServiceException;
 import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
-@Service
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 public class RequisitionServiceTest {
-    private final RequisitionRepository requisitionRepository;
-    private final KotoServiceRepository kotoServiceRepository;
 
-    public RequisitionServiceTest(RequisitionRepository requisitionRepository,
-                                  KotoServiceRepository kotoServiceRepository) {
-      this.requisitionRepository = requisitionRepository;
-      this.kotoServiceRepository = kotoServiceRepository;
-    }
+  @Mock
+  private RequisitionRepository requisitionRepository;
 
-    public List<Requisition> listRequisition() {
-        List<Requisition> result = new LinkedList<>();
-        Iterable<Requisition> requisitions = requisitionRepository.findAll();
-        requisitions.forEach(r -> r.setName(kotoServiceRepository.findTitleByServiceMnemonic(r.getMnemonic())));
-        requisitions.forEach(result::add);
-        return result;
-    }
+  @Mock
+  private KotoServiceRepository kotoServiceRepository;
 
-    public int createRequisition(Requisition requisition) {
-        requisition.setStatus(RequisitionStatus.FILED);
-        requisition.setCreated(new Date(System.currentTimeMillis()));
-        Requisition save = requisitionRepository.save(requisition);
-        return save.getId();
-    }
+  @InjectMocks
+  private RequisitionService requisitionService;
 
-    public Boolean updateRequisition(Requisition updRequisition) throws ServiceException {
-        String id = String.valueOf(updRequisition.getId());
-        if (id.isEmpty() || id.equals("null"))
-            throw new ServiceException("Не указан id заявки");
-        Integer idRequisite = Integer.parseInt(id);
-        Requisition requisition = requisitionRepository.findById(idRequisite).orElse(null);
-        if (requisition == null)
-            throw new ServiceException("Указанная заявка не найдена: " + idRequisite);
+  @Test
+  void createRequisitionTest() {
+    Requisition req = new Requisition();
+    Requisition savedReq = new Requisition();
+    savedReq.setId(123);
+    when(requisitionRepository.save(any(Requisition.class))).thenReturn(savedReq);
+    int id = requisitionService.createRequisition(req);
+    assertEquals(123, id);
+    assertEquals(RequisitionStatus.FILED, req.getStatus());
+    assertNotNull(req.getCreated());
+    verify(requisitionRepository, times(1)).save(req);
+  }
 
-        requisitionRepository.save(updRequisition);
-        return true;
-    }
+  @Test
+  void listRequisitionTest() {
+    Requisition req = new Requisition();
+    req.setMnemonic("TEST_SERVICE");
+    when(requisitionRepository.findAll()).thenReturn(List.of(req));
+    when(kotoServiceRepository.findTitleByServiceMnemonic("TEST_SERVICE")).thenReturn("Тестовая услуга");
+
+    List<Requisition> result = requisitionService.listRequisition();
+
+    assertEquals(1, result.size());
+    assertEquals("Тестовая услуга", result.get(0).getName());
+    verify(kotoServiceRepository).findTitleByServiceMnemonic("TEST_SERVICE");
+  }
+
+  @Test
+  void updateRequisition_Success() throws ServiceException {
+    Requisition req = new Requisition();
+    req.setId(1);
+    when(requisitionRepository.findById(1)).thenReturn(Optional.of(req));
+    Boolean result = requisitionService.updateRequisition(req);
+    assertTrue(result);
+    verify(requisitionRepository).save(req);
+  }
+
+  @Test
+  void updateRequisition_ShouldThrowException_WhenIdIsNull() {
+    Requisition req = new Requisition();
+    assertThrows(ServiceException.class, () -> {
+      requisitionService.updateRequisition(req);
+    });
+  }
+
+  @Test
+  void updateRequisition_ShouldThrowException_WhenNotFound() {
+    Requisition req = new Requisition();
+    req.setId(999);
+    when(requisitionRepository.findById(999)).thenReturn(Optional.empty());
+    assertThrows(ServiceException.class, () -> {
+      requisitionService.updateRequisition(req);
+    });
+  }
 }
