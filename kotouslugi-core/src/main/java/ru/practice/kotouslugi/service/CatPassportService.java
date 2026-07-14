@@ -4,11 +4,12 @@ package ru.practice.kotouslugi.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Id;
 import lombok.Data;
+
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
+
 import ru.practice.kotouslugi.model.*;
 import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
@@ -23,7 +24,7 @@ public class CatPassportService {
   private final RequisitionRepository requisitionRepository;
 
   public List<PassportDTO> getPassports(){
-    List<Requisition> requisitionsList = requisitionRepository.findAll();
+    Iterable<Requisition> requisitionsList = requisitionRepository.findAll();
     ArrayList<PassportDTO> passportDTOList = new ArrayList<>();
     requisitionsList.forEach(
       requisition -> {
@@ -34,10 +35,10 @@ public class CatPassportService {
     return passportDTOList;
   }
 
-  public PassportDTO addCatPassport(PassportDTO passportDTO){
+  public PassportDTO addCatPassport(PassportDTO passportDTO) {
 
     Requisition requisition = requisitionRepository.findById(passportDTO.getRequisition())
-      .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id: " + passportDTO.getRequisition()));
+      .orElseThrow(() -> new ServiceException("Requisition not found with id: " + passportDTO.getRequisition()));
 
     PassportDetail passportDetail = PassportDetail.builder()
       .requisition(requisition)
@@ -82,7 +83,7 @@ public class CatPassportService {
     Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequestionId())
       .orElseThrow(() -> new ServiceException("Requisition not found with id "));
 
-    if (req.getMnemonic().equals("passport") && req.getStatus() == RequisitionStatus.FILED){
+    if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
       req.setStatus(RequisitionStatus.REJECTED);
 
 

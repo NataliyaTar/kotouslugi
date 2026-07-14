@@ -42,7 +42,7 @@ public class PassportController extends BaseController{
   }
 
   @PostMapping(value = "/getAll", produces = "application/json")
-  @Operation(summary = "Отклонить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
+  @Operation(summary = "Получить все паспорта", tags = {"Кошачье АПИ"}, responses = {
     @ApiResponse(responseCode = "200", description = "OK"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<List<PassportDTO>> getAllPassports(){
