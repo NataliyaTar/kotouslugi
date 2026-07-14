@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import static org.assertj.core.api.Assertions.assertThat;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
+import ru.practice.kotouslugi.exception.DuplicateEntityException;
 import ru.practice.kotouslugi.model.DecisionPassportDTO;
 import ru.practice.kotouslugi.model.PassportDTO;
 import ru.practice.kotouslugi.model.PassportDetail;
@@ -362,7 +363,7 @@ public class PassoprtServiceTest {
   //если заявка не найдена
   @Test
   void addCatPassportWhenReqIsNull(){
-    int requisitionId = 999;
+    Integer requisitionId = null;
     Long expectedPassportId = 100L;
 
     PassportDTO passportDTO = PassportDTO.builder()
@@ -376,13 +377,66 @@ public class PassoprtServiceTest {
       .chipNumber("CHIP987")
       .build();
 
-    when(requisitionRepository.findById(passportDTO.getRequisition())).thenReturn(Optional.empty());
-    assertThatThrownBy(() -> passportService.addCatPassport(passportDTO))
-      .isInstanceOf(ServiceException.class)
-      .hasMessageContaining("Requisition not found with id: " + requisitionId);
+    when(catPassportRepository.save(any(PassportDetail.class))).thenAnswer(invocation -> {
+      PassportDetail arg = invocation.getArgument(0);
+      arg.setId(expectedPassportId);  // устанавливаем id
+      return arg;                     // возвращаем тот же объект
+    });
+    PassportDTO resultDTO = passportService.addCatPassport(passportDTO);
+
+    assertThat(resultDTO).isNotNull();
+    assertThat(resultDTO.getId()).isEqualTo(expectedPassportId);
+    assertThat(resultDTO).isSameAs(passportDTO);
+
+  }
+
+  @Test
+  void addCatPassportWhenPassportNumberHadDuplicate(){
+    Integer requisitionId = null;
+    Long expectedPassportId = 100L;
 
 
-    verify(catPassportRepository, never()).save(any(PassportDetail.class));
+    PassportDTO firstDTO = PassportDTO.builder()
+      .requisition(requisitionId)
+      .passportNumber("AB123456")
+      .issueDate(LocalDate.of(2025, 1, 1))
+      .ownerPhone("+79998887766")
+      .ownerEmail("test@example.com")
+      .photoUrl("http://example.com/photo.jpg")
+      .specialMarks("Особые отметки")
+      .chipNumber("CHIP987")
+      .build();
+
+    PassportDTO secondDTO = PassportDTO.builder()
+      .requisition(requisitionId)
+      .passportNumber("AB123456") // тот же номер
+      .issueDate(LocalDate.of(2025, 1, 1))
+      .ownerPhone("+79128587206")
+      .ownerEmail("test1@example.com")
+      .photoUrl("http://example1.com/photo1.jpg")
+      .specialMarks("Особые отметки1")
+      .chipNumber("CHIP9871")
+      .build();
+
+
+    when(catPassportRepository.existsByPassportNumber(firstDTO.getPassportNumber()))
+      .thenReturn(false, true);
+
+    when(catPassportRepository.save(any(PassportDetail.class))).thenAnswer(invocation -> {
+      PassportDetail arg = invocation.getArgument(0);
+      arg.setId(expectedPassportId);
+      return arg;
+    });
+
+    PassportDTO resultDTO = passportService.addCatPassport(firstDTO);
+
+    assertThat(resultDTO).isNotNull();
+    assertThat(resultDTO.getId()).isEqualTo(expectedPassportId);
+    assertThat(resultDTO).isSameAs(firstDTO);
+
+    assertThatThrownBy(() -> passportService.addCatPassport(secondDTO))
+      .isInstanceOf(DuplicateEntityException.class)
+      .hasMessageContaining("Passport number already exists");
 
   }
 }

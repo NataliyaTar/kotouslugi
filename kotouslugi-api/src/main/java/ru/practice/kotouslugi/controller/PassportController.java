@@ -2,9 +2,12 @@ package ru.practice.kotouslugi.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practice.kotouslugi.exception.DuplicateEntityException;
 import ru.practice.kotouslugi.model.DecisionPassportDTO;
 import ru.practice.kotouslugi.model.PassportDTO;
 import ru.practice.kotouslugi.service.CatPassportService;
@@ -19,11 +22,13 @@ public class PassportController extends BaseController{
 
   @PostMapping(value = "/add", produces = "application/json")
   @Operation(summary = "Добавить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
-    @ApiResponse(responseCode = "200", description = "OK"),
-    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
-  public ResponseEntity<PassportDTO> addPassport(@RequestBody PassportDTO passportDTO){
-
-    return wrapper((p) -> catPassportService.addCatPassport(passportDTO));
+    @ApiResponse(responseCode = "201", description = "Created"),
+    @ApiResponse(responseCode = "404", description = "Requisition not found"),
+    @ApiResponse(responseCode = "409", description = "Duplicate passport number"),
+    @ApiResponse(responseCode = "500", description = "Internal error")})
+  public ResponseEntity<Object> addPassport(@RequestBody PassportDTO passportDTO){
+    PassportDTO res = catPassportService.addCatPassport(passportDTO);
+    return ResponseEntity.status(HttpStatus.CREATED).body(res);
   }
 
   @PostMapping(value = "/approve", produces = "application/json")
@@ -31,7 +36,8 @@ public class PassportController extends BaseController{
     @ApiResponse(responseCode = "200", description = "OK"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<PassportDTO> approvePassport(@RequestBody DecisionPassportDTO decisionPassportDTO){
-    return wrapper((n) -> catPassportService.approvePassport(decisionPassportDTO));
+    PassportDTO decisionPassport = catPassportService.approvePassport(decisionPassportDTO);
+    return ResponseEntity.status(200).body(decisionPassport);
   }
   @PostMapping(value = "/reject", produces = "application/json")
   @Operation(summary = "Отклонить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
@@ -46,7 +52,8 @@ public class PassportController extends BaseController{
     @ApiResponse(responseCode = "200", description = "OK"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<List<PassportDTO>> getAllPassports(){
-    return wrapper((d) -> catPassportService.getPassports());
+      List<PassportDTO> list = catPassportService.getPassports();
+      return ResponseEntity.ok(list);
   }
 }
 

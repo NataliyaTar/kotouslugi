@@ -27,7 +27,7 @@ public class PassportDetail {
   private Long id;
 
   @OneToOne
-  @JoinColumn(nullable = false)
+  @JoinColumn()
   private Requisition requisition;
 
   @Column(name = "passportNumber", nullable = false, unique = true, length = 20)
@@ -37,7 +37,7 @@ public class PassportDetail {
   private LocalDate issueDate;
 
 
-  @Column(name = "country", nullable = false, length = 50)
+  @Column(name = "country", nullable = false)
   private String country = "РФ";
 
   @Column(name = "ownerPhone", nullable = false, length = 20)
