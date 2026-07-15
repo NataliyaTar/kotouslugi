@@ -2,6 +2,7 @@ package ru.practice.kotouslugi.service;
 
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
@@ -11,11 +12,10 @@ import ru.practice.kotouslugi.model.Requisition;
 import java.util.List;
 
 //в качестве демонстрации работы реальных сотрудников, будет происходить каждые 2 минуты подтверждение заявок на паспорт
-@Data
+@RequiredArgsConstructor
 @Service
 public class PollingService {
 
-  private final RequisitionService requisitionService;
   private final RequisitionRepository requisitionRepository;
   private final CatPassportService catPassportService;
 

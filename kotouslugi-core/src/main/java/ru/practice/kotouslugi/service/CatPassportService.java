@@ -4,6 +4,7 @@ package ru.practice.kotouslugi.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
 import java.util.*;
 
-@Data
+@RequiredArgsConstructor
 @Service
 public class CatPassportService {
 
