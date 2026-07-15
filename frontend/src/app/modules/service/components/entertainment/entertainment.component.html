@@ -43,7 +43,59 @@
       </div>
     </div>
 
-    @if (active === 1) {
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+
+      <div class="field">
+        <div>
+          <p class="label">Выберите место</p>
+          @if (getControl(1, 'place').errors?.['required'] && getControl(1, 'place').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+          <select formControlName="place" (invalid)="getControl(1, 'place').invalid">
+            @for (option of placeOptions; track $index) {
+              <option [value]="getItem('place', $index)">{{option.name}}</option>
+            }
+          </select>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Выберите мероприятие</p>
+          @if (getControl(1, 'event').errors?.['required'] && getControl(1, 'event').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="event" (invalid)="getControl(1, 'place').invalid">
+          @for (option of eventOptions; track $index) {
+            <option [value]="getItem('event', $index)">{{option.name}}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Выберите время посещения</p>
+        </div>
+        <select formControlName="visitDatetime" (invalid)="getControl(1, 'visitDatetime').invalid">
+          @for (option of availableSlotsOptions; track $index) {
+            <option [value]="getItem('visitDatetime', $index)">{{ formatDate(option) }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Стоимость услуги</p>
+        </div>
+        <p class="price">
+          {{ price }}
+        </p>
+      </div>
+    </div>
+
+
+    @if (active === 2) {
       <app-check-info [data]="getResult"></app-check-info>
     }
   </div>

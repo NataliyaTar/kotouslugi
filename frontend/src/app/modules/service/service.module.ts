@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
-import {EntertainmentComponent} from "./components/ entertainment/ entertainment.component";
+import {EntertainmentComponent} from "./components/entertainment/entertainment.component";
 
 /**
  * Роутинг для услуг

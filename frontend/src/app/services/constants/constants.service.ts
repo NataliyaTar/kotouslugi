@@ -3,6 +3,10 @@ import { EBreedMap, ESexMap, IValueBreed, IValueSex, IValueCat, ICatGroupedBySex
 import { mergeMap, Observable, of, take } from 'rxjs';
 import { CatService } from '@services/cat/cat.service';
 import { IValue } from '@models/common.model';
+import {IPlace} from "@models/place.model";
+import {PlaceService} from "@services/place/place.service";
+import {IServices} from "@models/event_services.model";
+import {IAvailableTime} from "@models/available_time.model";
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +87,7 @@ export class ConstantsService {
 
   constructor(
     private catService: CatService,
+    private placeService: PlaceService,
   ) { }
 
   /**
@@ -126,5 +131,39 @@ export class ConstantsService {
         }));
       })
     )
+  }
+
+  public getPlaceOptionsAll(): Observable<IPlace[]> {
+    return this.placeService.getPlacesList().pipe(
+      take(1)).pipe(
+        mergeMap((response) => {
+          return of(response.map((item) => {
+            return {
+              id: item.id,
+              name: item.name
+            }
+          }))
+        })
+    )
+  }
+
+  public getEventsOptionsAll(eventID: number): Observable<IServices[]> {
+    return this.placeService.getEventsList(eventID).pipe(
+      take(1)).pipe(
+        mergeMap((response) => {
+          return of(response.map((item) => {
+            return {
+              venueId: item.venueId,
+              id: item.id,
+              name: item.name,
+              price: item.price,
+            }
+          }));
+        })
+    )
+  }
+
+  public getAvailableTimeListAll(placeID: number): Observable<IAvailableTime> {
+    return this.placeService.getAvailableTimeList(placeID).pipe(take(1))
   }
 }
