@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<String> handleNotFound(EntityNotFoundException e) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    return ResponseEntity.status(404).body(e.getMessage());
   }
 
   @ExceptionHandler(DuplicateEntityException.class)

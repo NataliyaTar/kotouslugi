@@ -90,14 +90,14 @@ public class CatPassportService {
 
   public PassportDTO rejectPassport(DecisionPassportDTO decisionPassportDTO){
     Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequestionId())
-      .orElseThrow(() -> new ServiceException("Requisition not found with id "));
+      .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id "));
 
     if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
       req.setStatus(RequisitionStatus.REJECTED);
 
 
       PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
-        .orElseThrow(() -> new ServiceException("Not found passportDetail with id " + req.getPassportDetail().getId()));
+        .orElseThrow(() -> new EntityNotFoundException("Not found passportDetail with id " + req.getPassportDetail().getId()));
 
       PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
 
@@ -106,7 +106,7 @@ public class CatPassportService {
       return passportDTO;
 
     }else {
-      throw new ServiceException("Invalid order mnemonic or status");
+      throw new InvalidOperationException("Invalid order mnemonic or status");
     }
   }
 

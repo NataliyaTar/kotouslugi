@@ -1,5 +1,6 @@
 package ru.practice.kotouslugi.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
 import ru.practice.kotouslugi.exception.DuplicateEntityException;
+import ru.practice.kotouslugi.exception.InvalidOperationException;
 import ru.practice.kotouslugi.model.DecisionPassportDTO;
 import ru.practice.kotouslugi.model.PassportDTO;
 import ru.practice.kotouslugi.model.PassportDetail;
@@ -80,7 +82,7 @@ public class PassoprtServiceTest {
     when(requisitionRepository.findById(requisitionId)).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> passportService.approvePassport(decisionDTO))
-      .isInstanceOf(ServiceException.class)
+      .isInstanceOf(EntityNotFoundException.class)
       .hasMessageContaining("Requisition not found with id");
   }
 
@@ -112,7 +114,7 @@ public class PassoprtServiceTest {
     decisionDTO.setRequestionId(requisitionId);
 
     assertThatThrownBy(() -> passportService.approvePassport(decisionDTO))
-      .isInstanceOf(ServiceException.class)
+      .isInstanceOf(InvalidOperationException.class)
       .hasMessageContaining("Invalid order mnemonic or status");
 
   }
@@ -132,14 +134,6 @@ public class PassoprtServiceTest {
       .passportDetail(PassportDetail.builder().id(passportDetailId).build())
       .build();
 
-    PassportDetail passportDetail = PassportDetail.builder()
-      .id(passportDetailId)
-      .requisition(req)
-      .passportNumber("AB123456")
-      .ownerPhone("+79998887766")
-      .ownerEmail("test@example.com")
-      .build();
-
     when(requisitionRepository.findById(requisitionId)).thenReturn(Optional.of(req));
 
 
@@ -147,7 +141,7 @@ public class PassoprtServiceTest {
     decisionDTO.setRequestionId(requisitionId);
 
     assertThatThrownBy(() -> passportService.approvePassport(decisionDTO))
-      .isInstanceOf(ServiceException.class)
+      .isInstanceOf(InvalidOperationException.class)
       .hasMessageContaining("Invalid order mnemonic or status");
 
   }
@@ -196,7 +190,7 @@ public class PassoprtServiceTest {
     when(requisitionRepository.findById(requisitionId)).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> passportService.rejectPassport(decisionDTO))
-      .isInstanceOf(ServiceException.class)
+      .isInstanceOf(EntityNotFoundException.class)
       .hasMessageContaining("Requisition not found with id");
   }
   @Test
@@ -227,7 +221,7 @@ public class PassoprtServiceTest {
     decisionDTO.setRequestionId(requisitionId);
 
     assertThatThrownBy(() -> passportService.rejectPassport(decisionDTO))
-      .isInstanceOf(ServiceException.class)
+      .isInstanceOf(InvalidOperationException.class)
       .hasMessageContaining("Invalid order mnemonic or status");
 
   }
@@ -244,13 +238,6 @@ public class PassoprtServiceTest {
       .passportDetail(PassportDetail.builder().id(passportDetailId).build())
       .build();
 
-    PassportDetail passportDetail = PassportDetail.builder()
-      .id(passportDetailId)
-      .requisition(req)
-      .passportNumber("AB123456")
-      .ownerPhone("+79998887766")
-      .ownerEmail("test@example.com")
-      .build();
 
     when(requisitionRepository.findById(requisitionId)).thenReturn(Optional.of(req));
 
@@ -259,7 +246,7 @@ public class PassoprtServiceTest {
     decisionDTO.setRequestionId(requisitionId);
 
     assertThatThrownBy(() -> passportService.rejectPassport(decisionDTO))
-      .isInstanceOf(ServiceException.class)
+      .isInstanceOf(InvalidOperationException.class)
       .hasMessageContaining("Invalid order mnemonic or status");
 
   }
