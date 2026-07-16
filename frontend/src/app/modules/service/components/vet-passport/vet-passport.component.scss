@@ -1,0 +1,547 @@
+@use '../../../../../assets/styles/palette' as palette;
+
+.step-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: palette.$color-text-helper;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.step-wrapper {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.step-icon {
+  flex-shrink: 0;
+}
+
+.field {
+  margin-bottom: 20px;
+
+  > div:first-child {
+    margin-bottom: 6px;
+  }
+
+  .label {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+  }
+
+  .error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .hint {
+    color: #999;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  select,
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    background: #fff;
+
+    &:focus {
+      outline: none;
+      border-color: palette.$color-gosblue;
+    }
+
+    &.ng-invalid.ng-touched {
+      border-color: #e74c3c;
+    }
+  }
+
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  select {
+    appearance: auto;
+    cursor: pointer;
+  }
+}
+
+.field-gender {
+  > div:first-child {
+    margin-bottom: 2px !important;
+  }
+
+  select {
+    margin-top: 0 !important;
+  }
+}
+
+.field-photo {
+  .photo-upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    background: #fafafa;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: palette.$color-gosblue;
+    }
+
+    .btn-upload {
+      padding: 12px 32px;
+      border: none;
+      border-radius: 8px;
+      background: palette.$color-gosblue;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: palette.$color-active-item;
+      }
+
+      .icon {
+        margin-right: 8px;
+      }
+    }
+
+    .hint {
+      color: #999;
+      font-size: 12px;
+    }
+  }
+
+  .photo-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+
+    .photo-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #eee;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .btn-remove {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+
+        &:hover {
+          background: rgba(231, 76, 60, 0.8);
+        }
+      }
+    }
+  }
+}
+
+// ВАКЦИНАЦИИ
+.vaccination-list {
+  margin-bottom: 20px;
+}
+
+.vaccination-item {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e9ecef;
+  position: relative;
+
+  .field {
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    input {
+      background: #fff;
+      font-size: 14px;
+    }
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #c0392b;
+    }
+  }
+}
+
+.btn-add {
+  width: 100%;
+  padding: 14px;
+  background: #2196F3;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #1976D2;
+  }
+}
+
+// Форма добавления вакцинации (НОВОЕ)
+.vaccination-form {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 2px solid palette.$color-gosblue;
+  margin-bottom: 20px;
+
+  .form-subtitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+
+      &:hover {
+        background: #d0d0d0;
+      }
+    }
+
+    .btn-success {
+      background: #27ae60;
+      color: #fff;
+
+      &:hover {
+        background: #219a52;
+      }
+    }
+  }
+}
+
+.value {
+  font-size: 16px;
+  color: #333;
+  padding: 8px 0;
+  font-weight: 500;
+}
+
+// НАПОМИНАНИЯ
+.reminders-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid #eee;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+  }
+}
+
+.reminder-item {
+  padding: 16px;
+  border-radius: 8px;
+  background: #fff;
+  border-left: 4px solid #FF9800;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &.sent {
+    border-left-color: #4CAF50;
+    opacity: 0.7;
+  }
+
+  .reminder-type {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .reminder-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+  }
+
+  .reminder-date {
+    font-size: 14px;
+    color: #999;
+  }
+}
+
+.badge-sent {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #4CAF50;
+  color: #fff;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+// QR-КОД
+.qr-section {
+  text-align: center;
+  margin: 32px 0;
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 12px;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+  }
+}
+
+.qr-code-container {
+  display: inline-block;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  img {
+    max-width: 200px;
+    border-radius: 8px;
+  }
+
+  .hint {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+.btn-generate-qr {
+  padding: 14px 32px;
+  background: #9C27B0;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #7B1FA2;
+  }
+}
+
+.info-box {
+  padding: 20px;
+  border-radius: 12px;
+  background: #f0f8ff;
+  border-left: 4px solid palette.$color-gosblue;
+
+  h4 {
+    margin: 0 0 12px 0;
+    color: #333;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+
+    li {
+      margin-bottom: 8px;
+      color: #555;
+    }
+  }
+}
+
+.warning-box {
+  padding: 16px;
+  border-radius: 8px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  text-align: center;
+  margin-top: 16px;
+}
+
+// Таблица вакцинаций в шаге 4 (НОВОЕ)
+.vaccinations-review {
+  margin: 24px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+  }
+}
+
+.vaccinations-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+
+  th {
+    background: palette.$color-gosblue;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover {
+    background: #f5f5f5;
+  }
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+
+  .btn {
+    padding: 12px 32px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+
+    &:hover:not(:disabled) {
+      background: #d0d0d0;
+    }
+  }
+
+  .btn-primary {
+    background: palette.$color-gosblue;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: palette.$color-active-item;
+    }
+  }
+
+  .btn-success {
+    background: #27ae60;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: #219a52;
+    }
+  }
+}

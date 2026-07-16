@@ -1,0 +1,335 @@
+@if (loading) {
+<app-throbber></app-throbber>
+} @else {
+<div class="fields-wrapper" [formGroup]="form">
+
+  <!-- ШАГ 1: Основная информация о питомце -->
+  <div class="step-wrapper" [hidden]="active !== 0" formGroupName="0">
+    <div class="step-header">
+      <img src="assets/svg/icons/pets.svg" alt="" class="step-icon" width="32" height="32">
+      <h2 class="step-title">Информация о питомце</h2>
+    </div>
+
+    <div class="field">
+      <div>
+        <p class="label">Выберите питомца (если уже зарегистрирован)</p>
+        <p class="hint">Если питомца нет в списке — оставьте "Не выбран" и заполните данные вручную</p>
+      </div>
+      <select formControlName="pet" (change)="onPetSelected($event)">
+        <option value="">Не выбран</option>
+        @for (option of optionsPet; track $index) {
+        <option [value]="getItem('pet', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <div>
+        <p class="label">Кличка питомца *</p>
+        @if (getControl(0, 'petName').errors?.['required'] && getControl(0, 'petName').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <input formControlName="petName" placeholder="Введите кличку">
+    </div>
+
+    <div class="field">
+      <div>
+        <p class="label">Порода *</p>
+        @if (getControl(0, 'breed').errors?.['required'] && getControl(0, 'breed').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <input formControlName="breed" placeholder="Например, Мейн-кун">
+    </div>
+
+    <div class="field">
+      <div>
+        <p class="label">Возраст (лет) *</p>
+        @if (getControl(0, 'age').errors && getControl(0, 'age').touched) {
+        @if (getControl(0, 'age').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(0, 'age').errors?.['min'] || getControl(0, 'age').errors?.['max']) {
+        <p class="error">Возраст должен быть от 0 до 30 лет</p>
+        }
+        }
+      </div>
+      <input formControlName="age" type="number" placeholder="Введите возраст">
+    </div>
+
+    <div class="field field-gender">
+      <div>
+        <p class="label">Пол *</p>
+        @if (getControl(0, 'gender').errors?.['required'] && getControl(0, 'gender').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <select formControlName="gender">
+        @for (option of genderOptions; track $index) {
+        <option [value]="getItem('gender', $index)">{{option.text}}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Фото аватар -->
+    <div class="field field-photo">
+      <div>
+        <p class="label">📸 Фото питомца (аватар)</p>
+        <p class="hint">Загрузите фотографию для паспорта</p>
+      </div>
+      <div class="photo-upload-area">
+        <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden #photoInput>
+        <button type="button" class="btn-upload" (click)="photoInput.click()">
+          <span class="icon"></span> Выбрать фото
+        </button>
+        <p class="hint">Поддерживаются: JPG, PNG. Максимум 5 МБ</p>
+      </div>
+
+      @if (avatarFile?.url) {
+      <div class="photo-preview-grid">
+        <div class="photo-item">
+          <img [src]="avatarFile?.url" alt="Фото питомца">
+          <button type="button" class="btn-remove" (click)="removePhoto()"></button>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+
+  <!-- ШАГ 2: Чипирование -->
+  <div class="step-wrapper" [hidden]="active !== 1" formGroupName="1">
+    <div class="step-header">
+      <img src="assets/svg/icons/fingerprint.svg" alt="" class="step-icon" width="32" height="32">
+      <h2 class="step-title">Чипирование</h2>
+    </div>
+
+    <div class="field">
+      <div>
+        <p class="label">Номер чипа *</p>
+        @if (getControl(1, 'chipNumber').errors && getControl(1, 'chipNumber').touched) {
+        @if (getControl(1, 'chipNumber').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        @if (getControl(1, 'chipNumber').errors?.['pattern']) {
+        <p class="error">Номер чипа должен содержать ровно 15 цифр</p>
+        }
+        }
+      </div>
+      <input formControlName="chipNumber" placeholder="Например: 123456789012345" maxlength="15">
+      <p class="hint">Номер чипа состоит из 15 цифр</p>
+    </div>
+
+    <div class="field">
+      <div>
+        <p class="label">Дата чипирования</p>
+        @if (getControl(1, 'chipDate').errors?.['required'] && getControl(1, 'chipDate').touched) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+      </div>
+      <input formControlName="chipDate" type="date">
+    </div>
+
+    <div class="field">
+      <div>
+        <p class="label">Клиника чипирования</p>
+      </div>
+      <input formControlName="chipClinic" placeholder="Название ветеринарной клиники">
+    </div>
+
+    <div class="info-box">
+      <h4>ℹ️ О чипировании</h4>
+      <ul>
+        <li>Чип содержит уникальный 15-значный номер</li>
+        <li>Помогает идентифицировать питомца при потере</li>
+        <li>Данные хранятся в международной базе</li>
+        <li>Процедура безопасна и безболезненна</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- ШАГ 3: Вакцинации -->
+  <div class="step-wrapper" [hidden]="active !== 2" formGroupName="2">
+    <div class="step-header">
+      <img src="assets/svg/icons/vaccines.svg" alt="" class="step-icon" width="32" height="32">
+      <h2 class="step-title">Вакцинации</h2>
+    </div>
+
+    <!-- Список добавленных вакцинаций -->
+    @if (vaccinations.length > 0) {
+    <div class="vaccination-list">
+      @for (vaccination of vaccinations; track $index) {
+      <div class="vaccination-item">
+        <div class="field">
+          <p class="label">Название вакцины</p>
+          <p class="value">{{vaccination.name}}</p>
+        </div>
+        <div class="field">
+          <p class="label">Дата вакцинации</p>
+          <p class="value">{{vaccination.date | date:'dd.MM.yyyy'}}</p>
+        </div>
+        <div class="field">
+          <p class="label">Следующая вакцинация</p>
+          <p class="value">{{vaccination.nextDate | date:'dd.MM.yyyy'}}</p>
+        </div>
+        <div class="field">
+          <p class="label">Ветеринар</p>
+          <p class="value">{{vaccination.veterinarian}}</p>
+        </div>
+        <button type="button" class="btn-remove" (click)="removeVaccination($index)">✕ Удалить</button>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Форма добавления новой вакцинации -->
+    @if (showVaccinationForm) {
+    <div class="vaccination-form" [formGroup]="vaccinationForm">
+      <h3 class="form-subtitle">Добавить вакцинацию</h3>
+
+      <div class="field">
+        <div>
+          <p class="label">Название вакцины *</p>
+          @if (getVaccinationControl('name').errors?.['required'] && getVaccinationControl('name').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="name" placeholder="Например, Нобивак Rabies">
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Дата вакцинации *</p>
+          @if (getVaccinationControl('date').errors?.['required'] && getVaccinationControl('date').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="date" type="date">
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Следующая вакцинация *</p>
+          @if (getVaccinationControl('nextDate').errors?.['required'] && getVaccinationControl('nextDate').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="nextDate" type="date">
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Ветеринар *</p>
+          @if (getVaccinationControl('veterinarian').errors?.['required'] && getVaccinationControl('veterinarian').touched) {
+          <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="veterinarian" placeholder="ФИО ветеринара">
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelVaccinationForm()">Отмена</button>
+        <button type="button" class="btn btn-success" (click)="saveVaccination()">Сохранить</button>
+      </div>
+    </div>
+    } @else {
+    <button type="button" class="btn-add" (click)="showAddVaccinationForm()">
+      + Добавить вакцинацию
+    </button>
+    }
+
+    <div class="info-box">
+      <h4>📅 График обязательных прививок</h4>
+      <ul>
+        <li><strong>Комплексная вакцинация</strong> - ежегодно</li>
+        <li><strong>Бешенство</strong> - ежегодно (обязательно)</li>
+        <li><strong>Обработка от паразитов</strong> - каждые 3 месяца</li>
+      </ul>
+    </div>
+
+    <!-- Напоминание -->
+    <div class="reminders-section">
+      <h3>🔔 Напоминания</h3>
+      @for (reminder of reminders; track $index) {
+      <div class="reminder-item" [class.sent]="reminder.isSent">
+        <div class="reminder-type">{{reminder.type === 'vaccination' ? '💉 Вакцинация' : '🦠 Обработка от паразитов'}}</div>
+        <div class="reminder-title">{{reminder.title}}</div>
+        <div class="reminder-date">{{reminder.date | date:'dd.MM.yyyy'}}</div>
+        @if (reminder.isSent) {
+        <span class="badge-sent">Отправлено</span>
+        }
+      </div>
+      }
+    </div>
+  </div>
+
+
+  <!-- ШАГ 4: Проверка и QR-код -->
+  @if (active === 3) {
+  <div class="step-wrapper">
+    <div class="step-header">
+      <img src="assets/svg/icons/qr_code_scanner.svg" alt="" class="step-icon" width="32" height="32">
+      <h2 class="step-title">Проверка данных</h2>
+    </div>
+
+    <app-check-info [data]="getResult"></app-check-info>
+
+    <!-- Список вакцинаций для проверки -->
+    @if (vaccinations.length > 0) {
+    <div class="vaccinations-review">
+      <h3>📋 История вакцинаций</h3>
+      <table class="vaccinations-table">
+        <thead>
+        <tr>
+          <th>Вакцина</th>
+          <th>Дата</th>
+          <th>Следующая</th>
+          <th>Ветеринар</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for (v of vaccinations; track $index) {
+        <tr>
+          <td>{{v.name}}</td>
+          <td>{{v.date | date:'dd.MM.yyyy'}}</td>
+          <td>{{v.nextDate | date:'dd.MM.yyyy'}}</td>
+          <td>{{v.veterinarian}}</td>
+        </tr>
+        }
+        </tbody>
+      </table>
+    </div>
+    }
+
+    <!-- QR-КОД -->
+    <div class="qr-section">
+      <h3>📱 QR-код паспорта</h3>
+      @if (qrCodeUrl) {
+      <div class="qr-code-container">
+        <img [src]="qrCodeUrl" alt="QR-код паспорта">
+        <p class="hint">Отсканируйте для быстрого доступа к паспорту</p>
+      </div>
+      } @else {
+      <button type="button" class="btn-generate-qr" (click)="generateQR()">
+        Сгенерировать QR-код
+      </button>
+      }
+    </div>
+
+    <div class="info-box">
+      <h4>📋 Что включено в паспорт:</h4>
+      <ul>
+        <li>Основная информация о питомце</li>
+        <li>Данные о чипировании</li>
+        <li>История вакцинаций</li>
+        <li>График прививок и напоминания</li>
+        <li>Уникальный QR-код для быстрого доступа</li>
+        <li>Все данные сохранены в базе портала</li>
+      </ul>
+    </div>
+  </div>
+  }
+</div>
+}
