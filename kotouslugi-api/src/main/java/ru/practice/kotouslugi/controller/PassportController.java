@@ -31,25 +31,31 @@ public class PassportController extends BaseController{
     return ResponseEntity.status(HttpStatus.CREATED).body(res);
   }
 
-  @PostMapping(value = "/approve", produces = "application/json")
+  @PutMapping(value = "/approve", produces = "application/json")
   @Operation(summary = "Подтвердить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
     @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "404", description = "Не найдено"),
+    @ApiResponse(responseCode = "400", description = "Неверный формат"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<PassportDTO> approvePassport(@RequestBody DecisionPassportDTO decisionPassportDTO){
     PassportDTO decisionPassport = catPassportService.approvePassport(decisionPassportDTO);
     return ResponseEntity.status(200).body(decisionPassport);
   }
-  @PostMapping(value = "/reject", produces = "application/json")
+  @PutMapping(value = "/reject", produces = "application/json")
   @Operation(summary = "Отклонить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
     @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "404", description = "Не найдено"),
+    @ApiResponse(responseCode = "400", description = "Неверный формат"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<PassportDTO> rejectPassport(@RequestBody DecisionPassportDTO decisionPassportDTO){
     return wrapper((p) -> catPassportService.rejectPassport(decisionPassportDTO));
   }
 
-  @PostMapping(value = "/getAll", produces = "application/json")
+  @GetMapping(value = "/getAll", produces = "application/json")
   @Operation(summary = "Получить все паспорта", tags = {"Кошачье АПИ"}, responses = {
     @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "404", description = "Не найдено"),
+    @ApiResponse(responseCode = "400", description = "Неверный формат"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<List<PassportDTO>> getAllPassports(){
       List<PassportDTO> list = catPassportService.getPassports();
