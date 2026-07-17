@@ -66,6 +66,20 @@ export class OrdersComponent implements OnInit {
     }
   }
 
+  /**
+   * Возвращает ID заявки в человеческом виде
+   * @param id
+   */
+  public getOrderId(id: number | string | undefined): string {
+    if (id === undefined || id === null) {
+      return 'Неизвестно';
+    }
+    const strId = String(id);
+    if (strId.length > 8) {
+      return '...' + strId.slice(-8);
+    }
+    return strId;
+  }
   public getDate(date: string): string {
     return new Date(date).toLocaleDateString('ru-RU', {
       year: 'numeric',

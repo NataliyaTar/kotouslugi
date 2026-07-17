@@ -1,5 +1,3 @@
-// Файл не трогаем
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DrivingLicenseComponent } from './driving-license.component';
 

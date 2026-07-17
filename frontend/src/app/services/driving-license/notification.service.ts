@@ -28,8 +28,11 @@ export class DrivingNotificationService {
   }
 
   notifyStatusChange(application: IDrivingApplication): void {
+    const idStr = application.id ? String(application.id) : 'Неизвестно';
+    const shortId = idStr.length > 8 ? '...' + idStr.slice(-8) : idStr;
+
     this.addNotification(
-      `Изменение статуса заявки ${application.id?.slice(0, 8)}: ${application.status} (Кот: ${application.catName})`
+      `Изменение статуса заявки ${shortId}: ${application.status} (Кот: ${application.catName})`
     );
   }
 }
