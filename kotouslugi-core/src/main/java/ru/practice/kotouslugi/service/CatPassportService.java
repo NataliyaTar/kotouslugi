@@ -67,48 +67,6 @@ public class CatPassportService {
     }
   }
 
-  public PassportDTO approvePassport(DecisionPassportDTO decisionPassportDTO){
-    Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequestionId())
-      .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id "));
 
-    if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
-      req.setStatus(RequisitionStatus.DONE);
-
-
-      PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
-        .orElseThrow(() -> new EntityNotFoundException("Not found passportDetail with id " + req.getPassportDetail().getId()));
-
-      PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
-
-      req.setDecisionAt(new Date(System.currentTimeMillis()));
-      requisitionRepository.save(req);
-      return passportDTO;
-
-    }else {
-      throw new InvalidOperationException("Invalid order mnemonic or status");
-    }
-  }
-
-  public PassportDTO rejectPassport(DecisionPassportDTO decisionPassportDTO){
-    Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequestionId())
-      .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id "));
-
-    if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
-      req.setStatus(RequisitionStatus.REJECTED);
-
-
-      PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
-        .orElseThrow(() -> new EntityNotFoundException("Not found passportDetail with id " + req.getPassportDetail().getId()));
-
-      PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
-
-      req.setDecisionAt(new Date(System.currentTimeMillis()));
-      requisitionRepository.save(req);
-      return passportDTO;
-
-    }else {
-      throw new InvalidOperationException("Invalid order mnemonic or status");
-    }
-  }
 
 }

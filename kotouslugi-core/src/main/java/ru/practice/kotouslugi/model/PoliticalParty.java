@@ -29,7 +29,7 @@ public class PoliticalParty {
   @Column(name = "description", nullable = false, columnDefinition = "TEXT") // Обязательное по ТЗ
   private String description;
 
-  @Column(name = "logo_url", length = 255) // Опциональное по ТЗ
+  @Column(name = "logo_url", length = 255, columnDefinition = "TEXT") // Опциональное по ТЗ
   private String logoUrl;
 
   @Column(name = "candidate_cat_id") // Опциональное по ТЗ
