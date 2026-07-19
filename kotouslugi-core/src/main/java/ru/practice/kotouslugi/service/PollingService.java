@@ -17,7 +17,7 @@ import java.util.List;
 public class PollingService {
 
   private final RequisitionRepository requisitionRepository;
-  private final CatPassportService catPassportService;
+  private final DecisionPassportService decisionPassportService;
 
   @Scheduled(fixedDelay = 120_000)
   public void approveReq2min(){
@@ -26,7 +26,7 @@ public class PollingService {
     if (!requisitionList.isEmpty()){
       for (Requisition req : requisitionList){
         DecisionPassportDTO decisionPassportDTO = new DecisionPassportDTO(req.getId());
-        catPassportService.approvePassport(decisionPassportDTO);
+        decisionPassportService.approvePassport(decisionPassportDTO);
       }
     }
   }

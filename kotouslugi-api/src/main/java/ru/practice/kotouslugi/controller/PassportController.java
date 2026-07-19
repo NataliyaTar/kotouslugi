@@ -2,6 +2,7 @@ package ru.practice.kotouslugi.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import ru.practice.kotouslugi.exception.DuplicateEntityException;
 import ru.practice.kotouslugi.model.DecisionPassportDTO;
 import ru.practice.kotouslugi.model.PassportDTO;
 import ru.practice.kotouslugi.service.CatPassportService;
+import ru.practice.kotouslugi.service.DecisionPassportService;
 
 import java.util.List;
 
@@ -19,6 +21,9 @@ import java.util.List;
 public class PassportController extends BaseController{
   @Autowired
   private CatPassportService catPassportService;
+
+  @Autowired
+  private DecisionPassportService decisionPassportService;
 
   @PostMapping(value = "/add", produces = "application/json")
   @Operation(summary = "Добавить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
@@ -38,7 +43,7 @@ public class PassportController extends BaseController{
     @ApiResponse(responseCode = "400", description = "Неверный формат"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<PassportDTO> approvePassport(@RequestBody DecisionPassportDTO decisionPassportDTO){
-    PassportDTO decisionPassport = catPassportService.approvePassport(decisionPassportDTO);
+    PassportDTO decisionPassport = decisionPassportService.approvePassport(decisionPassportDTO);
     return ResponseEntity.status(200).body(decisionPassport);
   }
   @PutMapping(value = "/reject", produces = "application/json")
@@ -48,7 +53,7 @@ public class PassportController extends BaseController{
     @ApiResponse(responseCode = "400", description = "Неверный формат"),
     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")})
   public ResponseEntity<PassportDTO> rejectPassport(@RequestBody DecisionPassportDTO decisionPassportDTO){
-    return wrapper((p) -> catPassportService.rejectPassport(decisionPassportDTO));
+    return wrapper((p) -> decisionPassportService.rejectPassport(decisionPassportDTO));
   }
 
   @GetMapping(value = "/getAll", produces = "application/json")

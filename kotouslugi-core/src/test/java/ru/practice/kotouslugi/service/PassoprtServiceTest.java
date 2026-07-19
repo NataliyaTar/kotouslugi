@@ -36,6 +36,8 @@ public class PassoprtServiceTest {
   @Mock
   private CatPassportRepository catPassportRepository;
 
+  @Mock
+  private  DecisionPassportService decisionPassportService;
   @InjectMocks
   private CatPassportService passportService;
   //проверка если по всем условиям все норм
@@ -66,7 +68,7 @@ public class PassoprtServiceTest {
     DecisionPassportDTO decisionDTO = new DecisionPassportDTO();
     decisionDTO.setRequestionId(requisitionId);
 
-    PassportDTO result = passportService.approvePassport(decisionDTO);
+    PassportDTO result = decisionPassportService.approvePassport(decisionDTO);
 
     assertThat(result).isNotNull();
     assertThat(req.getStatus()).isEqualTo(RequisitionStatus.DONE);
@@ -81,7 +83,7 @@ public class PassoprtServiceTest {
 
     when(requisitionRepository.findById(requisitionId)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> passportService.approvePassport(decisionDTO))
+    assertThatThrownBy(() -> decisionPassportService.approvePassport(decisionDTO))
       .isInstanceOf(EntityNotFoundException.class)
       .hasMessageContaining("Requisition not found with id");
   }
@@ -113,7 +115,7 @@ public class PassoprtServiceTest {
     DecisionPassportDTO decisionDTO = new DecisionPassportDTO();
     decisionDTO.setRequestionId(requisitionId);
 
-    assertThatThrownBy(() -> passportService.approvePassport(decisionDTO))
+    assertThatThrownBy(() -> decisionPassportService.approvePassport(decisionDTO))
       .isInstanceOf(InvalidOperationException.class)
       .hasMessageContaining("Invalid order mnemonic or status");
 
@@ -140,7 +142,7 @@ public class PassoprtServiceTest {
     DecisionPassportDTO decisionDTO = new DecisionPassportDTO();
     decisionDTO.setRequestionId(requisitionId);
 
-    assertThatThrownBy(() -> passportService.approvePassport(decisionDTO))
+    assertThatThrownBy(() -> decisionPassportService.approvePassport(decisionDTO))
       .isInstanceOf(InvalidOperationException.class)
       .hasMessageContaining("Invalid order mnemonic or status");
 
@@ -173,7 +175,7 @@ public class PassoprtServiceTest {
     DecisionPassportDTO decisionDTO = new DecisionPassportDTO();
     decisionDTO.setRequestionId(requisitionId);
 
-    PassportDTO result = passportService.rejectPassport(decisionDTO);
+    PassportDTO result = decisionPassportService.rejectPassport(decisionDTO);
 
     assertThat(result).isNotNull();
     assertThat(req.getStatus()).isEqualTo(RequisitionStatus.REJECTED);
@@ -189,7 +191,7 @@ public class PassoprtServiceTest {
 
     when(requisitionRepository.findById(requisitionId)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> passportService.rejectPassport(decisionDTO))
+    assertThatThrownBy(() -> decisionPassportService.rejectPassport(decisionDTO))
       .isInstanceOf(EntityNotFoundException.class)
       .hasMessageContaining("Requisition not found with id");
   }
@@ -220,7 +222,7 @@ public class PassoprtServiceTest {
     DecisionPassportDTO decisionDTO = new DecisionPassportDTO();
     decisionDTO.setRequestionId(requisitionId);
 
-    assertThatThrownBy(() -> passportService.rejectPassport(decisionDTO))
+    assertThatThrownBy(() -> decisionPassportService.rejectPassport(decisionDTO))
       .isInstanceOf(InvalidOperationException.class)
       .hasMessageContaining("Invalid order mnemonic or status");
 
@@ -245,7 +247,7 @@ public class PassoprtServiceTest {
     DecisionPassportDTO decisionDTO = new DecisionPassportDTO();
     decisionDTO.setRequestionId(requisitionId);
 
-    assertThatThrownBy(() -> passportService.rejectPassport(decisionDTO))
+    assertThatThrownBy(() -> decisionPassportService.rejectPassport(decisionDTO))
       .isInstanceOf(InvalidOperationException.class)
       .hasMessageContaining("Invalid order mnemonic or status");
 
