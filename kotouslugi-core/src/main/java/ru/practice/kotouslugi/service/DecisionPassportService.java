@@ -24,15 +24,16 @@ public class DecisionPassportService {
 
     if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
       req.setStatus(RequisitionStatus.DONE);
+      req.setDecisionAt(new Date(System.currentTimeMillis()));
+      requisitionRepository.save(req);
 
 
-      PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
-        .orElseThrow(() -> new EntityNotFoundException("Not found passportDetail with id " + req.getPassportDetail().getId()));
+      PassportDetail passportDetail = req.getPassportDetail();
+      passportDetail.setRequisition(req);
 
       PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
 
-      req.setDecisionAt(new Date(System.currentTimeMillis()));
-      requisitionRepository.save(req);
+      catPassportRepository.save(passportDetail);
       return passportDTO;
 
     }else {
@@ -49,15 +50,14 @@ public class DecisionPassportService {
 
     if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
       req.setStatus(RequisitionStatus.REJECTED);
-
-
-      PassportDetail passportDetail = catPassportRepository.findById(req.getPassportDetail().getId())
-        .orElseThrow(() -> new EntityNotFoundException("Not found passportDetail with id " + req.getPassportDetail().getId()));
-
-      PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
-
       req.setDecisionAt(new Date(System.currentTimeMillis()));
       requisitionRepository.save(req);
+
+      PassportDetail passportDetail = req.getPassportDetail();
+
+      PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
+      passportDetail.setRequisition(req);
+
       return passportDTO;
 
     }else {

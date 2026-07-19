@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.RequisitionRepository;
 import ru.practice.kotouslugi.model.DecisionPassportDTO;
 import ru.practice.kotouslugi.model.Requisition;
+import ru.practice.kotouslugi.model.enums.RequisitionStatus;
 
 import java.util.List;
 
@@ -25,8 +26,11 @@ public class PollingService {
 
     if (!requisitionList.isEmpty()){
       for (Requisition req : requisitionList){
-        DecisionPassportDTO decisionPassportDTO = new DecisionPassportDTO(req.getId());
-        decisionPassportService.approvePassport(decisionPassportDTO);
+        if (req.getStatus() == RequisitionStatus.FILED){
+          DecisionPassportDTO decisionPassportDTO = new DecisionPassportDTO(req.getId());
+          decisionPassportService.approvePassport(decisionPassportDTO);
+        }
+
       }
     }
   }
