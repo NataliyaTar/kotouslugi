@@ -67,3 +67,12 @@ INSERT INTO service_category
 values (1, 1);
 INSERT INTO service_category
 values (2, 2);
+
+
+-- добавление новых строк
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'driving-license',
+        'driving_cat.png',
+        'Водительские права',
+        'Устали ходить пешком или ждать пустой автобус? Получите права и передвигайтесь с удовольствием');
