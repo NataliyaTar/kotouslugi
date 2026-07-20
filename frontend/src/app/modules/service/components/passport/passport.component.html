@@ -29,12 +29,15 @@
             @if (getControl(1, 'ownerPhone').errors?.['required']) {
               <p class="error">Поле обязательно для заполнения</p>
             }
+            @if (getControl(1, 'ownerPhone').errors?.['maxlength']) {
+              <p class="error">Не больше 20 символов</p>
+            }
             @if (getControl(1, 'ownerPhone').errors?.['pattern']) {
-              <p class="error">Введите 11 цифр</p>
+              <p class="error">Введите корректный номер телефона</p>
             }
           }
         </div>
-        <input formControlName="ownerPhone" placeholder="12345678901">
+        <input formControlName="ownerPhone" type="tel" placeholder="+7 900 123-45-67">
       </div>
       <div class="field">
         <div>
@@ -62,11 +65,17 @@
               <p class="error">Поле обязательно для заполнения</p>
             }
             @if (getControl(2, 'passportNumber').errors?.['pattern']) {
-              <p class="error">Введите значение в виде «0000 000000»</p>
+              <p class="error">Введите 10 цифр</p>
             }
           }
         </div>
-        <input formControlName="passportNumber" placeholder="0000 000000">
+        <input
+          formControlName="passportNumber"
+          placeholder="0000 000000"
+          inputmode="numeric"
+          maxlength="11"
+          (input)="onPassportNumberInput($event)"
+        >
       </div>
       <div class="field">
         <div>
@@ -90,18 +99,18 @@
       </div>
       <div class="field">
         <div>
-          <p class="label">Особые отметки</p>
-        </div>
-        <textarea formControlName="specialMarks" placeholder="Необязательно"></textarea>
-      </div>
-      <div class="field">
-        <div>
           <p class="label">Ссылка на фото</p>
           @if (getControl(2, 'photoUrl').errors?.['required'] && getControl(2, 'photoUrl').touched) {
             <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
         <input formControlName="photoUrl" placeholder="https://...">
+      </div>
+      <div class="field field--full">
+        <div>
+          <p class="label">Особые отметки</p>
+        </div>
+        <textarea formControlName="specialMarks" placeholder="Необязательно"></textarea>
       </div>
     </div>
 

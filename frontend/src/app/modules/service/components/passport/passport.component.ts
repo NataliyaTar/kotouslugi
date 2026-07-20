@@ -94,7 +94,7 @@ export class PassportComponent implements OnInit, OnDestroy {
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
       }),
       1: this.fb.group({
-        ownerPhone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        ownerPhone: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[+\d][\d\s\-()]*$/)]],
         ownerEmail: ['', [Validators.required, Validators.email]],
       }),
       2: this.fb.group({
@@ -126,5 +126,16 @@ export class PassportComponent implements OnInit, OnDestroy {
 
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
+  }
+
+  public onPassportNumberInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 10);
+    const formatted = digits.length > 4
+      ? `${digits.slice(0, 4)} ${digits.slice(4)}`
+      : digits;
+
+    this.getControl(2, 'passportNumber').setValue(formatted, { emitEvent: false });
+    input.value = formatted;
   }
 }
