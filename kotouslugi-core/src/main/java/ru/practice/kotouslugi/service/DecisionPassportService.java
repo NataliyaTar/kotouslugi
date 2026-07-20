@@ -19,7 +19,7 @@ public class DecisionPassportService {
 
 
   public PassportDTO approvePassport(DecisionPassportDTO decisionPassportDTO){
-    Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequestionId())
+    Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequisitionId())
       .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id "));
 
     if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
@@ -30,11 +30,10 @@ public class DecisionPassportService {
 
       PassportDetail passportDetail = req.getPassportDetail();
       passportDetail.setRequisition(req);
-
-      PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
+      passportDetail.setStatus(true);
 
       catPassportRepository.save(passportDetail);
-      return passportDTO;
+      return BuildPassportDTO.buildPassportDTO(passportDetail);
 
     }else {
       throw new InvalidOperationException("Invalid order mnemonic or status");
@@ -45,8 +44,8 @@ public class DecisionPassportService {
   public PassportDTO rejectPassport(DecisionPassportDTO decisionPassportDTO){
 
 
-    Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequestionId())
-      .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id "));
+    Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequisitionId())
+      .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id"));
 
     if ("passport".equals(req.getMnemonic()) && req.getStatus() == RequisitionStatus.FILED){
       req.setStatus(RequisitionStatus.REJECTED);
@@ -54,11 +53,11 @@ public class DecisionPassportService {
       requisitionRepository.save(req);
 
       PassportDetail passportDetail = req.getPassportDetail();
-
-      PassportDTO passportDTO = BuildPassportDTO.buildPassportDTO(passportDetail);
+      passportDetail.setStatus(false);
       passportDetail.setRequisition(req);
 
-      return passportDTO;
+      return BuildPassportDTO.buildPassportDTO(passportDetail);
+
 
     }else {
       throw new InvalidOperationException("Invalid order mnemonic or status");

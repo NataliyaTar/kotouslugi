@@ -22,21 +22,24 @@ import java.util.*;
 @Service
 public class CatPassportService {
 
+
+
   private final CatPassportRepository catPassportRepository;
 
   private final RequisitionRepository requisitionRepository;
 
   public List<PassportDTO> getPassports(){
-    Iterable<Requisition> requisitionsList = requisitionRepository.findAll();
-    ArrayList<PassportDTO> passportDTOList = new ArrayList<>();
-    requisitionsList.forEach(
-      requisition -> {
-        if (RequisitionStatus.DONE.equals(requisition.getStatus())){
-          passportDTOList.add(BuildPassportDTO.buildPassportDTO(requisition.getPassportDetail()));
-        }
-      });
-    return passportDTOList;
+    Iterable<PassportDetail> passportS = catPassportRepository.findAll();
+    List<PassportDTO> passportDTOS = new ArrayList<>();
+    passportS.forEach(passportDetail -> {
+      if (passportDetail.isStatus()){
+        passportDTOS.add(BuildPassportDTO.buildPassportDTO(passportDetail));}
+      }
+      );
+    return passportDTOS;
+
   }
+
 
   public PassportDTO addCatPassport(PassportDTO passportDTO) {
     if (catPassportRepository.existsByPassportNumber(passportDTO.getPassportNumber())){

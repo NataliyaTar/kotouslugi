@@ -19,4 +19,5 @@ public class PassportDTO {
   private String photoUrl;
   private String specialMarks;
   private String chipNumber;
+  private boolean status;
 }

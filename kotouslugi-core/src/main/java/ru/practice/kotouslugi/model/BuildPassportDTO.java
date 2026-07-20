@@ -13,6 +13,8 @@ public class BuildPassportDTO {
       .photoUrl(passportDetail.getPhotoUrl())
       .specialMarks(passportDetail.getSpecialMarks())
       .chipNumber(passportDetail.getChipNumber())
+      .status(passportDetail.isStatus())
       .build();
+
   }
 }

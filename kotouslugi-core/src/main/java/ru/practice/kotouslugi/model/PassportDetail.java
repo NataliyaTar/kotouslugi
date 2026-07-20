@@ -17,7 +17,8 @@ import java.time.LocalDate;
     @Index(name = "idx_pd_passport_num", columnList = "passportNumber", unique = true),
     @Index(name = "idx_pd_requisition", columnList = "requisition_id", unique = true),
     @Index(name = "idx_pd_owner_email", columnList = "ownerEmail"),
-    @Index(name = "idx_pd_issue_date", columnList = "issueDate")
+    @Index(name = "idx_pd_issue_date", columnList = "issueDate"),
+    @Index(name = "idx_pd_status", columnList = "status")
   }
 )
 public class PassportDetail {
@@ -52,6 +53,10 @@ public class PassportDetail {
   @Column(name = "specialMarks", columnDefinition = "TEXT")
   private String specialMarks;
 
+  @Column(name = "status", nullable = false)
+  private boolean status; //true - актуален
+
   @Column(name = "chipNumber", length = 50)
   private String chipNumber;
+
 }
