@@ -85,3 +85,11 @@ INSERT INTO license_category (id, code, name, min_age) VALUES (10, 'DE', 'Авт
 INSERT INTO driving_school (id, name, overall_rating, max_per_slot) VALUES (0, 'Автошкола №1', 0.0, 3);
 INSERT INTO driving_school (id, name, overall_rating, max_per_slot) VALUES (1, 'Автошкола №2', 0.0, 2);
 INSERT INTO driving_school (id, name, overall_rating, max_per_slot) VALUES (2, 'Автошкола №3', 0.0, 5);
+
+-- добавление новых строк
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'driving-license',
+        'driving_cat.png',
+        'Водительские права',
+        'Устали ходить пешком или ждать пустой автобус? Получите права и передвигайтесь с удовольствием');

@@ -2,51 +2,58 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router'; // ← ДОБАВЛЕН ActivatedRoute
-import { Subscription, take } from 'rxjs';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { Subscription, take, finalize, forkJoin } from 'rxjs';
+import { HttpClientModule } from '@angular/common/http';
 
-// ========================================
-// СЕРВИСЫ
-// ========================================
-
-import { DrivingApplicationService } from '@services/driving-license/application.service';
-import { DrivingNotificationService } from '@services/driving-license/notification.service';
 import { CatService } from '@services/cat/cat.service';
 import { ConstantsService } from '@services/constants/constants.service';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
-
-// ========================================
-// КОМПОНЕНТЫ
-// ========================================
+import { DrivingStatisticsService } from '@services/statistics/statistics.service';
+import { DrivingSchoolService, IDrivingSchool, ILicenseCategory } from '@services/driving-school/driving-school.service';
+import { ReviewService, IReviewResponse } from '@services/review/review.service';
+import { OrderService } from '@services/order/order.service';
 
 import { ThrobberComponent } from '@components/throbber/throbber.component';
-import { CheckInfoComponent } from '@components/check-info/check-info.component';
+import { StepsComponent } from '@components/steps/steps.component';
 
-// ========================================
-// МОДЕЛИ
-// ========================================
-
-import { IDrivingApplication, DrivingCategory, CATEGORY_LABELS } from '@models/driving-license.model';
 import { IStep } from '@models/step.model';
 import { IValueCat, ICat } from '@models/cat.model';
+import {
+  DrivingCategory,
+  ApplicationStatus,
+  IDrivingApplication,
+  STATUS_LABELS,
+  STATUS_COLORS
+} from '@models/driving-license.model';
 
-// ========================================
-// МАППИНГ ПОЛЕЙ ФОРМЫ ДЛЯ ПРЕДПРОСМОТРА
-// ========================================
-
-export enum FormMap {
-  cat = 'Кот',
-  catAge = 'Возраст',
-  catBreed = 'Порода',
-  catSex = 'Пол',
-  category = 'Категория прав',
-  examDate = 'Дата экзамена',
-  examTime = 'Время экзамена'
+interface IApplication {
+  id?: number;
+  catName: string;
+  catAge: number;
+  catBreed?: string;
+  catSex?: string;
+  category: string;
+  examDate: string;
+  examTime: string;
+  status: ApplicationStatus;
+  createdAt: string;
 }
 
-// ========================================
-// КОМПОНЕНТ
-// ========================================
+interface IFeedback {
+  id?: number;
+  schoolName: string;
+  rating: number;
+  comment: string;
+  createdAt?: string;
+  catId?: number;
+}
+
+interface ISchoolRating {
+  schoolName: string;
+  averageRating: number;
+  reviewsCount: number;
+}
 
 @Component({
   selector: 'app-driving-license',
@@ -56,27 +63,19 @@ export enum FormMap {
     ReactiveFormsModule,
     FormsModule,
     RouterModule,
+    HttpClientModule,
     ThrobberComponent,
-    CheckInfoComponent
+    StepsComponent
   ],
   templateUrl: './driving-license.component.html',
-  styleUrl: './driving-license.component.scss'
+  styleUrls: ['./driving-license.component.scss']
 })
 export class DrivingLicenseComponent implements OnInit, OnDestroy {
-
-  // ========================================
-  // ПУБЛИЧНЫЕ СВОЙСТВА
-  // ========================================
 
   public loading = true;
   public form!: UntypedFormGroup;
   public active: number = 0;
-  public hasCats = true;
-
-  public categories = Object.keys(CATEGORY_LABELS).map(key => ({
-    value: key as DrivingCategory,
-    label: CATEGORY_LABELS[key as DrivingCategory]
-  }));
+  public hasCats = false;
 
   public optionsCat: IValueCat[] = [];
   public minDate: string = new Date().toISOString().split('T')[0];
@@ -86,161 +85,775 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
     'female': 'Женский'
   };
 
-  public applications: IDrivingApplication[] = [];
-  public selectedApplication: IDrivingApplication | null = null;
-  public searchId = '';
-  public searchPerformed = false;
+  private breedMap: Record<string, string> = {
+    'siamese': 'Сиамская',
+    'british_shorthair': 'Британская короткошерстная',
+    'maine_coon': 'Мейн-кун',
+    'persian': 'Персидская',
+    'sphinx': 'Сфинкс',
+    'scottish_fold': 'Шотландская вислоухая',
+    'russian_blue': 'Русская голубая',
+    'munchkin': 'Манчкин'
+  };
 
-  public feedbackForm!: UntypedFormGroup;
-  public feedbackSubmitted = false;
-
-  public statistics: any[] = [];
-  public topSchools: any[] = [];
-  public categoryStats: any = { A: 0, B: 0, C: 0, D: 0 };
-
-  public showForm = false;
+  public showForm = true;
   public showStatus = false;
   public showFeedback = false;
   public showStatistics = false;
   public showConfirmation = false;
-  public submittedApplication: any;
 
-  // ========================================
-  // ПРИВАТНЫЕ СВОЙСТВА
-  // ========================================
+  public searchId = '';
+  public searchPerformed = false;
+  public selectedApplication: IApplication | null = null;
+  public applications: IApplication[] = [];
+
+  public feedbackForm: UntypedFormGroup;
+  public feedbackSubmitted = false;
+  public feedbacks: IFeedback[] = [];
+  public allFeedbacks: IFeedback[] = [];
+
+  public topSchools: ISchoolRating[] = [];
+  public categoryStats: { [key: string]: number } = { A: 0, B: 0, C: 0, D: 0 };
+
+  public submittedApplication: IApplication | null = null;
+  public isSubmitting = false;
+
+  public licenseCategories: ILicenseCategory[] = [];
+  public drivingSchools: IDrivingSchool[] = [];
+  public schoolOptions: { id: number; name: string }[] = [];
+
+  private readonly STORAGE_KEY = 'driving_license_data';
 
   private idService: string = '';
-  private steps: IStep[] = [];
+  public steps: IStep[] = [];
   private subscriptions: Subscription[] = [];
 
-  // ========================================
-  // ГЕТТЕРЫ
-  // ========================================
+  public toastMessage: string | null = null;
+  public toastType: 'success' | 'error' = 'success';
+  public showToast = false;
+  private toastTimeout: any = null;
 
-  public get getResult() {
-    const rawValue = this.form.getRawValue();
-
-    if (rawValue[0]?.cat) {
-      try {
-        const catObj = JSON.parse(rawValue[0].cat);
-        rawValue[0].cat = catObj.text;
-        rawValue[0].catBreed = catObj.breed ? this.getBreedText(catObj.breed) : 'Не указана';
-        rawValue[0].catSex = catObj.sex ? this.sexMap[catObj.sex] || catObj.sex : 'Не указан';
-      } catch (e) {
-        rawValue[0].catBreed = 'Не указана';
-        rawValue[0].catSex = 'Не указан';
-      }
-    }
-
-    return this.serviceInfo.prepareDataForPreview(rawValue, this.steps, FormMap);
-  }
-
-  // ========================================
-  // КОНСТРУКТОР
-  // ========================================
+  public ApplicationStatus = ApplicationStatus;
+  public STATUS_LABELS = STATUS_LABELS;
 
   constructor(
     private fb: FormBuilder,
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
-    private applicationService: DrivingApplicationService,
-    private notificationService: DrivingNotificationService,
     private catService: CatService,
     private constantService: ConstantsService,
-    private router: Router
-  ) {}
-
-  // ========================================
-  // ЖИЗНЕННЫЙ ЦИКЛ
-  // ========================================
-
-  ngOnInit(): void {
-    this.loadCats();
+    private router: Router,
+    private drivingSchoolService: DrivingSchoolService,
+    private reviewService: ReviewService,
+    private orderService: OrderService
+  ) {
     this.initFeedbackForm();
+  }
+
+  public ngOnInit(): void {
+    this.loadCats();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(item => item.unsubscribe());
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+    }
   }
 
-  // ========================================
-  // РАБОТА С ПОРОДАМИ
-  // ========================================
+  public submitForm(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const rawValue = this.form.getRawValue();
+
+    this.isSubmitting = true;
+
+    this.orderService.saveOrder(this.idService, rawValue).pipe(
+      finalize(() => {
+        this.isSubmitting = false;
+      })
+    ).subscribe({
+      next: (response: any) => {
+        this.showToastMessage('✅ Заявка успешно отправлена! Номер заявки: ' + (response?.id || 'сформирован'), 'success');
+
+        const catObj = JSON.parse(rawValue[0]?.cat || '{}');
+        const newApplication: IApplication = {
+          id: response?.id,
+          catName: catObj.text || 'Кот',
+          catAge: rawValue[0]?.catAge || 0,
+          catBreed: rawValue[0]?.catBreed || 'Не указана',
+          catSex: rawValue[0]?.catSex || 'Не указан',
+          category: rawValue[1]?.category || 'A',
+          examDate: rawValue[2]?.examDate || new Date().toISOString().split('T')[0],
+          examTime: rawValue[2]?.examTime || '10:00',
+          status: ApplicationStatus.SUBMITTED,
+          createdAt: new Date().toISOString()
+        };
+
+        this.applications.push(newApplication);
+        this.submittedApplication = newApplication;
+        this.showConfirmation = true;
+        this.saveToStorage();
+
+        this.updateCategoryStats();
+
+        setTimeout(() => {
+          this.showConfirmation = false;
+          this.submittedApplication = null;
+          this.form.reset();
+          this.active = 0;
+          this.serviceInfo.setActiveStep(this.idService, 0);
+        }, 5000);
+      },
+      error: (error: any) => {
+        let errorMessage = 'Произошла ошибка при отправке заявки. Попробуйте позже.';
+
+        if (error.error && typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        this.showToastMessage('❌ ' + errorMessage, 'error');
+      }
+    });
+  }
+
+  private showToastMessage(message: string, type: 'success' | 'error' = 'success'): void {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.showToast = true;
+
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+    }
+
+    this.toastTimeout = setTimeout(() => {
+      this.showToast = false;
+      this.toastMessage = null;
+    }, 5000);
+  }
+
+  public closeToast(): void {
+    this.showToast = false;
+    this.toastMessage = null;
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+      this.toastTimeout = null;
+    }
+  }
+
+  public isValidStep(): boolean {
+    return this.form?.get(this.active.toString())?.valid || false;
+  }
+
+  public next(): void {
+    if (this.active < this.steps.length - 1) {
+      if (this.isValidStep()) {
+        this.active++;
+        this.updateActiveStep();
+      } else {
+        this.form.get(this.active.toString())?.markAllAsTouched();
+      }
+    }
+  }
+
+  public prev(): void {
+    if (this.active > 0) {
+      this.active--;
+      this.updateActiveStep();
+    }
+  }
+
+  private updateActiveStep(): void {
+    this.serviceInfo.setActiveStep(this.idService, this.active);
+  }
+
+  public getControl(step: number, id: string): FormControl {
+    return this.form.get(`${step}.${id}`) as FormControl;
+  }
+
+  public getItem(type: 'cat' | 'doc', index: number): string {
+    if (type === 'cat' && this.optionsCat[index]) {
+      return JSON.stringify(this.optionsCat[index]);
+    }
+    return '';
+  }
+
+  public getCatName(): string {
+    try {
+      const rawValue = this.form.getRawValue();
+      const catObj = JSON.parse(rawValue[0]?.cat || '{}');
+      return catObj.text || 'Не указано';
+    } catch {
+      return 'Не указано';
+    }
+  }
+
+  public getCatAge(): string {
+    try {
+      const rawValue = this.form.getRawValue();
+      return rawValue[0]?.catAge || 'Не указано';
+    } catch {
+      return 'Не указано';
+    }
+  }
+
+  public getCatBreed(): string {
+    try {
+      const rawValue = this.form.getRawValue();
+      return rawValue[0]?.catBreed || 'Не указано';
+    } catch {
+      return 'Не указано';
+    }
+  }
+
+  public getCatSex(): string {
+    try {
+      const rawValue = this.form.getRawValue();
+      return rawValue[0]?.catSex || 'Не указано';
+    } catch {
+      return 'Не указано';
+    }
+  }
+
+  public getCategory(): string {
+    try {
+      const rawValue = this.form.getRawValue();
+      return rawValue[1]?.category || 'Не указано';
+    } catch {
+      return 'Не указано';
+    }
+  }
+
+  public getExamDate(): string {
+    try {
+      const rawValue = this.form.getRawValue();
+      const date = rawValue[2]?.examDate;
+      return date ? new Date(date).toLocaleDateString('ru-RU') : 'Не указано';
+    } catch {
+      return 'Не указано';
+    }
+  }
+
+  public getExamTime(): string {
+    try {
+      const rawValue = this.form.getRawValue();
+      return rawValue[2]?.examTime || 'Не указано';
+    } catch {
+      return 'Не указано';
+    }
+  }
+
+  public showSection(section: 'form' | 'status' | 'feedback' | 'statistics' | ''): void {
+    this.showForm = section === 'form' || section === '';
+    this.showStatus = section === 'status';
+    this.showFeedback = section === 'feedback';
+    this.showStatistics = section === 'statistics';
+    this.showConfirmation = false;
+    this.searchPerformed = false;
+
+    if (section === 'form') {
+      this.active = 0;
+      this.serviceInfo.setActiveStep(this.idService, 0);
+    }
+
+    if (section === 'statistics') {
+      this.loadAllReviews();
+    }
+  }
+
+  public searchApplication(): void {
+    this.searchPerformed = true;
+
+    if (!this.searchId.trim()) {
+      this.selectedApplication = null;
+      return;
+    }
+
+    const searchTerm = this.searchId.trim();
+    const numericId = parseInt(searchTerm, 10);
+
+    if (isNaN(numericId)) {
+      const lowerTerm = searchTerm.toLowerCase();
+      const found = this.applications.find(app =>
+        app.catName?.toLowerCase().includes(lowerTerm)
+      );
+      this.selectedApplication = found || null;
+      return;
+    }
+
+    this.orderService.getOrdersList().subscribe({
+      next: (orders: any[]) => {
+        const found = orders.find(order =>
+          order.id && String(order.id) === String(numericId) && order.mnemonic === 'driving-license'
+        );
+
+        if (found) {
+          const app = this.mapOrderToApplication(found);
+
+          this.selectedApplication = {
+            id: app.id,
+            catName: app.catName,
+            catAge: app.catAge,
+            catBreed: app.catBreed || 'Не указана',
+            catSex: app.catSex || 'Не указан',
+            category: app.category,
+            examDate: app.examDate.toISOString().split('T')[0],
+            examTime: app.examTime,
+            status: app.status,
+            createdAt: app.createdAt.toISOString()
+          };
+        } else {
+          this.selectedApplication = null;
+        }
+      },
+      error: () => {
+        this.selectedApplication = null;
+      }
+    });
+  }
+
+  private getBreedDisplay(breed: string): string {
+    if (!breed) return 'Не указана';
+    return this.breedMap[breed] || breed;
+  }
+
+  private getSexDisplay(sex: string): string {
+    if (!sex) return 'Не указан';
+    return this.sexMap[sex] || sex;
+  }
+
+  private mapOrderToApplication(order: any): IDrivingApplication {
+    let fieldsArray: any[] = [];
+    try {
+      let fieldsStr = order.fields;
+      if (typeof fieldsStr === 'string') {
+        let cleaned = fieldsStr;
+        if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+          cleaned = cleaned.slice(1, -1);
+        }
+        cleaned = cleaned.replace(/\\"/g, '"');
+        fieldsArray = JSON.parse(cleaned);
+      }
+    } catch {
+      try {
+        const parsed = JSON.parse(order.fields);
+        if (typeof parsed === 'string') {
+          fieldsArray = JSON.parse(parsed);
+        } else {
+          fieldsArray = parsed;
+        }
+      } catch {
+      }
+    }
+
+    let catName = 'Кот';
+    let catAge = 1;
+    let catBreed = 'Не указана';
+    let catSex = 'Не указан';
+    let category = 'A';
+    let examDate = new Date();
+    let examTime = '10:00';
+
+    fieldsArray.forEach((step: any) => {
+      if (step && typeof step === 'object') {
+        if (step.catName) {
+          catName = String(step.catName);
+        }
+
+        if (step.catAge) {
+          catAge = parseInt(String(step.catAge)) || 1;
+        }
+
+        if (step.catBreed) {
+          const rawBreed = String(step.catBreed);
+          catBreed = this.getBreedDisplay(rawBreed);
+        }
+
+        if (step.catSex) {
+          const rawSex = String(step.catSex);
+          catSex = this.getSexDisplay(rawSex);
+        }
+
+        if (step.category) {
+          category = String(step.category);
+        }
+
+        if (step.examDate) {
+          try {
+            examDate = new Date(String(step.examDate));
+          } catch {
+          }
+        }
+
+        if (step.examTime) {
+          examTime = String(step.examTime);
+        }
+      }
+    });
+
+    if (catName === 'Кот') {
+      for (const step of fieldsArray) {
+        if (step && typeof step === 'object') {
+          if (step.name) {
+            catName = String(step.name);
+            break;
+          }
+          if (step.text) {
+            catName = String(step.text);
+            break;
+          }
+        }
+      }
+    }
+
+    return {
+      id: order.id ? parseInt(String(order.id), 10) : undefined,
+      catName,
+      catAge,
+      catBreed,
+      catSex,
+      category: this.mapCategory(category),
+      examDate,
+      examTime,
+      status: this.mapOrderStatus(order.status || 'FILED'),
+      createdAt: new Date(order.created || Date.now()),
+      updatedAt: new Date(order.updated || Date.now())
+    };
+  }
+
+  private mapCategory(code: string): DrivingCategory {
+    if (!code) return DrivingCategory.A;
+    const upperCode = code.toUpperCase();
+    if (upperCode.includes('A')) return DrivingCategory.A;
+    if (upperCode.includes('B')) return DrivingCategory.B;
+    if (upperCode.includes('C')) return DrivingCategory.C;
+    if (upperCode.includes('D')) return DrivingCategory.D;
+    return DrivingCategory.A;
+  }
+
+  private mapOrderStatus(status: string): ApplicationStatus {
+    const map: Record<string, ApplicationStatus> = {
+      'FILED': ApplicationStatus.SUBMITTED,
+      'PENDING': ApplicationStatus.SUBMITTED,
+      'UNDER_CONSIDERATION': ApplicationStatus.VERIFICATION,
+      'ACCEPTED': ApplicationStatus.APPROVED,
+      'DONE': ApplicationStatus.COMPLETED,
+      'REJECTED': ApplicationStatus.REJECTED,
+      'SUBMITTED': ApplicationStatus.SUBMITTED,
+      'VERIFICATION': ApplicationStatus.VERIFICATION,
+      'APPROVED': ApplicationStatus.APPROVED,
+      'COMPLETED': ApplicationStatus.COMPLETED
+    };
+    return map[status] || ApplicationStatus.SUBMITTED;
+  }
+
+  public getStatusLabel(status: ApplicationStatus | string): string {
+    if (typeof status === 'string') {
+      const enumKey = Object.keys(ApplicationStatus).find(
+        key => ApplicationStatus[key as keyof typeof ApplicationStatus] === status
+      );
+      if (enumKey) {
+        return STATUS_LABELS[ApplicationStatus[enumKey as keyof typeof ApplicationStatus]];
+      }
+      return status;
+    }
+    return STATUS_LABELS[status] || status;
+  }
+
+  public getStatusColor(status: ApplicationStatus | string): string {
+    if (typeof status === 'string') {
+      const enumKey = Object.keys(ApplicationStatus).find(
+        key => ApplicationStatus[key as keyof typeof ApplicationStatus] === status
+      );
+      if (enumKey) {
+        return STATUS_COLORS[ApplicationStatus[enumKey as keyof typeof ApplicationStatus]];
+      }
+      return '#999';
+    }
+    return STATUS_COLORS[status] || '#999';
+  }
+
+  public submitFeedback(): void {
+    if (this.feedbackForm.invalid) {
+      this.feedbackForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+    const catId = this.getCurrentCatId();
+
+    const reviewData = {
+      catId: catId,
+      schoolName: this.feedbackForm.value.schoolName,
+      schoolRating: this.feedbackForm.value.rating,
+      comment: this.feedbackForm.value.comment
+    };
+
+    this.reviewService.createReview(reviewData).pipe(
+      finalize(() => {
+        this.isSubmitting = false;
+      })
+    ).subscribe({
+      next: (id: number) => {
+        const feedback: IFeedback = {
+          id: id,
+          schoolName: this.feedbackForm.value.schoolName,
+          rating: this.feedbackForm.value.rating,
+          comment: this.feedbackForm.value.comment,
+          createdAt: new Date().toISOString(),
+          catId: catId
+        };
+
+        this.feedbacks.push(feedback);
+        this.allFeedbacks.push(feedback);
+        this.feedbackSubmitted = true;
+
+        this.showToastMessage('✅ Отзыв успешно отправлен! Спасибо за ваш отзыв.', 'success');
+
+        this.calculateStatisticsFromReviews();
+
+        setTimeout(() => {
+          this.feedbackSubmitted = false;
+          this.feedbackForm.reset({ rating: 5 });
+          this.showSection('statistics');
+        }, 3000);
+      },
+      error: (error: any) => {
+        let errorMessage = 'Произошла ошибка при отправке отзыва. Попробуйте позже.';
+
+        if (error.error && typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        this.showToastMessage('❌ ' + errorMessage, 'error');
+      }
+    });
+  }
+
+  private loadAllReviews(): void {
+    this.reviewService.getReviews().subscribe({
+      next: (reviews: IReviewResponse[]) => {
+        this.allFeedbacks = reviews.map(review => ({
+          id: review.id,
+          schoolName: review.schoolName,
+          rating: review.schoolRating,
+          comment: review.comment,
+          catId: review.cat?.id,
+          createdAt: new Date().toISOString()
+        }));
+
+        this.calculateStatisticsFromReviews();
+      },
+      error: () => {
+      }
+    });
+  }
+
+  private calculateStatisticsFromReviews(): void {
+    const schoolMap = new Map<string, { sum: number; count: number }>();
+
+    this.allFeedbacks.forEach((feedback: IFeedback) => {
+      const existing = schoolMap.get(feedback.schoolName);
+      if (existing) {
+        existing.sum += feedback.rating;
+        existing.count += 1;
+      } else {
+        schoolMap.set(feedback.schoolName, { sum: feedback.rating, count: 1 });
+      }
+    });
+
+    this.topSchools = Array.from(schoolMap.entries())
+      .map(([schoolName, data]: [string, { sum: number; count: number }]) => ({
+        schoolName,
+        averageRating: Math.round((data.sum / data.count) * 10) / 10,
+        reviewsCount: data.count
+      }))
+      .sort((a: ISchoolRating, b: ISchoolRating) => b.averageRating - a.averageRating);
+
+    this.updateCategoryStats();
+  }
+
+  private updateCategoryStats(): void {
+    this.categoryStats = { A: 0, B: 0, C: 0, D: 0 };
+
+    this.applications
+      .filter((app: IApplication) =>
+        app.status === ApplicationStatus.APPROVED ||
+        app.status === ApplicationStatus.COMPLETED
+      )
+      .forEach((app: IApplication) => {
+        const category = app.category?.includes('A') ? 'A' :
+          app.category?.includes('B') ? 'B' :
+            app.category?.includes('C') ? 'C' : 'D';
+        if (this.categoryStats[category] !== undefined) {
+          this.categoryStats[category] = (this.categoryStats[category] || 0) + 1;
+        }
+      });
+  }
+
+  private getCurrentCatId(): number {
+    try {
+      const rawValue = this.form.getRawValue();
+      const catObj = JSON.parse(rawValue[0]?.cat || '{}');
+      return parseInt(catObj.id) || 1;
+    } catch {
+      return 1;
+    }
+  }
+
+  public navigateToAddCat(): void {
+    this.router.navigate(['/add-cat']).catch(() => {
+    });
+  }
+
+  private loadFromStorage(): void {
+    try {
+      const data = localStorage.getItem(this.STORAGE_KEY);
+      if (data) {
+        const parsed = JSON.parse(data);
+        this.applications = parsed.applications || [];
+        this.feedbacks = parsed.feedbacks || [];
+      } else {
+        this.applications = [];
+        this.feedbacks = [];
+      }
+    } catch {
+      this.applications = [];
+      this.feedbacks = [];
+    }
+  }
+
+  private saveToStorage(): void {
+    try {
+      const data = {
+        applications: this.applications,
+        feedbacks: this.feedbacks
+      };
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+    } catch {
+    }
+  }
 
   private getBreedText(breedId: string): string {
     if (!breedId) return 'Не указана';
-    const breed = this.constantService.breedOptions.find(b => b.id === breedId);
+    const breed = this.constantService.breedOptions?.find((b: any) => b.id === breedId);
     return breed ? breed.text : breedId;
   }
 
-  // ========================================
-  // ЗАГРУЗКА ДАННЫХ
-  // ========================================
-
   private loadCats(): void {
-    this.catService.getCatList().pipe(take(1)).subscribe((cats: ICat[]) => {
-      if (cats && cats.length > 0) {
-        this.optionsCat = cats.map(cat => ({
-          id: cat.id,
-          text: cat.name,
-          age: cat.age,
-          sex: cat.sex,
-          breed: cat.breed
-        }));
-        this.hasCats = true;
-      } else {
-        this.optionsCat = [];
+    this.catService.getCatList().pipe(take(1)).subscribe({
+      next: (cats: ICat[]) => {
+        if (cats && cats.length > 0) {
+          this.optionsCat = cats.map((cat: ICat) => ({
+            id: cat.id,
+            text: cat.name,
+            age: cat.age,
+            sex: cat.sex,
+            breed: cat.breed
+          }));
+          this.hasCats = true;
+        } else {
+          this.optionsCat = [];
+          this.hasCats = false;
+        }
+        this.prepareService();
+      },
+      error: () => {
         this.hasCats = false;
+        this.prepareService();
       }
-      this.prepareService();
-    }, (error: any) => { // ← ДОБАВЛЕН ТИП any
-      console.error('Ошибка при загрузке котов:', error);
-      this.hasCats = false;
-      this.prepareService();
     });
   }
 
   private prepareService(): void {
-    this.route.data.pipe(take(1)).subscribe((res: any) => { // ← ДОБАВЛЕН ТИП any
-      this.idService = res['idService'];
+    this.route.data.pipe(take(1)).subscribe((res: any) => {
+      this.idService = res['idService'] || 'driving-license';
 
-      this.serviceInfo.getSteps(this.idService).pipe(take(1)).subscribe((res: any) => { // ← ДОБАВЛЕН ТИП any
-        this.steps = res;
-        this.moveStepsAfterMenu();
+      forkJoin({
+        categories: this.drivingSchoolService.getCategories(),
+        schools: this.drivingSchoolService.getSchools()
+      }).subscribe({
+        next: (result) => {
+          this.licenseCategories = result.categories;
+          this.drivingSchools = result.schools;
+          this.schoolOptions = result.schools.map(school => ({
+            id: school.id,
+            name: school.name
+          }));
+        },
+        error: () => {
+          this.licenseCategories = [
+            { id: 0, code: 'A', name: 'Мотоциклы', minAge: 2 },
+            { id: 1, code: 'B', name: 'Легковые автомобили', minAge: 2 },
+            { id: 2, code: 'C', name: 'Грузовые автомобили', minAge: 3 },
+            { id: 3, code: 'D', name: 'Автобусы', minAge: 4 }
+          ];
+          this.drivingSchools = [];
+          this.schoolOptions = [];
+        }
+      });
+
+      this.serviceInfo.getSteps(this.idService).pipe(take(1)).subscribe({
+        next: (steps: IStep[]) => {
+          this.steps = steps;
+        },
+        error: () => {
+          this.steps = [
+            { title: 'Информация о котике', text: 'Заполните форму', icon: 'account.svg' },
+            { title: 'Категория водительских прав', text: 'Выберите необходимую категорию', icon: 'article.svg' },
+            { title: 'Дата экзамена', text: 'Дата и время экзамена', icon: 'calendar.svg' },
+            { title: 'Проверка формы', text: 'Проверьте заявку на корректность данных', icon: 'checklist.svg' }
+          ];
+        }
       });
 
       this.subscriptions.push(
-        this.serviceInfo.activeStep.subscribe((res: any) => { // ← ДОБАВЛЕН ТИП any
+        this.serviceInfo.activeStep.subscribe((res: any) => {
           this.active = res?.[this.idService] || 0;
         })
       );
 
+      this.loadApplications();
+      this.loadAllReviews();
+
       this.initForm();
-      this.loadData();
+      this.loadFromStorage();
       this.loading = false;
     });
   }
 
-  private loadData(): void {
-    this.applicationService.getApplications().subscribe((apps: IDrivingApplication[]) => {
-      this.applications = apps;
-    });
-
-    const stats = JSON.parse(localStorage.getItem('driving_statistics') || '[]');
-    this.statistics = stats;
-    this.topSchools = [...stats].sort((a: any, b: any) => b.averageRating - a.averageRating);
-
-    this.categoryStats = { A: 0, B: 0, C: 0, D: 0 };
-    stats.forEach((entry: any) => {
-      Object.keys(entry.categoryStats).forEach((cat: string) => {
-        this.categoryStats[cat] += entry.categoryStats[cat];
-      });
+  private loadApplications(): void {
+    this.orderService.getOrdersList().subscribe({
+      next: (orders: any[]) => {
+        const drivingOrders = orders.filter(order => order.mnemonic === 'driving-license');
+        this.applications = drivingOrders.map(order => {
+          const app = this.mapOrderToApplication(order);
+          return {
+            id: app.id,
+            catName: app.catName,
+            catAge: app.catAge,
+            catBreed: app.catBreed,
+            catSex: app.catSex || 'Не указан',
+            category: app.category,
+            examDate: app.examDate.toISOString().split('T')[0],
+            examTime: app.examTime,
+            status: app.status,
+            createdAt: app.createdAt.toISOString()
+          };
+        });
+        this.updateCategoryStats();
+      },
+      error: () => {
+      }
     });
   }
-
-  // ========================================
-  // ИНИЦИАЛИЗАЦИЯ ФОРМ
-  // ========================================
 
   private initForm(): void {
     this.form = this.fb.group({
@@ -249,18 +862,31 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
           this.hasCats && this.optionsCat.length > 0 ? JSON.stringify(this.optionsCat[0]) : '',
           [Validators.required]
         ],
-        catAge: [{ value: '', disabled: false }, [Validators.required, Validators.min(1), Validators.max(25)]],
+        catAge: [{
+          value: '',
+          disabled: false
+        }, [
+          Validators.required,
+          Validators.min(1),
+          Validators.max(50)
+        ]],
         catBreed: [{ value: '', disabled: false }],
         catSex: [{ value: '', disabled: false }]
       }),
       1: this.fb.group({
-        category: ['', Validators.required]
+        category: ['', [Validators.required, this.categoryAgeValidator.bind(this)]]
       }),
       2: this.fb.group({
-        examDate: ['', Validators.required],
+        examDate: ['', [Validators.required, this.dateValidator]],
         examTime: ['', Validators.required]
       })
     });
+
+    this.subscriptions.push(
+      this.form.get('0.catAge')?.valueChanges.subscribe(() => {
+        this.form.get('1.category')?.updateValueAndValidity();
+      }) as Subscription
+    );
 
     this.subscriptions.push(
       this.form.get('0.cat')?.valueChanges.subscribe((value: string) => {
@@ -282,15 +908,11 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
 
   private initFeedbackForm(): void {
     this.feedbackForm = this.fb.group({
-      schoolName: ['', Validators.required],
+      schoolName: ['', [Validators.required]],
       rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
-      comment: ['', Validators.required]
+      comment: ['', [Validators.required, Validators.minLength(10)]]
     });
   }
-
-  // ========================================
-  // ОБРАБОТКА ВЫБОРА КОТА
-  // ========================================
 
   private onCatSelect(value: string): void {
     if (!value) return;
@@ -317,167 +939,62 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
       } else {
         this.form.get('0.catSex')?.patchValue('Не указан', { emitEvent: false });
       }
-    } catch (e) {
-      console.error('Ошибка при парсинге кота:', e);
+
+      this.form.get('1.category')?.updateValueAndValidity();
+
+    } catch {
     }
   }
 
-  // ========================================
-  // РАБОТА С ФОРМОЙ
-  // ========================================
+  private dateValidator(control: FormControl): { [key: string]: boolean } | null {
+    const selectedDate = new Date(control.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  public getControl(step: number, id: string): FormControl {
-    return this.form.get(`${step}.${id}`) as FormControl;
-  }
-
-  public getItem(type: 'cat', index: number): string {
-    return JSON.stringify(this.optionsCat[index]);
-  }
-
-  public submitForm(): void {
-    if (!this.form.valid || !this.hasCats) return;
-
-    const rawValue = this.form.getRawValue();
-    const step0 = rawValue[0];
-    const step1 = rawValue[1];
-    const step2 = rawValue[2];
-
-    let catName = '';
-    let catBreed = '';
-    let catSex = '';
-
-    try {
-      const catObj = JSON.parse(step0.cat);
-      catName = catObj.text;
-      catBreed = catObj.breed ? this.getBreedText(catObj.breed) : 'Не указана';
-      catSex = catObj.sex || 'Не указан';
-    } catch (e) {
-      catName = 'Кот';
-      catBreed = 'Не указана';
-      catSex = 'Не указан';
+    if (selectedDate < today) {
+      return { minDate: true };
     }
 
-    const applicationData = {
-      catName: catName,
-      catAge: Number(step0.catAge),
-      catBreed: catBreed,
-      catSex: catSex,
-      category: step1.category as DrivingCategory,
-      examDate: new Date(step2.examDate),
-      examTime: step2.examTime
-    };
-
-    this.applicationService.createApplication(applicationData).subscribe((app: any) => {
-      this.submittedApplication = app;
-      this.showConfirmation = true;
-      this.notificationService.notifyConfirmation(app);
-      this.loadData();
-
-      setTimeout(() => {
-        this.showConfirmation = false;
-        this.form.reset();
-        this.serviceInfo.setActiveStep(this.idService, 0);
-        this.showForm = false;
-      }, 3000);
-    });
+    return null;
   }
 
-  // ========================================
-  // ПОИСК ЗАЯВКИ
-  // ========================================
+  private categoryAgeValidator(control: FormControl): { [key: string]: boolean } | null {
+    const categoryCode = control.value;
+    if (!categoryCode) return null;
 
-  public searchApplication(): void {
-    if (!this.searchId) return;
+    const rawValue = this.form?.getRawValue();
+    if (!rawValue) return null;
 
-    this.applicationService.getApplication(this.searchId).subscribe((app: IDrivingApplication | null) => {
-      this.selectedApplication = app || null;
-      this.searchPerformed = true;
-    });
-  }
+    const catAge = parseInt(rawValue[0]?.catAge) || 0;
 
-  // ========================================
-  // ОТЗЫВЫ
-  // ========================================
+    const selectedCategory = this.licenseCategories.find(cat => cat.code === categoryCode);
 
-  public submitFeedback(): void {
-    if (!this.feedbackForm.valid || !this.selectedApplication) return;
+    if (!selectedCategory) return null;
 
-    this.applicationService.addFeedback(
-      this.selectedApplication.id!,
-      this.feedbackForm.value
-    ).subscribe(() => {
-      this.feedbackSubmitted = true;
-      this.notificationService.addNotification(`Отзыв оставлен для школы ${this.feedbackForm.value.schoolName}`);
-      this.loadData();
-
-      setTimeout(() => {
-        this.feedbackSubmitted = false;
-        this.feedbackForm.reset({ rating: 5 });
-        this.showFeedback = false;
-      }, 3000);
-    });
-  }
-
-  // ========================================
-  // НАВИГАЦИЯ ПО РАЗДЕЛАМ
-  // ========================================
-
-  public showSection(section: string): void {
-    this.showForm = false;
-    this.showStatus = false;
-    this.showFeedback = false;
-    this.showStatistics = false;
-
-    switch(section) {
-      case 'form':
-        this.showForm = true;
-        this.serviceInfo.setActiveStep(this.idService, 0);
-        break;
-      case 'status':
-        this.showStatus = true;
-        break;
-      case 'feedback':
-        this.showFeedback = true;
-        break;
-      case 'statistics':
-        this.showStatistics = true;
-        break;
+    if (catAge < selectedCategory.minAge) {
+      return { ageTooYoung: true };
     }
+
+    return null;
   }
 
-  // ========================================
-  // ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
-  // ========================================
+  public getCategoryErrorMessage(): string {
+    const rawValue = this.form?.getRawValue();
+    if (!rawValue) return '';
 
-  private moveStepsAfterMenu(): void {
-    setTimeout(() => {
-      const stepsElement = document.querySelector('app-steps');
-      const menuWrapper = document.querySelector('.menu-buttons-wrapper');
+    const categoryCode = rawValue[1]?.category;
+    const catAge = parseInt(rawValue[0]?.catAge) || 0;
 
-      if (stepsElement && menuWrapper && menuWrapper.parentNode) {
-        menuWrapper.parentNode.insertBefore(stepsElement, menuWrapper.nextSibling);
-      }
-    }, 100);
-  }
+    if (!categoryCode) return '';
 
-  public getStatusColor(status: string): string {
-    const colors: Record<string, string> = {
-      'Заявка подана': '#6c757d',
-      'На проверке': '#ffc107',
-      'Допущен к экзамену': '#007bff',
-      'Экзамен сдан': '#28a745',
-      'Отказ': '#dc3545'
-    };
-    return colors[status] || '#6c757d';
-  }
+    const selectedCategory = this.licenseCategories.find(cat => cat.code === categoryCode);
 
-  public getCategoryLabel(categoryValue: string): string {
-    if (!categoryValue) return '';
-    const found = this.categories.find(c => c.value === categoryValue);
-    return found ? found.label : categoryValue;
-  }
+    if (!selectedCategory) return '';
 
-  public navigateToAddCat(): void {
-    this.router.navigate(['/add-cat']);
+    if (catAge < selectedCategory.minAge) {
+      return `⚠️ Коту должно быть не менее ${selectedCategory.minAge} лет для категории "${selectedCategory.code} - ${selectedCategory.name}"`;
+    }
+
+    return '';
   }
 }
