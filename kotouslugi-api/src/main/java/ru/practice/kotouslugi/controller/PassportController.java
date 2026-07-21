@@ -36,7 +36,7 @@ public class PassportController extends BaseController{
     return ResponseEntity.status(HttpStatus.CREATED).body(res);
   }
 
-  @PutMapping(value = "/approve", produces = "application/json")
+  @PatchMapping(value = "/approve", produces = "application/json")
   @Operation(summary = "Подтвердить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
     @ApiResponse(responseCode = "200", description = "OK"),
     @ApiResponse(responseCode = "404", description = "Не найдено"),
@@ -46,7 +46,7 @@ public class PassportController extends BaseController{
     PassportDTO decisionPassport = decisionPassportService.approvePassport(decisionPassportDTO);
     return ResponseEntity.status(200).body(decisionPassport);
   }
-  @PutMapping(value = "/reject", produces = "application/json")
+  @PatchMapping(value = "/reject", produces = "application/json")
   @Operation(summary = "Отклонить паспорт кота", tags = {"Кошачье АПИ"}, responses = {
     @ApiResponse(responseCode = "200", description = "OK"),
     @ApiResponse(responseCode = "404", description = "Не найдено"),

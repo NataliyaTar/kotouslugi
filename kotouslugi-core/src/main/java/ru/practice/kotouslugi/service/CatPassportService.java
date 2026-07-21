@@ -60,10 +60,12 @@ public class CatPassportService {
       .photoUrl(passportDTO.getPhotoUrl())
       .specialMarks(passportDTO.getSpecialMarks())
       .chipNumber(passportDTO.getChipNumber())
+      .status(true)
       .build();
     try {
       PassportDetail saved = catPassportRepository.save(passportDetail);
       passportDTO.setId(saved.getId());
+      passportDTO.setStatus(true);
       return passportDTO;
     } catch (DataIntegrityViolationException e){
       throw new InvalidOperationException(e.getMessage());
