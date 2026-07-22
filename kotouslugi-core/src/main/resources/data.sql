@@ -51,6 +51,18 @@ values (2,
         'relax.png',
         'SPA-процедуры',
         'Устали от бесконечной работы и гонки за мышами? Пора записаться на расслабляющие процедуры');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (3,
+        'missing-cat',
+        'search.png',
+        'Поиск пропавших котиков',
+        'Ваш котик потерялся? Составим объявление и поможем найти пушистого беглеца');
+INSERT INTO service(id, mnemonic, icon, title, description)
+values (4,
+        'vet-passport',
+        'sick.webp',
+        'Ветеринарный паспорт',
+        'Оформите цифровой ветеринарный паспорт с чипированием и историей вакцинаций');
 
 -- category
 INSERT INTO category
