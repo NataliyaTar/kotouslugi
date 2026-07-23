@@ -27,6 +27,7 @@ public class PassportDetail {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @JsonIgnore
   @OneToOne
   @JoinColumn()
   private Requisition requisition;

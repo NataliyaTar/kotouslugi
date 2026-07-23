@@ -6,8 +6,9 @@ import { IStep } from '@models/step.model';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { AsyncPipe } from '@angular/common';
-import { Subscription, take } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { OrderService } from '@services/order/order.service';
+import { PassportService } from '@services/passport/passport.service';
 
 @Component({
   selector: 'app-service',
@@ -32,6 +33,7 @@ export class ServiceComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private serviceInfo: ServiceInfoService,
     private orderService: OrderService,
+    private passportService: PassportService,
   ) {
   }
 
@@ -94,15 +96,20 @@ export class ServiceComponent implements OnInit, OnDestroy {
    * Сохранение результатов заполнения формы
    */
   public save(): void {
-    this.orderService.saveOrder(
-      this.idService,
-      this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue()
-    ).subscribe(res => {
-      alert('Ваша заявка зарегистрирована\nНажмите «OK» для перехода на предыдущую страницу портала');
-      window.history.back();
-    }, error => {
-      alert('Произошла ошибка, повторите попытку позже\nНажмите «OK» для перехода на предыдущую страницу портала');
-      window.history.back();
+    const rawValue = this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue();
+    const request$: Observable<unknown> = this.idService === 'passport'
+      ? this.passportService.createRequisition(rawValue)
+      : this.orderService.saveOrder(this.idService, rawValue);
+
+    request$.subscribe({
+      next: () => {
+        alert('Ваша заявка зарегистрирована\nНажмите «OK» для перехода на предыдущую страницу портала');
+        window.history.back();
+      },
+      error: () => {
+        alert('Произошла ошибка, повторите попытку позже\nНажмите «OK» для перехода на предыдущую страницу портала');
+        window.history.back();
+      },
     });
   }
 

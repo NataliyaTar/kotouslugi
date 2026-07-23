@@ -1,32 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, map, Observable } from 'rxjs';
-import { IPassportDocument } from '@models/passport.model';
+import {
+  ICreatePassportRequisition,
+  IPassportDocument,
+  IPassportDto,
+} from '@models/passport.model';
 import { IOrder } from '@models/order.model';
 import { ICat } from '@models/cat.model';
 import { OrderService } from '@services/order/order.service';
 import { CatService } from '@services/cat/cat.service';
 
-/**
- * Бэкенд-контракт (ещё не реализован на сервере):
- *
- * POST /api/passport/approve
- * Body: { requisitionId: number }
- * Действия сотрудника:
- *   1. Найти заявку по requisitionId (mnemonic = "passport")
- *   2. Создать PassportDetail из данных заявки
- *   3. Установить requisition.status = DONE
- *
- * Опционально в будущем:
- * GET /api/passport/list — список выданных паспортов
- * GET /api/passport/{requisitionId} — паспорт по заявке
- */
 @Injectable({
   providedIn: 'root'
 })
 export class PassportService {
 
   private passportApi = '/api/passport/';
+  private requisitionApi = '/api/requisition/';
 
   constructor(
     private http: HttpClient,
@@ -35,82 +26,121 @@ export class PassportService {
   ) {}
 
   /**
-   * Одобрение паспорта сотрудником (вызов с админ-интерфейса / Postman).
-   * На бэке эндпоинт пока отсутствует.
+   * Создание заявки на паспорт в формате бэкенда:
+   * { mnemonic, catId, fields, passportDetail }
    */
-  public approvePassport(requisitionId: number): Observable<unknown> {
-    return this.http.post(`${this.passportApi}approve`, { requisitionId });
-  }
-
-  /**
-   * Паспорта, доступные пользователю: заявки passport со статусом DONE.
-   * Пока данные берутся из /api/requisition/list + парсинг fields.
-   */
-  public getApprovedPassports(): Observable<IPassportDocument[]> {
-    return forkJoin({
-      orders: this.orderService.getOrdersList(),
-      cats: this.catService.getCatList(),
-    }).pipe(
-      map(({ orders, cats }) => this.mapApprovedPassports(orders, cats)),
+  public createRequisition(rawValue: Record<string, Record<string, unknown>>): Observable<number> {
+    return this.http.post<number>(
+      `${this.requisitionApi}create`,
+      this.buildCreatePayload(rawValue),
     );
   }
 
-  private mapApprovedPassports(orders: IOrder[], cats: ICat[]): IPassportDocument[] {
-    const catMap = new Map(cats.map(cat => [cat.id, cat.name]));
-
-    return orders
-      .filter(order => order.mnemonic === 'passport' && order.status === 'DONE')
-      .map(order => {
-        const fields = this.parseFields(order.fields);
-        const catId = Number(fields['cat']);
-        const validCatId = Number.isFinite(catId) ? catId : null;
-
-        return {
-          requisitionId: order.id,
-          approvedAt: order.created,
-          catId: validCatId ?? 0,
-          catName: validCatId !== null ? (catMap.get(validCatId) ?? `Кот #${validCatId}`) : 'Кот',
-          passportNumber: String(fields['passportNumber'] ?? ''),
-          issueDate: String(fields['issueDate'] ?? ''),
-          country: 'РФ',
-          ownerPhone: String(fields['ownerPhone'] ?? ''),
-          ownerEmail: String(fields['ownerEmail'] ?? ''),
-          photoUrl: String(fields['photoUrl'] ?? ''),
-          chipNumber: fields['chipNumber'] ? String(fields['chipNumber']) : undefined,
-          specialMarks: fields['specialMarks'] ? String(fields['specialMarks']) : undefined,
-        };
-      });
-  }
-
-  private parseFields(fields: string): Record<string, string | number> {
-    try {
-      const steps = this.unwrapFieldsArray(fields);
-      const result: Record<string, string | number> = {};
-
-      steps.forEach(step => {
-        Object.keys(step).forEach(key => {
-          if (key !== 'id') {
-            result[key] = step[key];
-          }
-        });
-      });
-
-      return result;
-    } catch {
-      return {};
-    }
+  public approvePassport(requisitionId: number): Observable<unknown> {
+    return this.http.patch(`${this.passportApi}approve`, { requisitionId });
   }
 
   /**
-   * Бэкенд иногда отдаёт fields как дважды закодированную JSON-строку.
+   * Актуальные паспорта: GET /api/passport/getAll.
+   * catId/имя кота подтягиваются из заявки и списка котов.
    */
-  private unwrapFieldsArray(fields: string): Record<string, string | number>[] {
-    let current: unknown = fields;
+  public getApprovedPassports(): Observable<IPassportDocument[]> {
+    return forkJoin({
+      passports: this.http.get<IPassportDto[]>(`${this.passportApi}getAll`),
+      orders: this.orderService.getOrdersList(),
+      cats: this.catService.getCatList(),
+    }).pipe(
+      map(({ passports, orders, cats }) => this.mapPassports(passports, orders, cats)),
+    );
+  }
 
-    while (typeof current === 'string') {
-      current = JSON.parse(current);
+  private mapPassports(
+    passports: IPassportDto[],
+    orders: IOrder[],
+    cats: ICat[],
+  ): IPassportDocument[] {
+    const catMap = new Map(cats.map(cat => [cat.id, cat.name]));
+    const orderMap = new Map(
+      orders.map(order => [String(order.id), order as IOrder & { catId?: number; decisionAt?: string }]),
+    );
+
+    return passports.map(passport => {
+      const order = orderMap.get(String(passport.requisition));
+      const catId = Number(order?.catId);
+      const validCatId = Number.isFinite(catId) ? catId : 0;
+
+      return {
+        requisitionId: String(passport.requisition),
+        approvedAt: order?.decisionAt ?? order?.created ?? passport.issueDate,
+        catId: validCatId,
+        catName: validCatId ? (catMap.get(validCatId) ?? `Кот #${validCatId}`) : 'Кот',
+        passportNumber: passport.passportNumber,
+        issueDate: passport.issueDate,
+        country: passport.country || 'РФ',
+        ownerPhone: passport.ownerPhone,
+        ownerEmail: passport.ownerEmail,
+        photoUrl: passport.photoUrl,
+        chipNumber: passport.chipNumber || undefined,
+        specialMarks: passport.specialMarks || undefined,
+      };
+    });
+  }
+
+  private buildCreatePayload(
+    rawValue: Record<string, Record<string, unknown>>,
+  ): ICreatePassportRequisition {
+    const catStep = rawValue['0'] ?? {};
+    const ownerStep = rawValue['1'] ?? {};
+    const passportStep = rawValue['2'] ?? {};
+
+    const catId = this.extractCatId(catStep['cat']);
+    const chipNumber = this.optionalString(passportStep['chipNumber']);
+    const specialMarks = this.optionalString(passportStep['specialMarks']);
+
+    return {
+      mnemonic: 'passport',
+      catId,
+      fields: JSON.stringify({}),
+      passportDetail: {
+        passportNumber: String(passportStep['passportNumber'] ?? ''),
+        issueDate: String(passportStep['issueDate'] ?? ''),
+        country: 'РФ',
+        ownerPhone: String(ownerStep['ownerPhone'] ?? ''),
+        ownerEmail: String(ownerStep['ownerEmail'] ?? ''),
+        photoUrl: String(passportStep['photoUrl'] ?? ''),
+        ...(chipNumber ? { chipNumber } : {}),
+        ...(specialMarks ? { specialMarks } : {}),
+      },
+    };
+  }
+
+  private extractCatId(catValue: unknown): number {
+    if (typeof catValue === 'number' && Number.isFinite(catValue)) {
+      return catValue;
     }
 
-    return Array.isArray(current) ? current : [];
+    if (typeof catValue === 'string') {
+      try {
+        const parsed = JSON.parse(catValue);
+        const id = Number(parsed?.id ?? catValue);
+        if (Number.isFinite(id)) {
+          return id;
+        }
+      } catch {
+        const id = Number(catValue);
+        if (Number.isFinite(id)) {
+          return id;
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  private optionalString(value: unknown): string | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+    return String(value);
   }
 }
