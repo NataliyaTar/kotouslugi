@@ -1,5 +1,6 @@
 package ru.practice.kotouslugi.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;

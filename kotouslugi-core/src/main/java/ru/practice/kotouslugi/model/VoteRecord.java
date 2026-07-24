@@ -15,6 +15,7 @@ import java.util.Date;
     @Index(name = "idx_vr_vote_date", columnList = "vote_date")
   }
 )
+@Data
 @Getter
 @Setter
 @Builder
@@ -37,12 +38,6 @@ public class VoteRecord {
 
   @Column(name = "election_period", nullable = false, length = 20)
   private String electionPeriod;
-
-  @Column(name = "vote_source", nullable = false, length = 10)
-  private String voteSource;
-
-  @Column(name = "voting_point_id")
-  private Long votingPointId;
 
   @Column(name = "encrypted_vote", nullable = false)
   private String encryptedVote;

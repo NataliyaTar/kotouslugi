@@ -27,7 +27,6 @@ public class PassportDetail {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @JsonIgnore
   @OneToOne
   @JoinColumn()
   private Requisition requisition;
@@ -59,5 +58,7 @@ public class PassportDetail {
 
   @Column(name = "chipNumber", length = 50)
   private String chipNumber;
+
+
 
 }

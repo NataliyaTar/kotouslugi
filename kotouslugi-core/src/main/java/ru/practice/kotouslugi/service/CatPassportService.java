@@ -43,7 +43,7 @@ public class CatPassportService {
 
   public PassportDTO addCatPassport(PassportDTO passportDTO) {
     if (catPassportRepository.existsByPassportNumber(passportDTO.getPassportNumber())){
-      throw new DuplicateEntityException("Passport number already exists: " + passportDTO.getPassportNumber());
+      throw new DuplicateEntityException();
     }
     Requisition requisition = null;
     Integer requisitionId = passportDTO.getRequisition();
