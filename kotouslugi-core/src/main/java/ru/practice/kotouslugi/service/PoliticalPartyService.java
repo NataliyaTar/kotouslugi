@@ -15,7 +15,7 @@ public class PoliticalPartyService {
   private final PoliticalPartyRepository politicalPartyRepository;
 
   public PoliticalParty addPoliticalParty(PoliticalPartyDTO dto){
-    if (politicalPartyRepository.existByName(dto.getName())){throw new DuplicateEntityException();}
+    if (politicalPartyRepository.existsByName(dto.getName())){throw new DuplicateEntityException();}
     PoliticalParty politicalParty = new PoliticalParty().builder()
       .candidateCatId(dto.getCandidateCatId())
       .description(dto.getDescription())

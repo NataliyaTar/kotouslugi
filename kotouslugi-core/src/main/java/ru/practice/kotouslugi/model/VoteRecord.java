@@ -30,8 +30,10 @@ public class VoteRecord {
   @Column(name = "cat_id", nullable = false)
   private Long catId;
 
-  @Column(name = "party_id", nullable = false)
-  private Long partyId;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "party_id", nullable = false,
+    foreignKey = @ForeignKey(name = "fk_vote_record_party"))
+  private PoliticalParty party;
 
   @Column(name = "vote_date", nullable = false)
   private Date voteDate;
@@ -39,6 +41,4 @@ public class VoteRecord {
   @Column(name = "election_period", nullable = false, length = 20)
   private String electionPeriod;
 
-  @Column(name = "encrypted_vote", nullable = false)
-  private String encryptedVote;
 }

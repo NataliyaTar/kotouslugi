@@ -19,14 +19,5 @@ public class BuildPassportDTO {
       .build();
 
   }
-  public static VoteRecord createVoteRecord(CreateVoteRecordDto dto) {
-    return VoteRecord.builder()
-      .catId(dto.getCatId())
-      .partyId(dto.getPartyId())
-      .voteDate(new Date())
-      .electionPeriod(dto.getElectionPeriod())
-      .voteSource(dto.getVoteSource())
-      .encryptedVote(dto.getEncryptedVote())
-      .build();
-  }
+
 }

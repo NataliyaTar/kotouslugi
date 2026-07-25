@@ -24,20 +24,26 @@ public class VotingService {
 
 
   public CreateVoteRecordDto CastAVoteOnline(CreateVoteRecordDto createVoteRecordDto){
+
     Optional<Cat> cat = catRepository.findById(createVoteRecordDto.getCatId());
     Optional<PassportDetail> passportDetail = catPassportRepository.findByPassportNumber(createVoteRecordDto.getPassportNumber());
-    if (!(passportDetail.isPresent()
-      && cat.isPresent()
-      && politicalPartyRepository.existByName(createVoteRecordDto.getPartyName()))){throw new EntityNotFoundException();}
+
+    if (!(passportDetail.isPresent() && cat.isPresent())){throw new EntityNotFoundException();}
+      Optional<PoliticalParty> politicalParty = politicalPartyRepository.findByName(createVoteRecordDto.getPartyName());
+    if (politicalParty.isEmpty()){throw new EntityNotFoundException();}
+
+
+
       VoteRecord voteRecord = VoteRecord.builder()
         .catId(createVoteRecordDto.getCatId())
-        .partyId(createVoteRecordDto.getPartyId())
         .voteDate(new Date())
         .electionPeriod(createVoteRecordDto.getElectionPeriod())
-        .encryptedVote(createVoteRecordDto.getEncryptedVote())
+        .party(politicalParty.get())
         .build();
+
       if (votingRecordRepository.existsByCatId(cat.get().getId())){throw new DuplicateEntityException();}
       votingRecordRepository.save(voteRecord);
+
       return createVoteRecordDto;
   }
 }

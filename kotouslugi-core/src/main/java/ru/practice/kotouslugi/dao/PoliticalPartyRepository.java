@@ -4,7 +4,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import ru.practice.kotouslugi.model.PoliticalParty;
 
+import java.util.Optional;
+
 @Repository
 public interface PoliticalPartyRepository extends CrudRepository<PoliticalParty, Long> {
-    boolean existByName(String name);
+    boolean existsByName(String name);
+
+
+  Optional<PoliticalParty> findByName(String name);
 }

@@ -26,7 +26,7 @@ public class PartyController {
     @ApiResponse(responseCode = "201", description = "Created"),
     @ApiResponse(responseCode = "403", description = "Forbidden")})
   private ResponseEntity<PoliticalParty> addParty(@RequestBody PoliticalPartyDTO dto){
-    PoliticalParty politicalPartySaved =  partyService.addPoliticalParty(dto);
+    PoliticalParty politicalPartySaved = partyService.addPoliticalParty(dto);
     return ResponseEntity.status(201).body(politicalPartySaved);
   }
 
