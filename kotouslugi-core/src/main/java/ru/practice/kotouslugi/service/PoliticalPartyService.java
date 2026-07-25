@@ -15,16 +15,15 @@ public class PoliticalPartyService {
   private final PoliticalPartyRepository politicalPartyRepository;
 
   public PoliticalParty addPoliticalParty(PoliticalPartyDTO dto){
+    if (politicalPartyRepository.existByName(dto.getName())){throw new DuplicateEntityException();}
     PoliticalParty politicalParty = new PoliticalParty().builder()
       .candidateCatId(dto.getCandidateCatId())
       .description(dto.getDescription())
       .logoUrl(dto.getLogoUrl())
       .name(dto.getName())
         .build();
-
     politicalParty.setCreatedAt(new Date());
     politicalParty.setActive(true);
     return politicalPartyRepository.save(politicalParty);
   }
-
 }

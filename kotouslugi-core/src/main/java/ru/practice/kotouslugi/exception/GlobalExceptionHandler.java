@@ -28,4 +28,8 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(500).body(e.getMessage());
   }
 
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<String> forbiddenException(){
+    return ResponseEntity.status(403).build();
+  }
 }

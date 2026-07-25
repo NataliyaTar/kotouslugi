@@ -10,6 +10,7 @@ import java.util.Date;
 public class CreateVoteRecordDto {
   private Long catId;
   private Long partyId;
+  private String partyName;
   private String electionPeriod;
   private String voteSource;
   private String encryptedVote;
