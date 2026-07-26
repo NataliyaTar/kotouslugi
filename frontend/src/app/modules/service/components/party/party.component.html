@@ -1,0 +1,59 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field field--full">
+        <div>
+          <p class="label">Название партии</p>
+          @if (getControl(0, 'name').errors && getControl(0, 'name').touched) {
+            @if (getControl(0, 'name').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(0, 'name').errors?.['maxlength']) {
+              <p class="error">Не больше 100 символов</p>
+            }
+          }
+        </div>
+        <input formControlName="name" placeholder="Название партии">
+      </div>
+
+      <div class="field field--full">
+        <div>
+          <p class="label">Описание</p>
+          @if (getControl(0, 'description').errors?.['required'] && getControl(0, 'description').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <textarea formControlName="description" placeholder="Программа партии"></textarea>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Ссылка на логотип</p>
+        </div>
+        <input formControlName="logoUrl" placeholder="https://example.com/logo.png">
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Кандидат</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat">
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem($index)">{{ option.text }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (active === 1) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+
+  </div>
+}

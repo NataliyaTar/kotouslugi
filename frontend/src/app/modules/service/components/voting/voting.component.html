@@ -1,0 +1,84 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat">
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem($index)">{{ option.text }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Номер паспорта</p>
+          @if (getControl(0, 'passportNumber').errors && getControl(0, 'passportNumber').touched) {
+            @if (getControl(0, 'passportNumber').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(0, 'passportNumber').errors?.['pattern']) {
+              <p class="error">Введите 10 цифр</p>
+            }
+          }
+          @if (voterError && getControl(0, 'passportNumber').touched) {
+            <p class="error">{{ voterError }}</p>
+          }
+        </div>
+        <input
+          formControlName="passportNumber"
+          placeholder="0000 000000"
+          inputmode="numeric"
+          maxlength="11"
+          (input)="onPassportNumberInput($event)"
+        >
+      </div>
+    </div>
+
+    <div class="field-wrapper field-wrapper--ballot" [hidden]="active !== 1" formGroupName="1">
+      <div class="field field--full">
+        <div>
+          <p class="label">Выберите партию</p>
+          @if (getControl(1, 'partyName').errors?.['required'] && getControl(1, 'partyName').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input type="hidden" formControlName="partyName">
+        @if (parties.length === 0) {
+          <p class="hint">Список партий пуст</p>
+        } @else {
+          <div class="ballot">
+            @for (party of parties; track party.name) {
+              <button
+                type="button"
+                class="ballot__item"
+                [class.ballot__item--selected]="isPartySelected(party.name)"
+                (click)="selectParty(party.name)"
+              >
+                @if (party.logoUrl) {
+                  <img class="ballot__logo" [src]="party.logoUrl" [alt]="party.name">
+                }
+                <div class="ballot__text">
+                  <p class="ballot__name">{{ party.name }}</p>
+                  <p class="ballot__description">{{ party.description }}</p>
+                </div>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (active === 2) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+
+  </div>
+}

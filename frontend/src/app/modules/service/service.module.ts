@@ -4,6 +4,8 @@ import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
 import { PassportComponent } from './components/passport/passport.component';
+import { VotingComponent } from './components/voting/voting.component';
+import { PartyComponent } from './components/party/party.component';
 
 /**
  * Роутинг для услуг
@@ -36,6 +38,22 @@ const routes: Routes = [
           idService: 'passport'
         },
         component: PassportComponent
+      },
+      {
+        path: 'voting',
+        pathMatch: 'full',
+        data: {
+          idService: 'voting'
+        },
+        component: VotingComponent
+      },
+      {
+        path: 'party',
+        pathMatch: 'full',
+        data: {
+          idService: 'party'
+        },
+        component: PartyComponent
       },
     ]
   }

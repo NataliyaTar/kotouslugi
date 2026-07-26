@@ -1,0 +1,63 @@
+@use '../../../../../assets/styles/palette' as palette;
+
+.field-wrapper--ballot {
+  flex-direction: column;
+}
+
+.hint {
+  margin-top: 8px;
+  color: palette.$color-text-helper;
+}
+
+.ballot {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.ballot__item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 16px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid palette.$color-divider;
+  border-radius: 12px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: palette.$color-gosblue;
+  }
+
+  &--selected {
+    border-color: palette.$color-gosblue;
+    box-shadow: 0 0 0 2px rgba(13, 76, 211, 0.15);
+  }
+}
+
+.ballot__logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.ballot__name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ballot__description {
+  color: palette.$color-text-helper;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.fields-wrapper .field-wrapper .field--full {
+  width: 100%;
+}
