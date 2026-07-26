@@ -16,7 +16,7 @@ import ru.practice.kotouslugi.service.VotingService;
 @RequestMapping("/api/vote")
 @AllArgsConstructor
 public class VoteController {
-  private final VotingService voitingService;
+  private final VotingService votingService;
 
   @PostMapping(value = "/online", produces = "application/json")
   @Operation(summary = "Проголосовать", tags = {"Кошачье АПИ"}, responses = {
@@ -24,7 +24,7 @@ public class VoteController {
     @ApiResponse(responseCode = "409", description = "Duplicate passport number"),
     @ApiResponse(responseCode = "403", description = "Forbidden")})
   private ResponseEntity<CreateVoteRecordDto> onlineVote(@RequestBody CreateVoteRecordDto createVoteRecordDto){
-    CreateVoteRecordDto createVoteRecordDtoResponseEntity = voitingService.CastAVoteOnline(createVoteRecordDto);
+    CreateVoteRecordDto createVoteRecordDtoResponseEntity = votingService.CastAVoteOnline(createVoteRecordDto);
     return ResponseEntity.status(201).body(createVoteRecordDtoResponseEntity);
   }
 }
