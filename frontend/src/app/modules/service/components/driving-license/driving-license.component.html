@@ -96,8 +96,9 @@
                 </div>
               </div>
 
-              <!--Шаг 2: Категория прав-->
+              <!--Шаг 2: Категория прав и автошкола-->
               <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+                <!-- Существующее поле категории -->
                 <div class="field">
                   <div>
                     <p class="label">Категория прав</p>
@@ -116,6 +117,24 @@
                       <option [value]="cat.code">
                         {{ cat.code }} - {{ cat.name }} (с {{ cat.minAge }} лет)
                       </option>
+                    }
+                  </select>
+                </div>
+
+                <!-- Выбор автошколы -->
+                <div class="field">
+                  <div>
+                    <p class="label">Автошкола</p>
+                    @if (getControl(1, 'schoolName').errors && getControl(1, 'schoolName').touched){
+                      @if (getControl(1, 'schoolName').errors?.['required']){
+                        <p class="error">Поле обязательно для заполнения</p>
+                      }
+                    }
+                  </div>
+                  <select formControlName="schoolName">
+                    <option value="">Выберите автошколу</option>
+                    @for (school of schoolOptions; track school.id) {
+                      <option [value]="school.name">{{ school.name }}</option>
                     }
                   </select>
                 </div>
@@ -202,6 +221,11 @@
                       <span class="check-separator">:</span>
                       <span class="check-value">{{ getExamTime() }}</span>
                     </div>
+                    <div class="check-row">
+                      <span class="check-label">Автошкола</span>
+                      <span class="check-separator">:</span>
+                      <span class="check-value">{{ getSchoolName() }}</span>
+                    </div>
                   </div>
                 </div>
               }
@@ -274,6 +298,11 @@
                     <span class="info-label">Время экзамена</span>
                     <span class="info-separator">:</span>
                     <span class="info-value">{{ selectedApplication.examTime }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Автошкола</span>
+                    <span class="info-separator">:</span>
+                    <span class="info-value">{{ selectedApplication.schoolName || 'Не выбрана' }}</span>
                   </div>
                   <div class="info-row">
                     <span class="info-label">Дата подачи</span>

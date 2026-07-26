@@ -34,6 +34,7 @@ interface IApplication {
   catBreed?: string;
   catSex?: string;
   category: string;
+  schoolName?: string;
   examDate: string;
   examTime: string;
   status: ApplicationStatus;
@@ -187,6 +188,7 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
           catBreed: rawValue[0]?.catBreed || 'Не указана',
           catSex: rawValue[0]?.catSex || 'Не указан',
           category: rawValue[1]?.category || 'A',
+          schoolName: rawValue[1]?.schoolName || 'Не выбрана',
           examDate: rawValue[2]?.examDate || new Date().toISOString().split('T')[0],
           examTime: rawValue[2]?.examTime || '10:00',
           status: ApplicationStatus.SUBMITTED,
@@ -402,6 +404,7 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
             catBreed: app.catBreed || 'Не указана',
             catSex: app.catSex || 'Не указан',
             category: app.category,
+            schoolName: app.schoolName || 'Не выбрана',
             examDate: app.examDate.toISOString().split('T')[0],
             examTime: app.examTime,
             status: app.status,
@@ -458,44 +461,47 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
     let category = 'A';
     let examDate = new Date();
     let examTime = '10:00';
+    let schoolName = 'Не выбрана';
 
     fieldsArray.forEach((step: any) => {
       if (step && typeof step === 'object') {
         if (step.catName) {
           catName = String(step.catName);
         }
-
         if (step.catAge) {
           catAge = parseInt(String(step.catAge)) || 1;
         }
-
         if (step.catBreed) {
           const rawBreed = String(step.catBreed);
           catBreed = this.getBreedDisplay(rawBreed);
         }
-
         if (step.catSex) {
           const rawSex = String(step.catSex);
           catSex = this.getSexDisplay(rawSex);
         }
 
+        // Категория и школа (шаг 1)
         if (step.category) {
           category = String(step.category);
         }
+        if (step.schoolName) {
+          schoolName = String(step.schoolName);
+        }
 
+        // Дата и время (шаг 2)
         if (step.examDate) {
           try {
             examDate = new Date(String(step.examDate));
           } catch {
           }
         }
-
         if (step.examTime) {
           examTime = String(step.examTime);
         }
       }
     });
 
+    // Fallback для имени кота
     if (catName === 'Кот') {
       for (const step of fieldsArray) {
         if (step && typeof step === 'object') {
@@ -518,6 +524,7 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
       catBreed,
       catSex,
       category: this.mapCategory(category),
+      schoolName,
       examDate,
       examTime,
       status: this.mapOrderStatus(order.status || 'FILED'),
@@ -842,6 +849,7 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
             catBreed: app.catBreed,
             catSex: app.catSex || 'Не указан',
             category: app.category,
+            schoolName: app.schoolName || 'Не выбрана',
             examDate: app.examDate.toISOString().split('T')[0],
             examTime: app.examTime,
             status: app.status,
@@ -874,7 +882,8 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
         catSex: [{ value: '', disabled: false }]
       }),
       1: this.fb.group({
-        category: ['', [Validators.required, this.categoryAgeValidator.bind(this)]]
+        category: ['', [Validators.required, this.categoryAgeValidator.bind(this)]],
+        schoolName: ['', [Validators.required]]
       }),
       2: this.fb.group({
         examDate: ['', [Validators.required, this.dateValidator]],
@@ -996,5 +1005,10 @@ export class DrivingLicenseComponent implements OnInit, OnDestroy {
     }
 
     return '';
+  }
+  getSchoolName(): string {
+    const schoolName = this.form.get('1')?.get('schoolName')?.value;
+    if (!schoolName) return 'Не выбрано';
+    return schoolName;
   }
 }

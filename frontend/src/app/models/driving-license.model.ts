@@ -43,6 +43,7 @@ export interface IDrivingApplication {
   catBreed: string;
   catSex?: string;
   category: DrivingCategory;
+  schoolName?: string;
   examDate: Date;
   examTime: string;
   status: ApplicationStatus;
