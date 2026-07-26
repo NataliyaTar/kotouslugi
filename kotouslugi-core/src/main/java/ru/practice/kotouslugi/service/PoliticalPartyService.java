@@ -11,7 +11,9 @@ import ru.practice.kotouslugi.model.Cat;
 import ru.practice.kotouslugi.model.PoliticalParty;
 import ru.practice.kotouslugi.model.PoliticalPartyDTO;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,5 +36,13 @@ public class PoliticalPartyService {
     politicalParty.setCreatedAt(new Date());
     politicalParty.setActive(true);
     return politicalPartyRepository.save(politicalParty);
+  }
+
+
+  public List<PoliticalParty> getParties(){
+    Iterable<PoliticalParty> politicalParties = politicalPartyRepository.findAll();
+    List<PoliticalParty> list = new ArrayList<>();
+    politicalParties.forEach(list::add);
+    return list;
   }
 }

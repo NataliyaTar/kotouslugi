@@ -5,15 +5,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practice.kotouslugi.model.PoliticalParty;
 import ru.practice.kotouslugi.model.PoliticalPartyDTO;
 import ru.practice.kotouslugi.service.PoliticalPartyService;
 
-import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -25,9 +22,14 @@ public class PartyController {
   @Operation(summary = "Добавить партию", tags = {"Кошачье АПИ"}, responses = {
     @ApiResponse(responseCode = "201", description = "Created"),
     @ApiResponse(responseCode = "403", description = "Forbidden")})
-  private ResponseEntity<PoliticalParty> addParty(@RequestBody PoliticalPartyDTO dto){
+  public ResponseEntity<PoliticalParty> addParty(@RequestBody PoliticalPartyDTO dto){
     PoliticalParty politicalPartySaved = partyService.addPoliticalParty(dto);
     return ResponseEntity.status(201).body(politicalPartySaved);
   }
 
+  @GetMapping("/get")
+  public ResponseEntity<List<PoliticalParty>> getAllParties(){
+    List<PoliticalParty> politicalParties = partyService.getParties();
+    return ResponseEntity.status(200).body(politicalParties);
+  }
 }
