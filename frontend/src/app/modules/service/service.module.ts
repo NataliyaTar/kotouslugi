@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { ServiceComponent } from './service.component';
-import { NewFamilyComponent } from './components/new-family/new-family.component';
-import { VetComponent } from './components/vet/vet.component';
-import { VetPassportComponent } from './components/vet-passport/vet-passport.component';
 
 /**
  * Роутинг для услуг
@@ -11,41 +8,48 @@ import { VetPassportComponent } from './components/vet-passport/vet-passport.com
 const routes: Routes = [
   {
     path: '',
-    component: ServiceComponent,
+    loadComponent: () => import('./service.component').then(m => m.ServiceComponent),
     children: [
       {
-        path: 'new_family',
-        pathMatch: 'full',
+        path: 'new-family',
         data: {
-          idService: 'new_family'
+          idService: 'new-family'
         },
-        component: NewFamilyComponent
+        loadComponent: () => import('./components/new-family/new-family.component')
+          .then(m => m.NewFamilyComponent)
       },
       {
         path: 'vet',
-        pathMatch: 'full',
         data: {
           idService: 'vet'
         },
-        component: VetComponent
+        loadComponent: () => import('./components/vet/vet.component')
+          .then(m => m.VetComponent)
       },
-    {
-            path: 'vet-passport',
-            pathMatch: 'full',
-            data: {
-              idService: 'vet-passport'
-            },
-            component: VetPassportComponent
-          },
-      // ToDo: your router for service
+      {
+        path: 'missing-cat',
+        data: {
+          idService: 'missing-cat'
+        },
+        loadComponent: () => import('./components/missing-cat/missing-cat.component')
+          .then(m => m.MissingCatComponent)
+      },
+      {
+        path: 'vet-passport',
+        data: {
+          idService: 'vet-passport'
+        },
+        loadComponent: () => import('./components/vet-passport/vet-passport.component')
+          .then(m => m.VetPassportComponent)
+      }
     ]
   }
 ];
 
 @NgModule({
-  declarations: [],
   imports: [
-    RouterModule.forChild(routes),
+    CommonModule,
+    RouterModule.forChild(routes)
   ]
 })
 export class ServiceModule { }

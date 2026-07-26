@@ -1,17 +1,23 @@
 @if (loading) {
 <app-throbber></app-throbber>
+} @else if (notEnoughCats) {
+<div class="not-have-cat col-2 col-lg-12">
+  <img src="../../../assets/png/cats/sad.png" class="image">
+  <h3>Упс...<br>У вас недостаточно зарегистрированных котиков для использования услуги</h3>
+  <p class="text">
+    Перейдите к <a [routerLink]="'/add-cat'">добавлению котика</a> или выберите <a [routerLink]="'/'">другую услугу</a>
+  </p>
+</div>
 } @else {
 <div class="fields-wrapper" [formGroup]="form">
 
-
-  <div class="step-wrapper" [hidden]="active !== 0" formGroupName="0">
-    <h2 class="step-title"> Информация о пропавшем котике</h2>
-
+  <!-- ШАГ 1: Информация о котике -->
+  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
     <div class="field">
       <div>
         <p class="label">Выберите котика (если уже зарегистрирован)</p>
       </div>
-      <select formControlName="cat">
+      <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
         <option value="">Не выбран</option>
         @for (option of optionsCat; track $index) {
         <option [value]="getItem('cat', $index)">{{option.text}}</option>
@@ -26,7 +32,8 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="catName" placeholder="Введите кличку">
+      <input formControlName="catName" placeholder="Введите кличку"
+             (invalid)="getControl(0, 'catName').invalid">
     </div>
 
     <div class="field">
@@ -36,7 +43,8 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="breed" placeholder="Например, Британская короткошерстная">
+      <input formControlName="breed" placeholder="Например, Британская короткошерстная"
+             (invalid)="getControl(0, 'breed').invalid">
     </div>
 
     <div class="field">
@@ -46,7 +54,8 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="color" placeholder="Например, чёрный дымчатый">
+      <input formControlName="color" placeholder="Например, чёрный дымчатый"
+             (invalid)="getControl(0, 'color').invalid">
     </div>
 
     <div class="field">
@@ -61,17 +70,18 @@
         }
         }
       </div>
-      <input formControlName="age" type="number" placeholder="Введите возраст в месяцах">
+      <input formControlName="age" type="number" placeholder="Введите возраст в месяцах"
+             (invalid)="getControl(0, 'age').invalid">
     </div>
 
-    <div class="field field-gender">
+    <div class="field">
       <div>
         <p class="label">Пол</p>
         @if (getControl(0, 'gender').errors?.['required'] && getControl(0, 'gender').touched) {
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="gender">
+      <select formControlName="gender" (invalid)="getControl(0, 'gender').invalid">
         @for (option of genderOptions; track $index) {
         <option [value]="getItem('gender', $index)">{{option.text}}</option>
         }
@@ -84,38 +94,10 @@
       </div>
       <textarea formControlName="distinctiveFeatures" placeholder="Например: белое пятно на лбу, рыжий хвост..."></textarea>
     </div>
-
-    <!-- ФОТОГРАФИИ -->
-    <div class="field field-photo">
-      <div>
-        <p class="label">📸 Фотографии котика</p>
-        <p class="hint">Загрузите несколько фотографий для лучшего поиска</p>
-      </div>
-      <div class="photo-upload-area">
-        <input type="file" multiple accept="image/*" (change)="onPhotosSelected($event)" hidden #photoInput>
-        <button type="button" class="btn-upload" (click)="photoInput.click()">
-          <span class="icon"></span> Выбрать фотографии
-        </button>
-        <p class="hint">Поддерживаются: JPG, PNG, GIF. Максимум 5 МБ</p>
-      </div>
-
-      @if (uploadedPhotos.length > 0) {
-      <div class="photo-preview-grid">
-        @for (photo of uploadedPhotos; track $index) {
-        <div class="photo-item">
-          <img [src]="photo.url" alt="Фото котика">
-          <button type="button" class="btn-remove" (click)="removePhoto($index)">✕</button>
-        </div>
-        }
-      </div>
-      }
-    </div>
   </div>
 
-
-  <div class="step-wrapper" [hidden]="active !== 1" formGroupName="1">
-    <h2 class="step-title"> Место и дата пропажи</h2>
-
+  <!-- ШАГ 2: Место и дата пропажи -->
+  <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
     <div class="field">
       <div>
         <p class="label">Дата пропажи</p>
@@ -123,7 +105,8 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="lastSeenDate" type="date">
+      <input formControlName="lastSeenDate" type="date"
+             (invalid)="getControl(1, 'lastSeenDate').invalid">
     </div>
 
     <div class="field">
@@ -133,25 +116,8 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="lastSeenPlace" placeholder="Например: ул. Ленина, д. 10">
-    </div>
-
-    <!-- КАРТА -->
-    <div class="field">
-      <div>
-        <p class="label">🗺 Местоположение на карте</p>
-        <p class="hint">Нажмите на карту, чтобы отметить место пропажи</p>
-      </div>
-      <div class="map-container">
-        <div class="map-placeholder" (click)="openMap()">
-          <p> Нажмите, чтобы открыть карту</p>
-          <p class="hint">Выберите место и скопируйте координаты</p>
-        </div>
-        <input formControlName="mapLocation" placeholder="55.751244, 37.618423" class="map-input">
-      </div>
-      @if (getControl(1, 'mapLocation').errors?.['required'] && getControl(1, 'mapLocation').touched) {
-      <p class="error">Поле обязательно для заполнения</p>
-      }
+      <input formControlName="lastSeenPlace" placeholder="Например: г. Москва, ул. Ленина, д. 10"
+             (invalid)="getControl(1, 'lastSeenPlace').invalid">
     </div>
 
     <div class="field">
@@ -166,7 +132,8 @@
         }
         }
       </div>
-      <input formControlName="phone" placeholder="89001234567">
+      <input formControlName="phone" placeholder="89001234567"
+             (invalid)="getControl(1, 'phone').invalid">
     </div>
 
     <div class="field">
@@ -177,10 +144,8 @@
     </div>
   </div>
 
-
-  <div class="step-wrapper" [hidden]="active !== 2" formGroupName="2">
-    <h2 class="step-title"> Статус заявки</h2>
-
+  <!-- ШАГ 3: Статус заявки -->
+  <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
     <div class="field">
       <div>
         <p class="label">Статус заявки</p>
@@ -188,56 +153,17 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="status">
+      <select formControlName="status" (invalid)="getControl(2, 'status').invalid">
         @for (option of statusOptions; track $index) {
         <option [value]="getItem('status', $index)">{{option.text}}</option>
         }
       </select>
     </div>
-
-    <div class="info-box">
-      <h4> Что будет дальше?</h4>
-      <ul>
-        <li>Ваше объявление появится в реестре пропавших котиков</li>
-        <li>Пользователи рядом получат уведомление</li>
-        <li>Если котика найдут, вы сможете отметить заявку как "Найден"</li>
-        <li>Все данные сохранятся в архиве для статистики</li>
-      </ul>
-    </div>
   </div>
 
-
+  <!-- ШАГ 4: Проверка -->
   @if (active === 3) {
-  <div class="step-wrapper">
-    <h2 class="step-title"> Проверка данных</h2>
-    <app-check-info [data]="getResult"></app-check-info>
-
-    @if (!hasPhotos) {
-    <div class="warning-box">
-      ⚠ Вы не загрузили фотографии. Это может замедлить поиск котика.
-    </div>
-    }
-  </div>
+  <app-check-info [data]="getResult"></app-check-info>
   }
-
-
-  <div class="navigation-buttons">
-    <button class="btn btn-secondary" (click)="prevStep()" [disabled]="active === 0">
-      Назад
-    </button>
-    @if (active < 3) {
-    <button class="btn btn-primary" (click)="nextStep()">
-      Далее
-    </button>
-    } @else {
-    <button class="btn btn-success" (click)="submitForm()" [disabled]="form.invalid || submitting">
-      @if (submitting) {
-      Отправка...
-      } @else {
-       Отправить заявку
-      }
-    </button>
-    }
-  </div>
 </div>
 }
