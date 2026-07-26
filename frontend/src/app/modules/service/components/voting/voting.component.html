@@ -62,9 +62,11 @@
                 [class.ballot__item--selected]="isPartySelected(party.name)"
                 (click)="selectParty(party.name)"
               >
-                @if (party.logoUrl) {
-                  <img class="ballot__logo" [src]="party.logoUrl" [alt]="party.name">
-                }
+                <div class="ballot__logo">
+                  @if (party.logoUrl) {
+                    <img [src]="party.logoUrl" [alt]="party.name">
+                  }
+                </div>
                 <div class="ballot__text">
                   <p class="ballot__name">{{ party.name }}</p>
                   <p class="ballot__description">{{ party.description }}</p>
