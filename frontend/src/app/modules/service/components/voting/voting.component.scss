@@ -25,6 +25,7 @@
   align-items: flex-start;
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   margin: 0;
   padding: 16px;
   text-align: left;
@@ -32,6 +33,7 @@
   border: 1px solid palette.$color-divider;
   border-radius: 12px;
   cursor: pointer;
+  overflow: hidden;
 
   &:hover {
     border-color: palette.$color-gosblue;
@@ -62,17 +64,22 @@
 .ballot__text {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .ballot__name {
   font-weight: 600;
   margin-bottom: 4px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .ballot__description {
   color: palette.$color-text-helper;
   font-size: 14px;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 :host ::ng-deep .fields-wrapper .field-wrapper--ballot .field--full {
