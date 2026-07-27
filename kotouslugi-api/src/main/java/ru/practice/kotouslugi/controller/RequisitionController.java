@@ -36,7 +36,6 @@ public class RequisitionController extends BaseController {
         return wrapper((s) -> requisitionService.listRequisition());
     }
 
-
     @PostMapping(value = "/create", produces = "application/json")
     @ResponseBody
     @Operation(summary = "Создать заявление", tags = {"Котоуслуги","Заявления"}, responses = {

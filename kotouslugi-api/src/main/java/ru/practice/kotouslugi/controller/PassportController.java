@@ -18,12 +18,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/passport")
+@AllArgsConstructor
 public class PassportController extends BaseController{
-  @Autowired
-  private CatPassportService catPassportService;
 
-  @Autowired
-  private DecisionPassportService decisionPassportService;
+  private final CatPassportService catPassportService;
+
+
+  private final DecisionPassportService decisionPassportService;
 
   @PostMapping(value = "/add", produces = "application/json")
   @Operation(summary = "Добавить паспорт кота", tags = {"Кошачье АПИ"}, responses = {

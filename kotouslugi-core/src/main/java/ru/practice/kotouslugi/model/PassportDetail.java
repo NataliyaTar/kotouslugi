@@ -29,6 +29,7 @@ public class PassportDetail {
 
   @OneToOne
   @JoinColumn()
+  @JsonIgnore
   private Requisition requisition;
 
   @Column(name = "passportNumber", nullable = false, unique = true, length = 20)
@@ -36,7 +37,6 @@ public class PassportDetail {
 
   @Column(name = "issueDate")
   private LocalDate issueDate;
-
 
   @Column(name = "country", nullable = false)
   private String country = "РФ";
@@ -58,7 +58,5 @@ public class PassportDetail {
 
   @Column(name = "chipNumber", length = 50)
   private String chipNumber;
-
-
 
 }
