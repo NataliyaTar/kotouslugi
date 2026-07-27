@@ -131,7 +131,10 @@ export class VotingComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.getControl(0, 'passportNumber').valueChanges.subscribe(() => {
-        this.applyPassportInfo();
+        this.refreshVoterError();
+      }),
+      this.getControl(0, 'cat').valueChanges.subscribe(() => {
+        this.getControl(0, 'passportNumber').updateValueAndValidity({ emitEvent: false });
         this.refreshVoterError();
       }),
     );
@@ -140,7 +143,10 @@ export class VotingComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  /** Паспорт из getAll + возраст кота из паспорта (≥ 3). */
+  /**
+   * Паспорт должен существовать и принадлежать выбранному коту.
+   * Возраст выбранного кота ≥ 3.
+   */
   private voterPassportValidator(control: AbstractControl): ValidationErrors | null {
     const number = String(control.value ?? '').trim();
     if (!number || !/^[\d]{4} [\d]{6}$/.test(number)) {
@@ -152,7 +158,12 @@ export class VotingComponent implements OnInit, OnDestroy {
       return { passportNotFound: true };
     }
 
-    const cat = this.catsById.get(passport.catId);
+    const selectedCatId = this.getSelectedCatId();
+    if (!selectedCatId || passport.catId !== selectedCatId) {
+      return { passportOwnerMismatch: true };
+    }
+
+    const cat = this.catsById.get(selectedCatId);
     if (!cat) {
       return { passportNotFound: true };
     }
@@ -165,30 +176,25 @@ export class VotingComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  /** Подставить кота из паспорта и зафиксировать выбор. */
-  private applyPassportInfo(): void {
-    const number = String(this.getControl(0, 'passportNumber').value ?? '').trim();
-    const passport = this.passportsByNumber.get(number);
-    const catControl = this.getControl(0, 'cat');
-
-    if (!passport?.catId) {
-      catControl.enable({ emitEvent: false });
-      return;
+  private getSelectedCatId(): number | null {
+    const raw = this.form?.get('0.cat')?.value;
+    if (typeof raw !== 'string' || !raw) {
+      return null;
     }
 
-    const option = this.optionsCat.find(cat => cat.id === passport.catId);
-    if (option) {
-      catControl.setValue(JSON.stringify(option), { emitEvent: false });
-      catControl.disable({ emitEvent: false });
-    } else {
-      catControl.enable({ emitEvent: false });
+    try {
+      const parsed = JSON.parse(raw) as IValueCat;
+      const id = Number(parsed?.id);
+      return Number.isFinite(id) ? id : null;
+    } catch {
+      return null;
     }
   }
 
   private refreshVoterError(): void {
     const errors = this.getControl(0, 'passportNumber').errors;
-    if (errors?.['passportNotFound']) {
-      this.voterError = 'Паспорт не найден. Оформите его в разделе «Паспорт»';
+    if (errors?.['passportNotFound'] || errors?.['passportOwnerMismatch']) {
+      this.voterError = 'Неверный паспорт';
     } else if (errors?.['tooYoung']) {
       this.voterError = 'Голосование доступно только котам с 3 лет';
     } else {
