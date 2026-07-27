@@ -44,7 +44,7 @@ public class Requisition implements Serializable {
     private PassportDetail passportDetail;
     @Column(columnDefinition = "TEXT")
     @JsonDeserialize(using = StringDeserializer.class)
-    private String fields; //сделал по совету нейронки, если че сорян
+    private String fields;
 
     public static class StringDeserializer extends JsonDeserializer<String> {
       @Override

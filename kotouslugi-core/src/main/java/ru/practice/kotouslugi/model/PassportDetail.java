@@ -29,7 +29,6 @@ public class PassportDetail {
 
   @OneToOne
   @JoinColumn()
-  @JsonIgnore
   private Requisition requisition;
 
   @Column(name = "passportNumber", nullable = false, unique = true, length = 20)
