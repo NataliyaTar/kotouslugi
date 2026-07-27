@@ -11,5 +11,6 @@ public interface PoliticalPartyRepository extends CrudRepository<PoliticalParty,
     boolean existsByName(String name);
 
     boolean existsByCandidateCatId(Long id);
-  Optional<PoliticalParty> findByName(String name);
+
+    Optional<PoliticalParty> findByName(String name);
 }
