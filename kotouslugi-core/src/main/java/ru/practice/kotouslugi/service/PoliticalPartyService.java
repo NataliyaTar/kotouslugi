@@ -24,9 +24,15 @@ public class PoliticalPartyService {
 
   public PoliticalParty addPoliticalParty(PoliticalPartyDTO dto){
     if (politicalPartyRepository.existsByName(dto.getName())){throw new DuplicateEntityException();}
+
     Optional<Cat> cat = catRepository.findById(dto.getCandidateCatId());
+
     if (cat.isEmpty()){throw new EntityNotFoundException();}
+
+    if (politicalPartyRepository.existsByCandidateCatId(cat.get().getId())){throw new DuplicateEntityException();}
+
     if (Integer.parseInt(cat.get().getAge()) < 4){throw new ForbiddenException();}
+
     PoliticalParty politicalParty = new PoliticalParty().builder()
       .candidateCatId(dto.getCandidateCatId())
       .description(dto.getDescription())

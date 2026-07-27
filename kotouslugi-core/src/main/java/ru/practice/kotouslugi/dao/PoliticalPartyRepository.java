@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface PoliticalPartyRepository extends CrudRepository<PoliticalParty, Long> {
     boolean existsByName(String name);
 
-
+    boolean existsByCandidateCatId(Long id);
   Optional<PoliticalParty> findByName(String name);
 }
