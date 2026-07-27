@@ -34,6 +34,11 @@ export const routes: Routes = [
     loadChildren: () => import('./modules/documents/documents.module').then(mod => mod.DocumentsModule)
   },
   {
+    path: 'voting-results',
+    pathMatch: 'full',
+    loadChildren: () => import('./modules/voting-results/voting-results.module').then(mod => mod.VotingResultsModule)
+  },
+  {
     path: 'service',
     loadChildren: () => import('./modules/service/service.module').then(mod => mod.ServiceModule)
   },

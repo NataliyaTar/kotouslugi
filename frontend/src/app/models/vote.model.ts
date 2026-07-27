@@ -8,3 +8,10 @@ export interface ICastVoteRequest {
 
 /** Ответ 201 POST /api/vote/online */
 export type ICastVoteResponse = ICastVoteRequest;
+
+/** Элемент GET /api/vote/getRes?t=... */
+export interface IPartyVoteResult {
+  partyName: string;
+  voteCount: number;
+  percentage: number;
+}

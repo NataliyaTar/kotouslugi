@@ -1,0 +1,53 @@
+<div class="container page-wrapper">
+  <h3>Результаты голосования</h3>
+
+  <div class="period-form">
+    <label class="period-form__label" for="election-period">Период</label>
+    <select
+      id="election-period"
+      class="period-form__input"
+      name="electionPeriod"
+      [(ngModel)]="selectedPeriod"
+      (change)="onPeriodChange()"
+    >
+      @for (option of periodOptions; track option) {
+        <option [value]="option">{{ option }}</option>
+      }
+    </select>
+  </div>
+
+  @if (loading) {
+    <app-throbber></app-throbber>
+  } @else if (error) {
+    <app-error></app-error>
+  } @else {
+    <p class="page-description">
+      Период {{ period }}. Всего голосов: {{ totalVotes }}.
+    </p>
+
+    <div class="results-list">
+      @for (item of results; track item.partyName) {
+        <article class="result-card shadow-block">
+          <div class="result-card__header">
+            <h4 class="result-card__name">{{ item.partyName }}</h4>
+            <div class="result-card__stats">
+              <span class="result-card__percent">{{ item.percentage | number:'1.0-1' }}%</span>
+              <span class="result-card__votes">{{ item.voteCount }} голосов</span>
+            </div>
+          </div>
+          <div class="result-card__bar" aria-hidden="true">
+            <div class="result-card__bar-fill" [style.width]="barWidth(item.percentage)"></div>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state col-2 col-lg-12">
+          <img src="../../../assets/png/cats/work2.png" class="image" alt="">
+          <h3>Пока нет голосов</h3>
+          <p class="text">
+            Результаты появятся после первых голосов в выбранном избирательном периоде.
+          </p>
+        </div>
+      }
+    </div>
+  }
+</div>
