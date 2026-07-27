@@ -29,6 +29,13 @@ export enum FormMap { // маппинг названия поля - значен
   status = 'Статус заявки'
 }
 
+// Интерфейс для загруженных файлов
+interface IUploadedFile {
+  file: File;
+  url: string;
+  name: string;
+}
+
 @Component({
   selector: 'app-missing-cat',
   standalone: true,
@@ -47,6 +54,7 @@ export class MissingCatComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup; // форма
   public active: number; // активный шаг формы
   public optionsCat: IValueCat[]; // список котов
+  public uploadedPhotos: IUploadedFile[] = []; // загруженные фотографии
 
   // Варианты пола
   public genderOptions = [
@@ -66,22 +74,16 @@ export class MissingCatComponent implements OnInit, OnDestroy {
   private steps: IStep[]; // шаги формы
   private subscriptions: Subscription[] = [];
 
-  // Фотографии
-  public uploadedPhotos: { file: File; url: string; name: string }[] = [];
-
   /**
    * Возвращает преобразованное значение формы для отображения заполненных данных
    */
   public get getResult() {
-    const rawValue = this.form.getRawValue();
-    const previewValue = {
-      ...rawValue,
-      1: { ...rawValue[1] },
-      2: { ...rawValue[2] }
-    };
-    return this.serviceInfo.prepareDataForPreview(previewValue, this.steps, FormMap);
+    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
   }
 
+  /**
+   * Проверяет, есть ли загруженные фотографии
+   */
   public get hasPhotos(): boolean {
     return this.uploadedPhotos.length > 0;
   }
@@ -104,42 +106,52 @@ export class MissingCatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Запрашиваем отформатированный список котов
+   * Проверяем есть ли возможность использовать форму.
+   * Запрашиваем список котов
    */
-  private getCatOptions(): void {
+  public getCatOptions(): void {
     this.constantService.getCatOptionsAll().pipe(
       take(1)
-    ).subscribe((res: IValueCat[]) => {
-      this.optionsCat = res;
-      this.prepareService();
+    ).subscribe(res => {
+      if (!res.length) {
+        this.notEnoughCats = true;
+        this.loading = false;
+      } else {
+        this.optionsCat = res;
+        this.prepareService();
+      }
     });
   }
 
   /**
    * Получаем мнемонику формы, запрашиваем шаги формы
+   * @private
    */
   private prepareService(): void {
     this.route.data.pipe(
       take(1)
     ).subscribe(res => {
       this.idService = res['idService'];
-      // запрашиваем шаги формы
+
       this.serviceInfo.getSteps(this.idService).pipe(
         take(1)
       ).subscribe(res => {
         this.steps = res;
       });
+
       this.subscriptions.push(
         this.serviceInfo.activeStep.subscribe(res => {
           this.active = res?.[this.idService] || 0;
         })
       );
+
       this.initForm();
     });
   }
 
   /**
    * Инициализация формы
+   * @private
    */
   private initForm(): void {
     const defaultCat = this.optionsCat.length > 0 ? JSON.stringify(this.optionsCat[0]) : '';
@@ -165,6 +177,7 @@ export class MissingCatComponent implements OnInit, OnDestroy {
       }),
     });
 
+    // сеттим значение формы в сервис
     this.serviceInfo.servicesForms$.next({
       [this.idService]: this.form
     });
@@ -174,6 +187,7 @@ export class MissingCatComponent implements OnInit, OnDestroy {
 
   /**
    * Возвращает json в виде строки
+   * @param index
    */
   public getItem(type: 'cat' | 'gender' | 'status', index: number): string {
     if (type === 'cat') {
@@ -190,13 +204,15 @@ export class MissingCatComponent implements OnInit, OnDestroy {
 
   /**
    * Возвращает контрол формы
+   * @param step
+   * @param id
    */
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
 
   /**
-   * Запоминаем имена выбранных файлов в контроле формы (для превью и валидации)
+   * Запоминаем выбранные файлы и отображаем превью
    */
   public onPhotosSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -220,7 +236,7 @@ export class MissingCatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Удаляет фото
+   * Удаляет фотографию по индексу
    */
   public removePhoto(index: number): void {
     this.uploadedPhotos.splice(index, 1);

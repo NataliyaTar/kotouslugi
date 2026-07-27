@@ -10,8 +10,6 @@
 </div>
 } @else {
 <div class="fields-wrapper" [formGroup]="form">
-
-  <!-- ШАГ 1: Информация о котике -->
   <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
     <div class="field">
       <div>
@@ -94,9 +92,41 @@
       </div>
       <textarea formControlName="distinctiveFeatures" placeholder="Например: белое пятно на лбу, рыжий хвост..."></textarea>
     </div>
+
+    <!-- ФОТОГРАФИИ -->
+    <div class="field field-photo">
+      <div>
+        <p class="label">📸 Фотографии котика</p>
+        <p class="hint">Загрузите несколько фотографий для лучшего поиска</p>
+      </div>
+
+      @if (uploadedPhotos.length === 0) {
+      <div class="photo-upload-area">
+        <input type="file" multiple accept="image/*" (change)="onPhotosSelected($event)" hidden #photoInput>
+        <button type="button" class="btn-upload" (click)="photoInput.click()">
+          <span class="icon">📁</span> Выбрать фотографии
+        </button>
+        <p class="hint">Поддерживаются: JPG, PNG, GIF. Максимум 5 МБ</p>
+      </div>
+      } @else {
+      <div class="photo-preview-grid">
+        @for (photo of uploadedPhotos; track $index) {
+        <div class="photo-item">
+          <img [src]="photo.url" alt="Фото котика">
+          <button type="button" class="btn-remove" (click)="removePhoto($index)">✕</button>
+        </div>
+        }
+      </div>
+      <div class="add-more-wrapper">
+        <input type="file" multiple accept="image/*" (change)="onPhotosSelected($event)" hidden #photoInputMore>
+        <button type="button" class="btn-add-more" (click)="photoInputMore.click()">
+          + Добавить ещё
+        </button>
+      </div>
+      }
+    </div>
   </div>
 
-  <!-- ШАГ 2: Место и дата пропажи -->
   <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
     <div class="field">
       <div>
@@ -144,7 +174,6 @@
     </div>
   </div>
 
-  <!-- ШАГ 3: Статус заявки -->
   <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
     <div class="field">
       <div>
@@ -161,7 +190,6 @@
     </div>
   </div>
 
-  <!-- ШАГ 4: Проверка -->
   @if (active === 3) {
   <app-check-info [data]="getResult"></app-check-info>
   }
