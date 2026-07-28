@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practice.kotouslugi.model.Breeding;
+import ru.practice.kotouslugi.model.BreedingRequest;
 import ru.practice.kotouslugi.service.BreedingService;
 
 import java.util.List;
@@ -46,6 +47,16 @@ public class BreedingController extends BaseController {
   )
   public ResponseEntity<List<Breeding>> getMatches(@RequestParam Long profileId) {
     return this.<List<Breeding>>wrapper((s) -> breedingService.findMatches(profileId));
+  }
+
+  @PostMapping(value = "/request/send", produces = "application/json")
+  @ResponseBody
+  @Operation(summary = "Отправить запрос на вязку партнёру", tags = {"Вязка кошек"}, responses = {
+    @ApiResponse(responseCode = "200", description = "OK"),
+    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+  )
+  public ResponseEntity<Long> sendRequest(@RequestBody BreedingRequest request) {
+    return this.<Long>wrapper((s) -> breedingService.sendRequest(request));
   }
 
   @PostMapping(value = "/request/status", produces = "application/json")
