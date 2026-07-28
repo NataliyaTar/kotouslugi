@@ -104,8 +104,13 @@ VALUES (2, 'Британская', 'MALE', 'Москва', 3, true, 'Брита�
 INSERT INTO breeding_profiles (id, breed, gender, city, age, has_pedigree, target_breed, target_city, min_age, max_age, status)
 VALUES (3, 'Мейн-кун', 'MALE', 'Воронеж', 4, false, 'Мейн-кун', 'Воронеж', 2, 6, 'ACTIVE');
 
+-- ID проставлены вручную, поэтому сдвигаем автоинкремент, иначе следующая реальная анкета
+-- упадёт с ошибкой "нарушение первичного ключа"
+ALTER TABLE breeding_profiles ALTER COLUMN id RESTART WITH 4;
 
 -- breeding_requests (тестовый запрос на вязку)
 -- Кот Борис (ID 2) отправляет предложение кошке Мусе (ID 1)
 INSERT INTO breeding_requests (id, sender_profile_id, receiver_profile_id, status)
 VALUES (1, 2, 1, 'PENDING');
+
+ALTER TABLE breeding_requests ALTER COLUMN id RESTART WITH 2;
