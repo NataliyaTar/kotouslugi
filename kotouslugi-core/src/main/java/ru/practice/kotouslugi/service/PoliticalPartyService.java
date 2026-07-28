@@ -3,11 +3,13 @@ package ru.practice.kotouslugi.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practice.kotouslugi.dao.CatPassportRepository;
 import ru.practice.kotouslugi.dao.CatRepository;
 import ru.practice.kotouslugi.dao.PoliticalPartyRepository;
 import ru.practice.kotouslugi.exception.DuplicateEntityException;
 import ru.practice.kotouslugi.exception.ForbiddenException;
 import ru.practice.kotouslugi.model.Cat;
+import ru.practice.kotouslugi.model.PassportDetail;
 import ru.practice.kotouslugi.model.PoliticalParty;
 import ru.practice.kotouslugi.model.PoliticalPartyDTO;
 
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class PoliticalPartyService {
   private final PoliticalPartyRepository politicalPartyRepository;
   private final CatRepository catRepository;
+  private final CatPassportRepository catPassportRepository;
 
   public PoliticalParty addPoliticalParty(PoliticalPartyDTO dto){
     if (politicalPartyRepository.existsByName(dto.getName())){throw new DuplicateEntityException();}
@@ -28,10 +31,12 @@ public class PoliticalPartyService {
     Optional<Cat> cat = catRepository.findById(dto.getCandidateCatId());
 
     if (cat.isEmpty()){throw new EntityNotFoundException();}
-
     if (politicalPartyRepository.existsByCandidateCatId(cat.get().getId())){throw new DuplicateEntityException();}
-
     if (Integer.parseInt(cat.get().getAge()) < 4){throw new ForbiddenException();}
+    Optional<PassportDetail> candidatePassport = catPassportRepository.findByPassportNumber(dto.getPassportNumber());
+    if (candidatePassport.isEmpty() || !candidatePassport.get().isStatus()){throw new ForbiddenException();}
+
+
 
     PoliticalParty politicalParty = new PoliticalParty().builder()
       .candidateCatId(dto.getCandidateCatId())

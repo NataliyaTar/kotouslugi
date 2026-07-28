@@ -10,4 +10,5 @@ public class PoliticalPartyDTO {
   private String description;
   private String logoUrl;
   private Long candidateCatId;
+  private String passportNumber;
 }
