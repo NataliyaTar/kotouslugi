@@ -1,11 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { IValueCat } from '@models/cat.model';
+import { IExhibition } from '@models/exhibition.model';
+import { IValue } from '@models/common.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
+import { ExhibitionService } from '@services/exhibition/exhibition.service';
 import { IStep } from '@models/step.model';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
@@ -25,6 +28,7 @@ export enum FormMap {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     CheckInfoComponent,
     ThrobberComponent,
   ],
@@ -37,13 +41,7 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup;
   public active: number;
   public optionsCat: IValueCat[];
-
-  // TODO: подключить API — список выставок пока захардкожен, эндпоинта на бэке ещё нет
-  public exhibitionOptions = [
-    { id: 1, text: 'Международная выставка «Кубок Пушистых» — 15.08.2026, Москва' },
-    { id: 2, text: 'Выставка WCF «Мурлыка» — 02.09.2026, Санкт-Петербург' },
-    { id: 3, text: 'Монопородная выставка TICA «Сиамский стиль» — 20.09.2026, Казань' },
-  ];
+  public exhibitionOptions: IValue[] = [];
 
   public exhibitionClassOptions = [
     { id: 'kitten', text: 'Котята' },
@@ -51,6 +49,11 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     { id: 'open', text: 'Открытый класс' },
     { id: 'veteran', text: 'Ветераны' },
   ];
+
+  public reviewExhibitionId: number | null = null;
+  public reviewRating = 5;
+  public reviewComment = '';
+  public reviewSubmitted = false;
 
   private idService: string;
   private steps: IStep[];
@@ -72,6 +75,7 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private constantService: ConstantsService,
+    private exhibitionService: ExhibitionService,
   ) {
   }
 
@@ -90,6 +94,19 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe((res: IValueCat[]) => {
       this.optionsCat = res;
+
+      this.getExhibitionOptions();
+    });
+  }
+
+  private getExhibitionOptions(): void {
+    this.exhibitionService.getExhibitions().pipe(
+      take(1)
+    ).subscribe((res: IExhibition[]) => {
+      this.exhibitionOptions = res.map(item => ({
+        id: item.id,
+        text: `${item.name} — ${item.date}, ${item.city}`
+      }));
 
       this.prepareService();
     });
@@ -138,6 +155,7 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
       [this.idService]: this.form
     });
 
+    this.reviewExhibitionId = this.exhibitionOptions[0]?.id ?? null;
     this.loading = false;
   }
 
@@ -160,6 +178,22 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
 
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
+  }
+
+  public submitReview(): void {
+    if (!this.reviewExhibitionId) {
+      return;
+    }
+
+    this.exhibitionService.submitReview(this.reviewExhibitionId, {
+      exhibitionId: this.reviewExhibitionId,
+      rating: this.reviewRating,
+      comment: this.reviewComment,
+    }).pipe(
+      take(1)
+    ).subscribe(() => {
+      this.reviewSubmitted = true;
+    });
   }
 
 }

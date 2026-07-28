@@ -59,3 +59,16 @@
     accent-color: palette.$color-gosblue;
   }
 }
+
+.matches-block {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid palette.$color-divider;
+
+  .match-card {
+    margin-top: 16px;
+    padding: 16px;
+    background: palette.$color-input;
+    border-radius: 8px;
+  }
+}

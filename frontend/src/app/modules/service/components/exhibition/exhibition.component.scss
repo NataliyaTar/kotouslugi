@@ -60,3 +60,13 @@
     accent-color: palette.$color-gosblue;
   }
 }
+
+.review-block {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid palette.$color-divider;
+
+  .field {
+    margin-top: 16px;
+  }
+}
