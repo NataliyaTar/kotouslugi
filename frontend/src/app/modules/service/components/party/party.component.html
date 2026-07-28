@@ -15,6 +15,9 @@
               <p class="error">Не больше 100 символов</p>
             }
           }
+          @if (nameError && getControl(0, 'name').touched) {
+            <p class="error">{{ nameError }}</p>
+          }
         </div>
         <input formControlName="name" placeholder="Название партии">
       </div>
@@ -41,6 +44,9 @@
           <p class="label">Кандидат</p>
           @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
             <p class="error">Поле обязательно для заполнения</p>
+          }
+          @if (candidateError && getControl(0, 'cat').touched) {
+            <p class="error">{{ candidateError }}</p>
           }
         </div>
         <select formControlName="cat">

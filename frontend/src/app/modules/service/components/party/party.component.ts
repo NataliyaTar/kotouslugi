@@ -1,17 +1,23 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormControl,
   ReactiveFormsModule,
   UntypedFormGroup,
+  ValidationErrors,
   Validators
 } from '@angular/forms';
-import { IValueCat } from '@models/cat.model';
+import { ICat, IValueCat } from '@models/cat.model';
+import { IPoliticalParty } from '@models/party.model';
 import { IStep } from '@models/step.model';
-import { Subscription, take } from 'rxjs';
+import { forkJoin, of, Subscription, take } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
 import { ConstantsService } from '@services/constants/constants.service';
+import { CatService } from '@services/cat/cat.service';
+import { PartyService } from '@services/party/party.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
@@ -35,10 +41,15 @@ export class PartyComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup;
   public active: number;
   public optionsCat: IValueCat[];
+  public candidateError: string | null = null;
+  public nameError: string | null = null;
 
   private idService: string;
   private steps: IStep[];
   private subscriptions: Subscription[] = [];
+  private catsById = new Map<number, ICat>();
+  private partyNames = new Set<string>();
+  private candidateCatIds = new Set<number>();
 
   public get getResult() {
     return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
@@ -49,19 +60,39 @@ export class PartyComponent implements OnInit, OnDestroy {
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private constantService: ConstantsService,
+    private catService: CatService,
+    private partyService: PartyService,
   ) {}
 
   public ngOnInit(): void {
-    this.getCatOption();
+    this.loadData();
   }
 
   public ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  private getCatOption(): void {
-    this.constantService.getCatOptionsAll().pipe(take(1)).subscribe((res: IValueCat[]) => {
-      this.optionsCat = res;
+  private loadData(): void {
+    forkJoin({
+      options: this.constantService.getCatOptionsAll().pipe(take(1)),
+      cats: this.catService.getCatList().pipe(take(1), catchError(() => of([] as ICat[]))),
+      parties: this.partyService.getParties().pipe(take(1), catchError(() => of([] as IPoliticalParty[]))),
+    }).subscribe(({ options, cats, parties }) => {
+      this.optionsCat = options;
+      this.catsById.clear();
+      (cats ?? []).forEach(cat => this.catsById.set(cat.id, cat));
+
+      this.partyNames.clear();
+      this.candidateCatIds.clear();
+      (parties ?? []).forEach(party => {
+        if (party.name) {
+          this.partyNames.add(party.name.trim().toLowerCase());
+        }
+        if (party.candidateCatId != null) {
+          this.candidateCatIds.add(Number(party.candidateCatId));
+        }
+      });
+
       this.prepareService();
     });
   }
@@ -87,15 +118,99 @@ export class PartyComponent implements OnInit, OnDestroy {
   private initForm(): void {
     this.form = this.fb.group({
       0: this.fb.group({
-        name: ['', [Validators.required, Validators.maxLength(100)]],
+        name: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(100),
+            (control: AbstractControl) => this.partyNameValidator(control),
+          ],
+        ],
         description: ['', [Validators.required]],
         logoUrl: [''],
-        cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
+        cat: [
+          JSON.stringify(this.optionsCat[0]),
+          [
+            Validators.required,
+            (control: AbstractControl) => this.candidateValidator(control),
+          ],
+        ],
       }),
     });
 
+    this.subscriptions.push(
+      this.getControl(0, 'name').valueChanges.subscribe(() => this.refreshNameError()),
+      this.getControl(0, 'cat').valueChanges.subscribe(() => this.refreshCandidateError()),
+    );
+
+    this.refreshNameError();
+    this.refreshCandidateError();
+
+    const catControl = this.getControl(0, 'cat');
+    if (catControl.invalid) {
+      catControl.markAsTouched();
+    }
+
     this.serviceInfo.servicesForms$.next({ [this.idService]: this.form });
     this.loading = false;
+  }
+
+  /** Название не должно совпадать с уже существующей партией. */
+  private partyNameValidator(control: AbstractControl): ValidationErrors | null {
+    const name = String(control.value ?? '').trim().toLowerCase();
+    if (!name) {
+      return null;
+    }
+    return this.partyNames.has(name) ? { duplicateName: true } : null;
+  }
+
+  /** Кот не должен уже быть кандидатом другой партии; возраст ≥ 4. */
+  private candidateValidator(control: AbstractControl): ValidationErrors | null {
+    const option = this.parseCatOption(control.value);
+    if (!option?.id) {
+      return null;
+    }
+
+    if (this.candidateCatIds.has(option.id)) {
+      return { alreadyCandidate: true };
+    }
+
+    const cat = this.catsById.get(option.id);
+    const age = Number.parseInt(cat?.age ?? '', 10);
+    if (Number.isFinite(age) && age < 4) {
+      return { tooYoung: true };
+    }
+
+    return null;
+  }
+
+  private refreshNameError(): void {
+    const errors = this.getControl(0, 'name').errors;
+    this.nameError = errors?.['duplicateName']
+      ? 'Партия с таким названием уже существует'
+      : null;
+  }
+
+  private refreshCandidateError(): void {
+    const errors = this.getControl(0, 'cat').errors;
+    if (errors?.['alreadyCandidate']) {
+      this.candidateError = 'Этот кот уже является кандидатом другой партии';
+    } else if (errors?.['tooYoung']) {
+      this.candidateError = 'Кандидат должен быть старше 3 лет';
+    } else {
+      this.candidateError = null;
+    }
+  }
+
+  private parseCatOption(value: unknown): IValueCat | null {
+    if (typeof value !== 'string' || !value) {
+      return null;
+    }
+    try {
+      return JSON.parse(value) as IValueCat;
+    } catch {
+      return null;
+    }
   }
 
   public getItem(index: number): string {
