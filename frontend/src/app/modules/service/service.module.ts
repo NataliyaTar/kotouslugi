@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { ServiceComponent } from './service.component';
 import { NewFamilyComponent } from './components/new-family/new-family.component';
 import { VetComponent } from './components/vet/vet.component';
+import { ExhibitionComponent } from './components/exhibition/exhibition.component';
+import { BreedingPartnerComponent } from './components/breeding-partner/breeding-partner.component';
 
 /**
  * Роутинг для услуг
@@ -27,6 +29,22 @@ const routes: Routes = [
           idService: 'vet'
         },
         component: VetComponent
+      },
+      {
+        path: 'exhibition',
+        pathMatch: 'full',
+        data: {
+          idService: 'exhibition'
+        },
+        component: ExhibitionComponent
+      },
+      {
+        path: 'breeding_partner',
+        pathMatch: 'full',
+        data: {
+          idService: 'breeding_partner'
+        },
+        component: BreedingPartnerComponent
       },
       // ToDo: your router for service
     ]
