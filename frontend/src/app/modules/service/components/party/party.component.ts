@@ -10,6 +10,7 @@ import {
 } from '@angular/forms';
 import { ICat, IValueCat } from '@models/cat.model';
 import { IPoliticalParty } from '@models/party.model';
+import { IPassportDocument } from '@models/passport.model';
 import { IStep } from '@models/step.model';
 import { forkJoin, of, Subscription, take } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -17,6 +18,7 @@ import { ServiceInfoService } from '@services/servise-info/service-info.service'
 import { ActivatedRoute } from '@angular/router';
 import { ConstantsService } from '@services/constants/constants.service';
 import { CatService } from '@services/cat/cat.service';
+import { PassportService } from '@services/passport/passport.service';
 import { PartyService } from '@services/party/party.service';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
@@ -26,6 +28,7 @@ export enum FormMap {
   description = 'Описание',
   logoUrl = 'Логотип',
   cat = 'Кандидат',
+  passportNumber = 'Номер паспорта',
 }
 
 @Component({
@@ -42,12 +45,14 @@ export class PartyComponent implements OnInit, OnDestroy {
   public active: number;
   public optionsCat: IValueCat[];
   public candidateError: string | null = null;
+  public passportError: string | null = null;
   public nameError: string | null = null;
 
   private idService: string;
   private steps: IStep[];
   private subscriptions: Subscription[] = [];
   private catsById = new Map<number, ICat>();
+  private passportsByNumber = new Map<string, IPassportDocument>();
   private partyNames = new Set<string>();
   private candidateCatIds = new Set<number>();
 
@@ -61,6 +66,7 @@ export class PartyComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private constantService: ConstantsService,
     private catService: CatService,
+    private passportService: PassportService,
     private partyService: PartyService,
   ) {}
 
@@ -77,10 +83,18 @@ export class PartyComponent implements OnInit, OnDestroy {
       options: this.constantService.getCatOptionsAll().pipe(take(1)),
       cats: this.catService.getCatList().pipe(take(1), catchError(() => of([] as ICat[]))),
       parties: this.partyService.getParties().pipe(take(1), catchError(() => of([] as IPoliticalParty[]))),
-    }).subscribe(({ options, cats, parties }) => {
+      passports: this.passportService.getApprovedPassports().pipe(take(1), catchError(() => of([] as IPassportDocument[]))),
+    }).subscribe(({ options, cats, parties, passports }) => {
       this.optionsCat = options;
       this.catsById.clear();
       (cats ?? []).forEach(cat => this.catsById.set(cat.id, cat));
+
+      this.passportsByNumber.clear();
+      (passports ?? []).forEach(passport => {
+        if (passport.passportNumber) {
+          this.passportsByNumber.set(passport.passportNumber, passport);
+        }
+      });
 
       this.partyNames.clear();
       this.candidateCatIds.clear();
@@ -135,20 +149,39 @@ export class PartyComponent implements OnInit, OnDestroy {
             (control: AbstractControl) => this.candidateValidator(control),
           ],
         ],
+        passportNumber: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(/^[\d]{4} [\d]{6}$/),
+            (control: AbstractControl) => this.partyPassportValidator(control),
+          ],
+        ],
       }),
     });
 
     this.subscriptions.push(
       this.getControl(0, 'name').valueChanges.subscribe(() => this.refreshNameError()),
-      this.getControl(0, 'cat').valueChanges.subscribe(() => this.refreshCandidateError()),
+      this.getControl(0, 'passportNumber').valueChanges.subscribe(() => this.refreshPassportError()),
+      this.getControl(0, 'cat').valueChanges.subscribe(() => {
+        this.getControl(0, 'passportNumber').updateValueAndValidity({ emitEvent: false });
+        this.refreshCandidateError();
+        this.refreshPassportError();
+      }),
     );
 
     this.refreshNameError();
     this.refreshCandidateError();
+    this.refreshPassportError();
 
     const catControl = this.getControl(0, 'cat');
     if (catControl.invalid) {
       catControl.markAsTouched();
+    }
+
+    const passportControl = this.getControl(0, 'passportNumber');
+    if (passportControl.invalid) {
+      passportControl.markAsTouched();
     }
 
     this.serviceInfo.servicesForms$.next({ [this.idService]: this.form });
@@ -202,6 +235,15 @@ export class PartyComponent implements OnInit, OnDestroy {
     }
   }
 
+  private refreshPassportError(): void {
+    const errors = this.getControl(0, 'passportNumber').errors;
+    if (errors?.['passportNotFound'] || errors?.['passportOwnerMismatch']) {
+      this.passportError = 'Неверный паспорт';
+    } else {
+      this.passportError = null;
+    }
+  }
+
   private parseCatOption(value: unknown): IValueCat | null {
     if (typeof value !== 'string' || !value) {
       return null;
@@ -211,6 +253,43 @@ export class PartyComponent implements OnInit, OnDestroy {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Паспорт должен существовать в списке одобренных и принадлежать выбранному коту-кандидату.
+   */
+  private partyPassportValidator(control: AbstractControl): ValidationErrors | null {
+    const number = String(control.value ?? '').trim();
+    if (!number || !/^[\d]{4} [\d]{6}$/.test(number)) {
+      return null; // формат отлавливает pattern
+    }
+
+    const passport = this.passportsByNumber.get(number);
+    if (!passport) {
+      return { passportNotFound: true };
+    }
+
+    const option = this.parseCatOption(this.getControl(0, 'cat').value);
+    if (!option?.id) {
+      return null;
+    }
+
+    if (passport.catId !== option.id) {
+      return { passportOwnerMismatch: true };
+    }
+
+    return null;
+  }
+
+  public onPassportNumberInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 10);
+    const formatted = digits.length > 4
+      ? `${digits.slice(0, 4)} ${digits.slice(4)}`
+      : digits;
+
+    this.getControl(0, 'passportNumber').setValue(formatted);
+    input.value = formatted;
   }
 
   public getItem(index: number): string {

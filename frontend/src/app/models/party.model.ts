@@ -4,6 +4,7 @@ export interface ICreatePartyRequest {
   description: string;
   logoUrl?: string;
   candidateCatId: number;
+  passportNumber: string;
 }
 
 /** Партия: ответ POST /api/party/add и GET /api/party/get */

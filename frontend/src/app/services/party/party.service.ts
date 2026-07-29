@@ -39,7 +39,7 @@ export class PartyService {
 
     switch (error.status) {
       case 403:
-        return 'Кандидат должен быть старше 3 лет';
+        return 'Проверьте возраст кандидата и номер паспорта';
       case 404:
         return 'Кот-кандидат не найден';
       case 409:
