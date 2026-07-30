@@ -137,6 +137,7 @@ export class ServiceComponent implements OnInit, OnDestroy {
           name: String(step['name'] ?? ''),
           description: String(step['description'] ?? ''),
           candidateCatId: this.extractCatId(step['cat']),
+          passportNumber: String(step['passportNumber'] ?? ''),
           ...(logoUrl ? { logoUrl } : {}),
         });
       }

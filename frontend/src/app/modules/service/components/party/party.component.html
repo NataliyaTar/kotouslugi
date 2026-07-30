@@ -55,6 +55,30 @@
           }
         </select>
       </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Номер паспорта</p>
+          @if (getControl(0, 'passportNumber').errors && getControl(0, 'passportNumber').touched) {
+            @if (getControl(0, 'passportNumber').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(0, 'passportNumber').errors?.['pattern']) {
+              <p class="error">Введите 10 цифр</p>
+            }
+          }
+          @if (passportError && getControl(0, 'passportNumber').touched) {
+            <p class="error">{{ passportError }}</p>
+          }
+        </div>
+        <input
+          formControlName="passportNumber"
+          placeholder="0000 000000"
+          inputmode="numeric"
+          maxlength="11"
+          (input)="onPassportNumberInput($event)"
+        >
+      </div>
     </div>
 
     @if (active === 1) {
