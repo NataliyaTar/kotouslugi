@@ -62,3 +62,5 @@ https://www.google.com/search?q=pusheen+cat+transparent&newwindow=1&sca_esv=3697
 
 ## Удалить фон у картинок
 https://removal.ai
+
+##
