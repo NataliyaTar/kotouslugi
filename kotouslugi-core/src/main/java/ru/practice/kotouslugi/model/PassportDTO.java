@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 public class PassportDTO {
   private Long id;
-  private Integer requisition; //тут в дто передается именно id-шник requisition, не путайтесь
+  private Integer requisition;
   private String passportNumber;
   private LocalDate issueDate;
   @Builder.Default

@@ -1,6 +1,7 @@
 package ru.practice.kotouslugi.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
@@ -17,7 +18,7 @@ public class DecisionPassportService {
 
   private final RequisitionRepository requisitionRepository;
 
-
+  @Transactional
   public PassportDTO approvePassport(DecisionPassportDTO decisionPassportDTO){
     Requisition req = requisitionRepository.findById(decisionPassportDTO.getRequisitionId())
       .orElseThrow(() -> new EntityNotFoundException("Requisition not found with id "));
@@ -40,7 +41,7 @@ public class DecisionPassportService {
     }
   }
 
-
+  @Transactional
   public PassportDTO rejectPassport(DecisionPassportDTO decisionPassportDTO){
 
 

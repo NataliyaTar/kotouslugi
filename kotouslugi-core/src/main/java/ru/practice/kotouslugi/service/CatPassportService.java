@@ -2,6 +2,7 @@ package ru.practice.kotouslugi.service;
 
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class CatPassportService {
 
   }
 
-
+  @Transactional
   public PassportDTO addCatPassport(PassportDTO passportDTO) {
     if (catPassportRepository.existsByPassportNumber(passportDTO.getPassportNumber())){
       throw new DuplicateEntityException();

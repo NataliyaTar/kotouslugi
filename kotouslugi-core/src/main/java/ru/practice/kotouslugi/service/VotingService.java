@@ -1,6 +1,8 @@
 package ru.practice.kotouslugi.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.TableGenerator;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
@@ -22,7 +24,7 @@ public class VotingService {
   private final VoitingRecordRepository votingRecordRepository;
   private final PoliticalPartyRepository politicalPartyRepository;
 
-
+  @Transactional
   public CreateVoteRecordDto CastAVoteOnline(CreateVoteRecordDto createVoteRecordDto){
 
     Optional<Cat> cat = catRepository.findById(createVoteRecordDto.getCatId());

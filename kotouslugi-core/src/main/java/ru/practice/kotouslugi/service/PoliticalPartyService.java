@@ -1,6 +1,7 @@
 package ru.practice.kotouslugi.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practice.kotouslugi.dao.CatPassportRepository;
@@ -11,7 +12,7 @@ import ru.practice.kotouslugi.exception.ForbiddenException;
 import ru.practice.kotouslugi.model.Cat;
 import ru.practice.kotouslugi.model.PassportDetail;
 import ru.practice.kotouslugi.model.PoliticalParty;
-import ru.practice.kotouslugi.model.PoliticalPartyDTO;
+import ru.practice.kotouslugi.model.CreatePoliticalPartyDTO;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +26,8 @@ public class PoliticalPartyService {
   private final CatRepository catRepository;
   private final CatPassportRepository catPassportRepository;
 
-  public PoliticalParty addPoliticalParty(PoliticalPartyDTO dto){
+  @Transactional
+  public PoliticalParty addPoliticalParty(CreatePoliticalPartyDTO dto){
     if (politicalPartyRepository.existsByName(dto.getName())){throw new DuplicateEntityException();}
 
     Optional<Cat> cat = catRepository.findById(dto.getCandidateCatId());
