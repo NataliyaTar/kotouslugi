@@ -82,19 +82,71 @@ export class VetPassportComponent implements OnInit, OnDestroy {
     };
   }
 
-  public get getResult() {
-    const rawValue = this.form.getRawValue();
-    const result = this.serviceInfo.prepareDataForPreview(rawValue, this.steps, FormMapVet);
+      public get getResult(): any[][] {
+        const rawValue = this.form.getRawValue();
 
-    return {
-      ...result,
-      'Фото': this.avatarFile ? this.avatarFile.name : 'Не загружено',
-      'Вакцинации': this.vaccinations.length > 0
-        ? this.vaccinations.map(v => `${v.name} (${v.date})`).join('; ')
-        : 'Нет записей',
-      'QR-код': this.qrCodeUrl ? 'Сгенерирован' : 'Не сгенерирован'
-    };
-  }
+        // Формируем массив массивов, который ожидает CheckInfoComponent
+        const formattedData: any[][] = [];
+
+        // ШАГ 1: Данные питомца (берём напрямую из rawValue[0])
+        const step1Data: any[] = [];
+        const petData = rawValue[0];
+
+        if (petData?.petName) {
+          step1Data.push({ name: 'Кличка питомца', value: petData.petName });
+        }
+        if (petData?.breed) {
+          step1Data.push({ name: 'Порода', value: petData.breed });
+        }
+        if (petData?.age !== null && petData?.age !== undefined && petData?.age !== '') {
+          step1Data.push({ name: 'Возраст (лет)', value: petData.age });
+        }
+        if (petData?.gender) {
+          try {
+            const genderObj = typeof petData.gender === 'string' ? JSON.parse(petData.gender) : petData.gender;
+            step1Data.push({ name: 'Пол', value: genderObj?.text || 'Не указан' });
+          } catch (e) {
+            step1Data.push({ name: 'Пол', value: 'Не указан' });
+          }
+        }
+        step1Data.push({ name: 'Фото', value: this.avatarFile ? this.avatarFile.name : 'Не загружено' });
+        formattedData.push(step1Data);
+
+        // ШАГ 2: Чипирование (берём напрямую из rawValue[1])
+        const step2Data: any[] = [];
+        const chipData = rawValue[1];
+
+        if (chipData?.chipNumber) {
+          step2Data.push({ name: 'Номер чипа', value: chipData.chipNumber });
+        }
+        if (chipData?.chipDate) {
+          step2Data.push({ name: 'Дата чипирования', value: chipData.chipDate });
+        }
+        if (chipData?.chipClinic) {
+          step2Data.push({ name: 'Клиника чипирования', value: chipData.chipClinic });
+        }
+        formattedData.push(step2Data);
+
+        // ШАГ 3: Вакцинации
+        const step3Data: any[] = [];
+        step3Data.push({
+          name: 'Вакцинации',
+          value: this.vaccinations.length > 0
+            ? this.vaccinations.map(v => `${v.name} (${v.date})`).join('; ')
+            : 'Нет записей'
+        });
+        formattedData.push(step3Data);
+
+        // ШАГ 4: QR-код
+        const step4Data: any[] = [];
+        step4Data.push({
+          name: 'QR-код',
+          value: this.qrCodeUrl ? 'Сгенерирован' : 'Не сгенерирован'
+        });
+        formattedData.push(step4Data);
+
+        return formattedData;
+      }
 
   constructor(
     private fb: FormBuilder,
@@ -148,33 +200,61 @@ export class VetPassportComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initForm(): void {
-    const defaultGender = JSON.stringify(this.genderOptions[0]);
+    private initForm(): void {
+      const defaultGender = JSON.stringify(this.genderOptions[0]);
 
-    this.form = this.fb.group({
-      0: this.fb.group({
-        pet: [''],
-        petName: ['', [Validators.required]],
-        breed: ['', [Validators.required]],
-        age: ['', [Validators.required, Validators.min(0), Validators.max(30)]],
-        gender: [defaultGender, [Validators.required]],
-      }),
-      1: this.fb.group({
-        chipNumber: ['', [Validators.pattern(/^\d{15}$/)]],
-        chipDate: [''],
-        chipClinic: [''],
-      }),
-      2: this.fb.group({
-        notes: ['']
-      })
-    });
+      this.form = this.fb.group({
+        0: this.fb.group({
+          pet: [''],
+          petName: ['', [Validators.required]],
+          breed: ['', [Validators.required]],
+          age: ['', [Validators.required, Validators.min(0), Validators.max(30)]],
+          gender: [defaultGender, [Validators.required]],
+        }),
+        1: this.fb.group({
+          chipNumber: ['', [Validators.pattern(/^\d{15}$/)]],
+          chipDate: [''],
+          chipClinic: [''],
+        }),
+        2: this.fb.group({
+          notes: ['']
+        }),
+        3: this.fb.group({
+          // Пустая группа для 4-го шага (проверка и QR-код)
+        })
+      });
 
-    this.serviceInfo.servicesForms$.next({
-      [this.idService]: this.form
-    });
+      //  Подписка на изменения номера чипа для динамической валидации
+      this.getControl(1, 'chipNumber').valueChanges.subscribe((value: string) => {
+        this.updateChipValidators(value);
+      });
 
-    this.loading = false;
-  }
+      this.serviceInfo.servicesForms$.next({
+        [this.idService]: this.form
+      });
+
+      this.loading = false;
+    }
+
+    // Метод для обновления валидаторов полей чипирования
+    private updateChipValidators(chipNumber: string): void {
+      const chipDateControl = this.getControl(1, 'chipDate');
+      const chipClinicControl = this.getControl(1, 'chipClinic');
+
+      if (chipNumber && chipNumber.trim().length > 0) {
+        // Если номер чипа введён — делаем поля обязательными
+        chipDateControl.setValidators([Validators.required]);
+        chipClinicControl.setValidators([Validators.required]);
+      } else {
+        // Если номер чипа пустой — убираем обязательность
+        chipDateControl.clearValidators();
+        chipClinicControl.clearValidators();
+      }
+
+      // Обновляем статус валидации
+      chipDateControl.updateValueAndValidity();
+      chipClinicControl.updateValueAndValidity();
+    }
 
   // ✅ ИСПРАВЛЕННЫЙ ОБРАБОТЧИК ВЫБОРА ПИТОМЦА
   public onPetSelected(event: Event): void {
@@ -289,12 +369,26 @@ export class VetPassportComponent implements OnInit, OnDestroy {
   public saveVaccination(): void {
     if (this.vaccinationForm.valid) {
       const vaccination = this.vaccinationForm.value;
+
+      // Добавляем вакцинацию
       this.vaccinations.push({
         name: vaccination.name,
         date: vaccination.date,
         nextDate: vaccination.nextDate,
         veterinarian: vaccination.veterinarian
       });
+
+      //  АВТОМАТИЧЕСКИ создаем напоминание о следующей вакцинации
+      this.reminders.push({
+        type: 'vaccination',
+        title: `Повторная вакцинация: ${vaccination.name}`,
+        date: vaccination.nextDate,
+        isSent: false
+      });
+
+      // Сортируем напоминания по дате (ближайшие сверху)
+      this.reminders.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
       this.showVaccinationForm = false;
       this.vaccinationForm.reset();
     } else {
@@ -303,7 +397,15 @@ export class VetPassportComponent implements OnInit, OnDestroy {
   }
 
   public removeVaccination(index: number): void {
-    this.vaccinations.splice(index, 1);
+    if (confirm('Вы уверены, что хотите удалить эту вакцинацию?')) {
+      const vaccinationName = this.vaccinations[index]?.name;
+      this.vaccinations.splice(index, 1);
+
+      // Удаление связанного напоминания
+      this.reminders = this.reminders.filter(r =>
+        r.title !== `Повторная вакцинация: ${vaccinationName}`
+      );
+    }
   }
 
   public generateQR(): void {

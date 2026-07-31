@@ -55,7 +55,7 @@
         }
         }
       </div>
-      <input formControlName="age" type="number" placeholder="Введите возраст">
+      <input formControlName="age" type="number" min="0" max="30" placeholder="Введите возраст">
     </div>
 
     <div class="field field-gender">
@@ -90,7 +90,7 @@
       <div class="photo-preview-grid">
         <div class="photo-item">
           <img [src]="avatarFile?.url" alt="Фото питомца">
-          <button type="button" class="btn-remove" (click)="removePhoto()"></button>
+          <button type="button" class="btn-remove" (click)="removePhoto()">X</button>
         </div>
       </div>
       }
@@ -123,19 +123,28 @@
 
     <div class="field">
       <div>
-        <p class="label">Дата чипирования</p>
-        @if (getControl(1, 'chipDate').errors?.['required'] && getControl(1, 'chipDate').touched) {
+        <p class="label">Дата чипирования *</p>
+        @if (getControl(1, 'chipDate').errors && getControl(1, 'chipDate').touched) {
+        @if (getControl(1, 'chipDate').errors?.['required']) {
         <p class="error">Поле обязательно для заполнения</p>
+        }
         }
       </div>
       <input formControlName="chipDate" type="date">
+      <p class="hint">Обязательно, если указан номер чипа</p>
     </div>
 
     <div class="field">
       <div>
-        <p class="label">Клиника чипирования</p>
+        <p class="label">Клиника чипирования *</p>
+        @if (getControl(1, 'chipClinic').errors && getControl(1, 'chipClinic').touched) {
+        @if (getControl(1, 'chipClinic').errors?.['required']) {
+        <p class="error">Поле обязательно для заполнения</p>
+        }
+        }
       </div>
       <input formControlName="chipClinic" placeholder="Название ветеринарной клиники">
+      <p class="hint">Обязательно, если указан номер чипа</p>
     </div>
 
     <div class="info-box">
@@ -156,32 +165,10 @@
       <img src="assets/svg/icons/vaccines.svg" alt="" class="step-icon" width="32" height="32">
       <h2 class="step-title">Вакцинации</h2>
     </div>
-
-    <!-- Список добавленных вакцинаций -->
-    @if (vaccinations.length > 0) {
-    <div class="vaccination-list">
-      @for (vaccination of vaccinations; track $index) {
-      <div class="vaccination-item">
-        <div class="field">
-          <p class="label">Название вакцины</p>
-          <p class="value">{{vaccination.name}}</p>
-        </div>
-        <div class="field">
-          <p class="label">Дата вакцинации</p>
-          <p class="value">{{vaccination.date | date:'dd.MM.yyyy'}}</p>
-        </div>
-        <div class="field">
-          <p class="label">Следующая вакцинация</p>
-          <p class="value">{{vaccination.nextDate | date:'dd.MM.yyyy'}}</p>
-        </div>
-        <div class="field">
-          <p class="label">Ветеринар</p>
-          <p class="value">{{vaccination.veterinarian}}</p>
-        </div>
-        <button type="button" class="btn-remove" (click)="removeVaccination($index)">✕ Удалить</button>
-      </div>
-      }
-    </div>
+    @if (!showVaccinationForm) {
+    <button type="button" class="btn-add" (click)="showAddVaccinationForm()">
+      + Добавить вакцинацию
+    </button>
     }
 
     <!-- Форма добавления новой вакцинации -->
@@ -234,10 +221,33 @@
         <button type="button" class="btn btn-success" (click)="saveVaccination()">Сохранить</button>
       </div>
     </div>
-    } @else {
-    <button type="button" class="btn-add" (click)="showAddVaccinationForm()">
-      + Добавить вакцинацию
-    </button>
+    }
+
+    <!-- Список добавленных вакцинаций -->
+    @if (vaccinations.length > 0) {
+    <div class="vaccination-list">
+      @for (vaccination of vaccinations; track $index) {
+      <div class="vaccination-item">
+        <div class="field">
+          <p class="label">Название вакцины</p>
+          <p class="value">{{vaccination.name}}</p>
+        </div>
+        <div class="field">
+          <p class="label">Дата вакцинации</p>
+          <p class="value">{{vaccination.date | date:'dd.MM.yyyy'}}</p>
+        </div>
+        <div class="field">
+          <p class="label">Следующая вакцинация</p>
+          <p class="value">{{vaccination.nextDate | date:'dd.MM.yyyy'}}</p>
+        </div>
+        <div class="field">
+          <p class="label">Ветеринар</p>
+          <p class="value">{{vaccination.veterinarian}}</p>
+        </div>
+        <button type="button" class="btn-remove" (click)="removeVaccination($index)"> Удалить</button>
+      </div>
+      }
+    </div>
     }
 
     <div class="info-box">
@@ -249,9 +259,12 @@
       </ul>
     </div>
 
-    <!-- Напоминание -->
+    <!-- Напоминания -->
     <div class="reminders-section">
       <h3>🔔 Напоминания</h3>
+      @if (reminders.length === 0) {
+      <p class="no-reminders">Пока нет напоминаний. Добавьте вакцинацию, чтобы создать напоминание.</p>
+      }
       @for (reminder of reminders; track $index) {
       <div class="reminder-item" [class.sent]="reminder.isSent">
         <div class="reminder-type">{{reminder.type === 'vaccination' ? '💉 Вакцинация' : '🦠 Обработка от паразитов'}}</div>
