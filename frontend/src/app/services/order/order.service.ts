@@ -54,13 +54,15 @@ export class OrderService {
           value = JSON.parse(value)?.id ?? value;
         } catch (error) {
         }
-        Object.assign(stepValue, {[key]: value});
+        if (value !== '' && value !== null && value !== undefined) {
+          Object.assign(stepValue, {[key]: value});
+        }
       });
 
       fields.push(stepValue);
     });
 
-    Object.assign(res, {fields: JSON.stringify(fields)});
+    Object.assign(res, {fields});
 
     return this.http.post(`${this.orderApi}create`, res);
   }

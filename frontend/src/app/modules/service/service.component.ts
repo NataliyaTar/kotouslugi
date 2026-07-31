@@ -6,8 +6,11 @@ import { IStep } from '@models/step.model';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { AsyncPipe } from '@angular/common';
-import { Subscription, take } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { OrderService } from '@services/order/order.service';
+import { PassportService } from '@services/passport/passport.service';
+import { VotingService } from '@services/voting/voting.service';
+import { PartyService } from '@services/party/party.service';
 
 @Component({
   selector: 'app-service',
@@ -32,6 +35,9 @@ export class ServiceComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private serviceInfo: ServiceInfoService,
     private orderService: OrderService,
+    private passportService: PassportService,
+    private votingService: VotingService,
+    private partyService: PartyService,
   ) {
   }
 
@@ -94,16 +100,73 @@ export class ServiceComponent implements OnInit, OnDestroy {
    * Сохранение результатов заполнения формы
    */
   public save(): void {
-    this.orderService.saveOrder(
-      this.idService,
-      this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue()
-    ).subscribe(res => {
-      alert('Ваша заявка зарегистрирована\nНажмите «OK» для перехода на предыдущую страницу портала');
-      window.history.back();
-    }, error => {
-      alert('Произошла ошибка, повторите попытку позже\nНажмите «OK» для перехода на предыдущую страницу портала');
-      window.history.back();
+    const rawValue = this.serviceInfo.servicesForms$?.value?.[this.idService].getRawValue();
+    const request$: Observable<unknown> = this.buildSaveRequest(rawValue);
+
+    request$.subscribe({
+      next: () => {
+        alert('Ваша заявка зарегистрирована\nНажмите «OK» для перехода на предыдущую страницу портала');
+        window.history.back();
+      },
+      error: (error: unknown) => {
+        const message = error instanceof Error && error.message
+          ? error.message
+          : 'Произошла ошибка, повторите попытку позже';
+        alert(`${message}\nНажмите «OK» для перехода на предыдущую страницу портала`);
+        window.history.back();
+      },
     });
+  }
+
+  private buildSaveRequest(rawValue: Record<string, Record<string, unknown>>): Observable<unknown> {
+    switch (this.idService) {
+      case 'passport':
+        return this.passportService.createRequisition(rawValue);
+      case 'voting':
+        return this.votingService.castOnline(
+          this.votingService.buildRequest(
+            this.extractCatId(rawValue['0']?.['cat']),
+            String(rawValue['1']?.['partyName'] ?? ''),
+            String(rawValue['0']?.['passportNumber'] ?? ''),
+          ),
+        );
+      case 'party': {
+        const step = rawValue['0'] ?? {};
+        const logoUrl = String(step['logoUrl'] ?? '').trim();
+        return this.partyService.addParty({
+          name: String(step['name'] ?? ''),
+          description: String(step['description'] ?? ''),
+          candidateCatId: this.extractCatId(step['cat']),
+          passportNumber: String(step['passportNumber'] ?? ''),
+          ...(logoUrl ? { logoUrl } : {}),
+        });
+      }
+      default:
+        return this.orderService.saveOrder(this.idService, rawValue);
+    }
+  }
+
+  private extractCatId(catValue: unknown): number {
+    if (typeof catValue === 'number' && Number.isFinite(catValue)) {
+      return catValue;
+    }
+
+    if (typeof catValue === 'string') {
+      try {
+        const parsed = JSON.parse(catValue);
+        const id = Number(parsed?.id ?? catValue);
+        if (Number.isFinite(id)) {
+          return id;
+        }
+      } catch {
+        const id = Number(catValue);
+        if (Number.isFinite(id)) {
+          return id;
+        }
+      }
+    }
+
+    return 0;
   }
 
 }

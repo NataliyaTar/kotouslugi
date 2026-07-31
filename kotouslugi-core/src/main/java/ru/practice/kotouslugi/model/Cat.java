@@ -1,16 +1,10 @@
 package ru.practice.kotouslugi.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
+import java.util.Date;
+@Data
 @Getter
 @Setter
 @Entity
@@ -19,11 +13,11 @@ import jakarta.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cat {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String name;
-    private String age;
-    private String sex;
-    private String breed;
+  @Id
+  @GeneratedValue
+  private Long id;
+  private String name;
+  private String age;
+  private String sex;
+  private String breed;
 }

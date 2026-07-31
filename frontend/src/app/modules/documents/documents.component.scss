@@ -1,0 +1,28 @@
+.page-wrapper {
+  margin-top: 48px;
+  max-width: 960px;
+
+  .page-description {
+    margin-top: 12px;
+    color: #66727F;
+  }
+
+  .documents-grid {
+    margin-top: 32px;
+    display: grid;
+    gap: 24px;
+  }
+
+  .empty-state {
+    text-align: center;
+
+    .image {
+      max-width: 150px;
+      margin-bottom: 24px;
+    }
+
+    .text {
+      margin-top: 12px;
+    }
+  }
+}

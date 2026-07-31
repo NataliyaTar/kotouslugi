@@ -23,8 +23,9 @@ header {
       }
     }
 
-    .cats {
-      margin-right: 24px;
+    .header-nav {
+      display: flex;
+      gap: 24px;
     }
   }
 }

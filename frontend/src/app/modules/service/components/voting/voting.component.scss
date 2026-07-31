@@ -1,0 +1,87 @@
+@use '../../../../../assets/styles/palette' as palette;
+
+:host ::ng-deep .fields-wrapper .field-wrapper--ballot {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.hint {
+  margin-top: 8px;
+  color: palette.$color-text-helper;
+}
+
+.ballot {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.ballot__item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 16px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid palette.$color-divider;
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+
+  &:hover {
+    border-color: palette.$color-gosblue;
+  }
+
+  &--selected {
+    border-color: palette.$color-gosblue;
+    box-shadow: 0 0 0 2px rgba(13, 76, 211, 0.15);
+  }
+}
+
+.ballot__logo {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: palette.$color-input;
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.ballot__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ballot__name {
+  font-weight: 600;
+  margin-bottom: 4px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.ballot__description {
+  color: palette.$color-text-helper;
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+:host ::ng-deep .fields-wrapper .field-wrapper--ballot .field--full {
+  width: 100%;
+}

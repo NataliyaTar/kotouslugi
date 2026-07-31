@@ -1,0 +1,123 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+
+    <!-- Шаг 0: Кот -->
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat">
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem($index)">{{ option.text }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Шаг 1: Владелец -->
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+      <div class="field">
+        <div>
+          <p class="label">Телефон владельца</p>
+          @if (getControl(1, 'ownerPhone').errors && getControl(1, 'ownerPhone').touched) {
+            @if (getControl(1, 'ownerPhone').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(1, 'ownerPhone').errors?.['maxlength']) {
+              <p class="error">Не больше 20 символов</p>
+            }
+            @if (getControl(1, 'ownerPhone').errors?.['pattern']) {
+              <p class="error">Введите корректный номер телефона</p>
+            }
+          }
+        </div>
+        <input formControlName="ownerPhone" type="tel" placeholder="+7 900 123-45-67">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Email владельца</p>
+          @if (getControl(1, 'ownerEmail').errors && getControl(1, 'ownerEmail').touched) {
+            @if (getControl(1, 'ownerEmail').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(1, 'ownerEmail').errors?.['email']) {
+              <p class="error">Введите корректный email</p>
+            }
+          }
+        </div>
+        <input formControlName="ownerEmail" type="email" placeholder="abc@dfg.ru">
+      </div>
+    </div>
+
+    <!-- Шаг 2: Паспорт -->
+    <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
+      <div class="field">
+        <div>
+          <p class="label">Серия и номер паспорта</p>
+          @if (getControl(2, 'passportNumber').errors && getControl(2, 'passportNumber').touched) {
+            @if (getControl(2, 'passportNumber').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(2, 'passportNumber').errors?.['pattern']) {
+              <p class="error">Введите 10 цифр</p>
+            }
+          }
+        </div>
+        <input
+          formControlName="passportNumber"
+          placeholder="0000 000000"
+          inputmode="numeric"
+          maxlength="11"
+          (input)="onPassportNumberInput($event)"
+        >
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Дата выдачи</p>
+          @if (getControl(2, 'issueDate').errors && getControl(2, 'issueDate').touched) {
+            @if (getControl(2, 'issueDate').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(2, 'issueDate').errors?.['futureDate']) {
+              <p class="error">Дата выдачи не может быть в будущем</p>
+            }
+          }
+        </div>
+        <input formControlName="issueDate" type="date">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Номер чипа</p>
+        </div>
+        <input formControlName="chipNumber" placeholder="Необязательно">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Ссылка на фото</p>
+          @if (getControl(2, 'photoUrl').errors?.['required'] && getControl(2, 'photoUrl').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="photoUrl" placeholder="https://...">
+      </div>
+      <div class="field field--full">
+        <div>
+          <p class="label">Особые отметки</p>
+        </div>
+        <textarea formControlName="specialMarks" placeholder="Необязательно"></textarea>
+      </div>
+    </div>
+
+    <!-- Шаг 3: Проверка -->
+    @if (active === 3) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+
+  </div>
+}
