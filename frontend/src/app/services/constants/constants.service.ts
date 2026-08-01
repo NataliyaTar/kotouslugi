@@ -9,85 +9,35 @@ import { IValue } from '@models/common.model';
 })
 export class ConstantsService {
 
-  // варианты пола
   public sexOptions: IValueSex[] = [
-    {
-      id: 'male',
-      text: ESexMap.male
-    },
-    {
-      id: 'female',
-      text: ESexMap.female
-    }
+    { id: 'male', text: ESexMap.male },
+    { id: 'female', text: ESexMap.female }
   ];
 
-  // варианты пород
   public breedOptions: IValueBreed[] = [
-    {
-      id: 'siamese',
-      text: EBreedMap.siamese
-    },
-    {
-      id: 'british_shorthair',
-      text: EBreedMap.british_shorthair
-    },
-    {
-      id: 'maine_coon',
-      text: EBreedMap.maine_coon
-    },
-    {
-      id: 'persian',
-      text: EBreedMap.persian
-    },
-    {
-      id: 'sphinx',
-      text: EBreedMap.sphinx
-    },
-    {
-      id: 'scottish_fold',
-      text: EBreedMap.scottish_fold
-    },
-    {
-      id: 'russian_blue',
-      text: EBreedMap.russian_blue
-    },
-    {
-      id: 'munchkin',
-      text: EBreedMap.munchkin
-    }
+    { id: 'siamese', text: EBreedMap.siamese },
+    { id: 'british_shorthair', text: EBreedMap.british_shorthair },
+    { id: 'maine_coon', text: EBreedMap.maine_coon },
+    { id: 'persian', text: EBreedMap.persian },
+    { id: 'sphinx', text: EBreedMap.sphinx },
+    { id: 'scottish_fold', text: EBreedMap.scottish_fold },
+    { id: 'russian_blue', text: EBreedMap.russian_blue },
+    { id: 'munchkin', text: EBreedMap.munchkin }
   ];
 
-  // варианты специалистов
   public doctorOptions: IValue[] = [
-    {
-      id: 0,
-      text: 'Терапевт'
-    },
-    {
-      id: 1,
-      text: 'Ортопед'
-    },
-    {
-      id: 2,
-      text: 'Офтальмолог'
-    },
-    {
-      id: 3,
-      text: 'Хирург'
-    },
-    {
-      id: 4,
-      text: 'Дерматолог'
-    }
+    { id: 0, text: 'Терапевт' },
+    { id: 1, text: 'Ортопед' },
+    { id: 2, text: 'Офтальмолог' },
+    { id: 3, text: 'Хирург' },
+    { id: 4, text: 'Дерматолог' }
   ];
 
   constructor(
     private catService: CatService,
   ) { }
 
-  /**
-   * Возвращает список котов сгруппированных по полу, преобразовывая ответ для использования в dropdown
-   */
+
   public getCatOptionsBySex(): Observable<ICatGroupedBySex> {
     return this.catService.getCatList().pipe(
       take(1)
@@ -110,10 +60,8 @@ export class ConstantsService {
     );
   }
 
-  /**
-   * Возвращает список котов, преобразовывая ответ для использования в dropdown
-   */
-  public getCatOptionsAll():  Observable<IValueCat[]> {
+
+  public getCatOptionsAll(): Observable<IValueCat[]> {
     return this.catService.getCatList().pipe(
       take(1)
     ).pipe(
@@ -125,6 +73,13 @@ export class ConstantsService {
           }
         }));
       })
-    )
+    );
+  }
+
+
+  public getCatOptionsFull(): Observable<any[]> {
+    return this.catService.getCatList().pipe(
+      take(1)
+    );
   }
 }

@@ -10,12 +10,17 @@
 </div>
 } @else {
 <div class="fields-wrapper" [formGroup]="form">
-  <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+
+  <!-- ШАГ 1: Информация о котике -->
+  <div class="step-wrapper" [hidden]="active !== 0" formGroupName="0">
+
+    <!-- Выбор котика -->
     <div class="field">
       <div>
         <p class="label">Выберите котика (если уже зарегистрирован)</p>
+        <p class="hint">Если котика нет в списке — оставьте "Не выбран" и заполните данные вручную</p>
       </div>
-      <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+      <select formControlName="cat">
         <option value="">Не выбран</option>
         @for (option of optionsCat; track $index) {
         <option [value]="getItem('cat', $index)">{{option.text}}</option>
@@ -23,69 +28,60 @@
       </select>
     </div>
 
+    <!-- Кличка котика -->
     <div class="field">
       <div>
-        <p class="label">Кличка котика</p>
+        <p class="label">Кличка котика *</p>
         @if (getControl(0, 'catName').errors?.['required'] && getControl(0, 'catName').touched) {
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="catName" placeholder="Введите кличку"
-             (invalid)="getControl(0, 'catName').invalid">
+      <input formControlName="catName" placeholder="Введите кличку" [disabled]="true">
     </div>
 
+    <!-- Порода -->
     <div class="field">
       <div>
-        <p class="label">Порода</p>
+        <p class="label">Порода *</p>
         @if (getControl(0, 'breed').errors?.['required'] && getControl(0, 'breed').touched) {
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="breed" placeholder="Например, Британская короткошерстная"
-             (invalid)="getControl(0, 'breed').invalid">
+      <input formControlName="breed" placeholder="Например, Британская короткошерстная" [disabled]="true">
     </div>
 
+    <!-- Возраст -->
     <div class="field">
       <div>
-        <p class="label">Окрас</p>
-        @if (getControl(0, 'color').errors?.['required'] && getControl(0, 'color').touched) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
-      </div>
-      <input formControlName="color" placeholder="Например, чёрный дымчатый"
-             (invalid)="getControl(0, 'color').invalid">
-    </div>
-
-    <div class="field">
-      <div>
-        <p class="label">Возраст (месяцев)</p>
+        <p class="label">Возраст (месяцев) *</p>
         @if (getControl(0, 'age').errors && getControl(0, 'age').touched) {
         @if (getControl(0, 'age').errors?.['required']) {
         <p class="error">Поле обязательно для заполнения</p>
         }
-        @if (getControl(0, 'age').errors?.['min'] || getControl(0, 'age').errors?.['max']) {
-        <p class="error">Возраст должен быть от 1 до 240 месяцев</p>
+        @if (getControl(0, 'age').errors?.['min']) {
+        <p class="error">Возраст должен быть от 1 месяца</p>
         }
         }
       </div>
-      <input formControlName="age" type="number" placeholder="Введите возраст в месяцах"
-             (invalid)="getControl(0, 'age').invalid">
+      <input formControlName="age" type="number" min="0" placeholder="Введите возраст в месяцах">
     </div>
 
+    <!-- Пол -->
     <div class="field">
       <div>
-        <p class="label">Пол</p>
+        <p class="label">Пол *</p>
         @if (getControl(0, 'gender').errors?.['required'] && getControl(0, 'gender').touched) {
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <select formControlName="gender" (invalid)="getControl(0, 'gender').invalid">
+      <select formControlName="gender" [disabled]="true">
         @for (option of genderOptions; track $index) {
         <option [value]="getItem('gender', $index)">{{option.text}}</option>
         }
       </select>
     </div>
 
+    <!-- Особые приметы -->
     <div class="field">
       <div>
         <p class="label">Особые приметы</p>
@@ -93,7 +89,7 @@
       <textarea formControlName="distinctiveFeatures" placeholder="Например: белое пятно на лбу, рыжий хвост..."></textarea>
     </div>
 
-    <!-- ФОТОГРАФИИ -->
+    <!-- Фотографии -->
     <div class="field field-photo">
       <div>
         <p class="label">📸 Фотографии котика</p>
@@ -127,18 +123,24 @@
     </div>
   </div>
 
+  <!-- ШАГ 2: Место и дата пропажи -->
   <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+
+    <!-- Дата пропажи -->
     <div class="field">
       <div>
         <p class="label">Дата пропажи</p>
         @if (getControl(1, 'lastSeenDate').errors?.['required'] && getControl(1, 'lastSeenDate').touched) {
         <p class="error">Поле обязательно для заполнения</p>
         }
+        @if (getControl(1, 'lastSeenDate').errors?.['futureDate'] && getControl(1, 'lastSeenDate').touched) {
+        <p class="error">Дата не может быть в будущем</p>
+        }
       </div>
-      <input formControlName="lastSeenDate" type="date"
-             (invalid)="getControl(1, 'lastSeenDate').invalid">
+      <input formControlName="lastSeenDate" type="date">
     </div>
 
+    <!-- Место пропажи -->
     <div class="field">
       <div>
         <p class="label">Место пропажи (адрес)</p>
@@ -146,10 +148,10 @@
         <p class="error">Поле обязательно для заполнения</p>
         }
       </div>
-      <input formControlName="lastSeenPlace" placeholder="Например: г. Москва, ул. Ленина, д. 10"
-             (invalid)="getControl(1, 'lastSeenPlace').invalid">
+      <input formControlName="lastSeenPlace" placeholder="Например: г. Москва, ул. Ленина, д. 10">
     </div>
 
+    <!-- Телефон -->
     <div class="field">
       <div>
         <p class="label">Телефон для связи</p>
@@ -162,10 +164,10 @@
         }
         }
       </div>
-      <input formControlName="phone" placeholder="89001234567"
-             (invalid)="getControl(1, 'phone').invalid">
+      <input formControlName="phone" placeholder="89001234567">
     </div>
 
+    <!-- Дополнительная информация -->
     <div class="field">
       <div>
         <p class="label">Дополнительная информация</p>
@@ -174,24 +176,77 @@
     </div>
   </div>
 
-  <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
-    <div class="field">
-      <div>
-        <p class="label">Статус заявки</p>
-        @if (getControl(2, 'status').errors?.['required'] && getControl(2, 'status').touched) {
-        <p class="error">Поле обязательно для заполнения</p>
-        }
-      </div>
-      <select formControlName="status" (invalid)="getControl(2, 'status').invalid">
-        @for (option of statusOptions; track $index) {
-        <option [value]="getItem('status', $index)">{{option.text}}</option>
-        }
-      </select>
-    </div>
-  </div>
+  <!-- ШАГ 3: Проверка данных -->
+  @if (active === 2) {
+  <div class="step-wrapper">
+    <h2 class="step-title"> Проверка данных</h2>
 
-  @if (active === 3) {
-  <app-check-info [data]="getResult"></app-check-info>
+    <div class="review-wrapper">
+      <div class="review-info">
+        <div class="review-data">
+          <h3> Информация о котике</h3>
+
+          <div class="data-row">
+            <span class="data-label">Кличка котика:</span>
+            <span class="data-value">{{ getControl(0, 'catName').value || '—' }}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Порода:</span>
+            <span class="data-value">{{ getControl(0, 'breed').value || '—' }}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Возраст:</span>
+            <span class="data-value">{{ getControl(0, 'age').value || '—' }} мес.</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Пол:</span>
+            <span class="data-value">{{ getGenderText() || '—' }}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Особые приметы:</span>
+            <span class="data-value">{{ getControl(0, 'distinctiveFeatures').value || '—' }}</span>
+          </div>
+
+          <h3> Место и дата пропажи</h3>
+          <div class="data-row">
+            <span class="data-label">Дата пропажи:</span>
+            <span class="data-value">{{ getControl(1, 'lastSeenDate').value || '—' }}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Место пропажи:</span>
+            <span class="data-value">{{ getControl(1, 'lastSeenPlace').value || '—' }}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Телефон:</span>
+            <span class="data-value">{{ getControl(1, 'phone').value || '—' }}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Доп. информация:</span>
+            <span class="data-value">{{ getControl(1, 'additionalInfo').value || '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      @if (uploadedPhotos.length > 0) {
+      <div class="review-photo">
+        <p class="photo-label"> Фото котика</p>
+        <div class="photo-frame">
+          <img [src]="uploadedPhotos[0].url" alt="Фото котика" class="review-photo-img">
+          @if (uploadedPhotos.length > 1) {
+          <p class="photo-count">+ ещё {{uploadedPhotos.length - 1}} фото</p>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    @if (!hasPhotos) {
+    <div class="warning-box">
+      ⚠️ Вы не загрузили фотографии. Это может замедлить поиск котика.
+    </div>
+    }
+  </div>
   }
+
 </div>
 }
