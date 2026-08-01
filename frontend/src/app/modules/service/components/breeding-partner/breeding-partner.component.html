@@ -40,7 +40,7 @@
           <label for="breeding-photos" class="file-label">Выбрать файлы</label>
           <input id="breeding-photos" class="file-input" type="file" multiple accept="image/*"
                  (change)="onFilesSelected($event)">
-          <p class="file-name">{{getControl(0, 'photos').value || ' '}}</p>
+          <p class="file-name">{{getFileNameDisplay(0, 'photos')}}</p>
         </div>
       </div>
     </div>
@@ -110,6 +110,30 @@
             </div>
           }
         }
+      </div>
+
+      <!-- TODO: пока хардкод, потом с бэка -->
+      <div class="matches-block">
+        <h5>Рекомендованные кандидаты</h5>
+        @for (candidate of mockCandidates; track candidate.id) {
+          <div class="match-card">
+            <img [src]="'../../../../assets/png/cats/' + candidate.photo" class="candidate-photo">
+            <p><b>{{candidate.name}}</b>, {{candidate.breed}}</p>
+            <p>{{candidate.age}} лет, {{candidate.city}}</p>
+            @if (sentMockRequestIds.has(candidate.id)) {
+              <p>Запрос отправлен</p>
+            } @else {
+              <label class="checkbox-field">
+                <input type="checkbox" [checked]="selectedMockCandidateIds.has(candidate.id)"
+                       (change)="toggleMockCandidate(candidate.id)">
+                Выбрать
+              </label>
+            }
+          </div>
+        }
+        <button type="button" (click)="sendMockRequests()" [disabled]="!selectedMockCandidateIds.size">
+          Отправить запрос
+        </button>
       </div>
     }
   </div>

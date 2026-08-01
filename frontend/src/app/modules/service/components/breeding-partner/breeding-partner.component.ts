@@ -46,6 +46,15 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
   public loadingMatches = false;
   public sentRequestIds = new Set<number>();
 
+  // TODO: пока хардкод, потом с бэка
+  public mockCandidates = [
+    { id: 1, name: 'Барсик', photo: 'cat.png', breed: 'Мейн-кун', age: 3, city: 'Москва' },
+    { id: 2, name: 'Мурка', photo: 'cat2.png', breed: 'Британская короткошёрстная', age: 2, city: 'Санкт-Петербург' },
+    { id: 3, name: 'Рыжик', photo: 'awww.png', breed: 'Сфинкс', age: 4, city: 'Казань' },
+  ];
+  public selectedMockCandidateIds = new Set<number>();
+  public sentMockRequestIds = new Set<number>();
+
   private cats: ICat[] = [];
   private profileId: number | null = null;
   private profilePublished = false;
@@ -61,6 +70,7 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
       0: { ...rawValue[0] }
     };
     previewValue[0].hasPedigree = previewValue[0].hasPedigree ? 'Да' : 'Нет';
+    previewValue[0].photos = this.truncateFileName(previewValue[0].photos);
 
     return this.serviceInfo.prepareDataForPreview(previewValue, this.steps, FormMap);
   }
@@ -163,6 +173,19 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     return this.form.get(`${step}.${id}`) as FormControl;
   }
 
+  // Показываем короткое имя, чтобы длинное/странное имя файла не ломало вёрстку —
+  // сама форма при этом хранит полное имя без изменений
+  public getFileNameDisplay(step: number, id: string): string {
+    return this.truncateFileName(this.getControl(step, id).value) || ' ';
+  }
+
+  private truncateFileName(value: string): string {
+    if (!value) {
+      return '';
+    }
+    return value.length > 30 ? `${value.slice(0, 20)}…${value.slice(-6)}` : value;
+  }
+
   /**
    * Публикует анкету в реальном API (нужно, чтобы подбор партнёров вообще нашёл эту анкету
    * в базе) и сразу подгружает список подходящих партнёров.
@@ -222,6 +245,19 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       this.sentRequestIds.add(match.id!);
     });
+  }
+
+  public toggleMockCandidate(id: number): void {
+    if (this.selectedMockCandidateIds.has(id)) {
+      this.selectedMockCandidateIds.delete(id);
+    } else {
+      this.selectedMockCandidateIds.add(id);
+    }
+  }
+
+  public sendMockRequests(): void {
+    this.selectedMockCandidateIds.forEach(id => this.sentMockRequestIds.add(id));
+    this.selectedMockCandidateIds.clear();
   }
 
 }

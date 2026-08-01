@@ -71,4 +71,11 @@
     background: palette.$color-input;
     border-radius: 8px;
   }
+
+  .candidate-photo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 8px;
+  }
 }

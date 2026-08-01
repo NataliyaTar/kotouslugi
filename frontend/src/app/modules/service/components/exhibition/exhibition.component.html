@@ -59,11 +59,11 @@
               <p class="error">Поле обязательно для заполнения</p>
             }
             @if (getControl(0, 'telephone').errors?.['pattern']) {
-              <p class="error">Введите 11 цифр</p>
+              <p class="error">Введите номер в формате +7 999 123-45-67 (или начиная с 8)</p>
             }
           }
         </div>
-        <input formControlName="telephone" placeholder="12345678901">
+        <input formControlName="telephone" placeholder="+7 999 123-45-67">
       </div>
       <div class="field">
         <div>
@@ -89,7 +89,7 @@
           <label for="exhibition-documents" class="file-label">Выбрать файлы</label>
           <input id="exhibition-documents" class="file-input" type="file" multiple
                  (change)="onFilesSelected($event, 'documents')">
-          <p class="file-name">{{getControl(1, 'documents').value || ' '}}</p>
+          <p class="file-name">{{getFileNameDisplay(1, 'documents')}}</p>
         </div>
       </div>
       <div class="field">
@@ -100,7 +100,7 @@
           <label for="exhibition-photos" class="file-label">Выбрать файлы</label>
           <input id="exhibition-photos" class="file-input" type="file" multiple accept="image/*"
                  (change)="onFilesSelected($event, 'photos')">
-          <p class="file-name">{{getControl(1, 'photos').value || ' '}}</p>
+          <p class="file-name">{{getFileNameDisplay(1, 'photos')}}</p>
         </div>
       </div>
       <div class="field">

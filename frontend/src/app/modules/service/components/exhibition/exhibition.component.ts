@@ -66,6 +66,8 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
       1: { ...rawValue[1] }
     };
     delete previewValue[1].agreement;
+    previewValue[1].documents = this.truncateFileName(previewValue[1].documents);
+    previewValue[1].photos = this.truncateFileName(previewValue[1].photos);
 
     return this.serviceInfo.prepareDataForPreview(previewValue, this.steps, FormMap);
   }
@@ -141,7 +143,7 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
         exhibitionClass: [JSON.stringify(this.exhibitionClassOptions[0]), [Validators.required]],
         color: ['', [Validators.required]],
-        telephone: ['', [Validators.required, Validators.pattern(/^[\d]{11}$/)]],
+        telephone: ['', [Validators.required, Validators.pattern(/^(\+7|8)[\s-]?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/)]],
         email: ['', [Validators.email]],
       }),
       1: this.fb.group({
@@ -178,6 +180,19 @@ export class ExhibitionComponent implements OnInit, OnDestroy {
 
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
+  }
+
+  // Показываем короткое имя, чтобы длинное/странное имя файла не ломало вёрстку —
+  // сама форма при этом хранит полное имя без изменений
+  public getFileNameDisplay(step: number, id: string): string {
+    return this.truncateFileName(this.getControl(step, id).value) || ' ';
+  }
+
+  private truncateFileName(value: string): string {
+    if (!value) {
+      return '';
+    }
+    return value.length > 30 ? `${value.slice(0, 20)}…${value.slice(-6)}` : value;
   }
 
   public submitReview(): void {
