@@ -91,28 +91,7 @@
     @if (active === 2) {
       <app-check-info [data]="getResult"></app-check-info>
 
-      <div class="matches-block">
-        <h5>Подходящие партнёры</h5>
-        @if (loadingMatches) {
-          <app-throbber></app-throbber>
-        } @else if (!matches.length) {
-          <p>Подходящих партнёров пока не нашлось</p>
-        } @else {
-          @for (match of matches; track match.id) {
-            <div class="match-card">
-              <p><b>{{match.breed}}</b>, {{match.city}}, возраст {{match.age}}</p>
-              <p>Родословная: {{match.hasPedigree ? 'есть' : 'нет'}}</p>
-              @if (sentRequestIds.has(match.id!)) {
-                <p>Запрос отправлен</p>
-              } @else {
-                <button type="button" (click)="sendRequest(match)">Отправить запрос</button>
-              }
-            </div>
-          }
-        }
-      </div>
-
-      <!-- TODO: пока хардкод, потом с бэка -->
+      <!-- TODO: пока хардкод, для вида — подбора партнёров как функции не существует -->
       <div class="matches-block">
         <h5>Рекомендованные кандидаты</h5>
         @for (candidate of mockCandidates; track candidate.id) {
