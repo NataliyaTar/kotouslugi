@@ -25,11 +25,15 @@ public class MissingCatRequisition {
   private String color;
   private Integer age;
   private String gender;
+  @Column(length = 1000)
   private String distinctiveFeatures;
   private String lastSeenDate;
+  @Column(length = 500)
   private String lastSeenPlace;
+  @Column(length = 500)
   private String mapLocation;
   private String phone;
+  @Column(length = 1000)
   private String additionalInfo;
   private String status;
   private Date created;

@@ -27,6 +27,7 @@ public class VetPassport {
   private String chipNumber;
   private String chipDate;
   private String chipClinic;
+  @Column(length = 1000)
   private String notes;
   @Column(length = 2000)
   private String vaccinationsJson; // список вакцинаций как JSON-строка

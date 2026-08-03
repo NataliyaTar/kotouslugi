@@ -25,21 +25,22 @@ import java.util.Date;
 @Entity
 @Table(name = "requisition")
 public class Requisition implements Serializable {
-    @Id
-    @GeneratedValue
-    private int id;
-    @Transient
-    private String name;
-    private String mnemonic;
-    private RequisitionStatus status;
-    private Date created;
-    @JsonDeserialize(using = StringDeserializer.class)
-    private String fields;
+  @Id
+  @GeneratedValue
+  private int id;
+  @Transient
+  private String name;
+  private String mnemonic;
+  private RequisitionStatus status;
+  private Date created;
+  @Column(length = 1000)
+  @JsonDeserialize(using = StringDeserializer.class)
+  private String fields;
 
-    public static class StringDeserializer extends JsonDeserializer<String> {
-      @Override
-      public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        return p.readValueAsTree().toString();
-      }
+  public static class StringDeserializer extends JsonDeserializer<String> {
+    @Override
+    public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+      return p.readValueAsTree().toString();
     }
+  }
 }
