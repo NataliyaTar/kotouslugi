@@ -8,14 +8,10 @@
       </list>
     </option>
   </component>
-<<<<<<< HEAD
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="ms-17" project-jdk-type="JavaSDK" />
-=======
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/target" />
   </component>
   <component name="ProjectType">
     <option name="id" value="jpab" />
   </component>
->>>>>>> f62ed2cd780fa460c22eea891e1cd5c7d466ffa1
 </project>
