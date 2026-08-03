@@ -26,19 +26,10 @@
         <input formControlName="city" placeholder="Например, Москва">
       </div>
       <div class="field">
-        <div>
-          <p class="label">Окрас</p>
-          @if (getControl(0, 'color').errors?.['required'] && getControl(0, 'color').touched) {
-            <p class="error">Поле обязательно для заполнения</p>
-          }
-        </div>
-        <input formControlName="color" placeholder="Например, чёрный дымчатый">
-      </div>
-      <div class="field">
-        <div>
-          <p class="label">Номер родословной (при наличии)</p>
-        </div>
-        <input formControlName="pedigreeNumber" placeholder="Например, RU12345">
+        <label class="checkbox-field">
+          <input type="checkbox" formControlName="hasPedigree">
+          Есть родословная
+        </label>
       </div>
       <div class="field">
         <div>
@@ -49,7 +40,7 @@
           <label for="breeding-photos" class="file-label">Выбрать файлы</label>
           <input id="breeding-photos" class="file-input" type="file" multiple accept="image/*"
                  (change)="onFilesSelected($event)">
-          <p class="file-name">{{getControl(0, 'photos').value || ' '}}</p>
+          <p class="file-name">{{getFileNameDisplay(0, 'photos')}}</p>
         </div>
       </div>
     </div>
@@ -58,11 +49,11 @@
       <div class="field">
         <div>
           <p class="label">Порода партнёра</p>
-          @if (getControl(1, 'partnerBreed').errors?.['required'] && getControl(1, 'partnerBreed').touched) {
+          @if (getControl(1, 'targetBreed').errors?.['required'] && getControl(1, 'targetBreed').touched) {
             <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
-        <select formControlName="partnerBreed">
+        <select formControlName="targetBreed">
           @for (option of breedOptions; track $index) {
             <option [value]="getItem('breed', $index)">{{option.text}}</option>
           }
@@ -70,38 +61,59 @@
       </div>
       <div class="field">
         <div>
-          <p class="label">Возраст партнёра</p>
-          @if (getControl(1, 'partnerAge').errors?.['required'] && getControl(1, 'partnerAge').touched) {
-            <p class="error">Поле обязательно для заполнения</p>
-          }
-        </div>
-        <input formControlName="partnerAge" placeholder="Например, 1-3 года">
-      </div>
-      <div class="field">
-        <div>
           <p class="label">Город партнёра</p>
-          @if (getControl(1, 'partnerCity').errors?.['required'] && getControl(1, 'partnerCity').touched) {
+          @if (getControl(1, 'targetCity').errors?.['required'] && getControl(1, 'targetCity').touched) {
             <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
-        <input formControlName="partnerCity" placeholder="Например, Москва">
-      </div>
-      <div class="field">
-        <label class="checkbox-field">
-          <input type="checkbox" formControlName="partnerPedigreeRequired">
-          Только с родословной
-        </label>
+        <input formControlName="targetCity" placeholder="Например, Москва">
       </div>
       <div class="field">
         <div>
-          <p class="label">Комментарий</p>
+          <p class="label">Возраст партнёра от</p>
+          @if (getControl(1, 'minAge').errors?.['required'] && getControl(1, 'minAge').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
         </div>
-        <textarea formControlName="comment" placeholder="Дополнительные пожелания к партнёру"></textarea>
+        <input formControlName="minAge" type="number" min="0" placeholder="1">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Возраст партнёра до</p>
+          @if (getControl(1, 'maxAge').errors?.['required'] && getControl(1, 'maxAge').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <input formControlName="maxAge" type="number" min="0" placeholder="5">
       </div>
     </div>
 
     @if (active === 2) {
       <app-check-info [data]="getResult"></app-check-info>
+
+      <!-- TODO: пока хардкод, для вида — подбора партнёров как функции не существует -->
+      <div class="matches-block">
+        <h5>Рекомендованные кандидаты</h5>
+        @for (candidate of mockCandidates; track candidate.id) {
+          <div class="match-card">
+            <img [src]="'../../../../assets/png/cats/' + candidate.photo" class="candidate-photo">
+            <p><b>{{candidate.name}}</b>, {{candidate.breed}}</p>
+            <p>{{candidate.age}} лет, {{candidate.city}}</p>
+            @if (sentMockRequestIds.has(candidate.id)) {
+              <p>Запрос отправлен</p>
+            } @else {
+              <label class="checkbox-field">
+                <input type="checkbox" [checked]="selectedMockCandidateIds.has(candidate.id)"
+                       (change)="toggleMockCandidate(candidate.id)">
+                Выбрать
+              </label>
+            }
+          </div>
+        }
+        <button type="button" (click)="sendMockRequests()" [disabled]="!selectedMockCandidateIds.size">
+          Отправить запрос
+        </button>
+      </div>
     }
   </div>
 }

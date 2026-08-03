@@ -1,25 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
-import { IValueCat } from '@models/cat.model';
+import { ICat, IValueCat } from '@models/cat.model';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute } from '@angular/router';
 import { CheckInfoComponent } from '@components/check-info/check-info.component';
 import { ConstantsService } from '@services/constants/constants.service';
+import { CatService } from '@services/cat/cat.service';
 import { IStep } from '@models/step.model';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
 
 export enum FormMap {
   cat = 'Кличка',
   city = 'Город',
-  color = 'Окрас',
-  pedigreeNumber = 'Номер родословной',
+  hasPedigree = 'Есть родословная',
   photos = 'Фотографии',
-  partnerBreed = 'Порода партнёра',
-  partnerAge = 'Возраст партнёра',
-  partnerCity = 'Город партнёра',
-  partnerPedigreeRequired = 'Только с родословной',
-  comment = 'Комментарий',
+  targetBreed = 'Порода партнёра',
+  targetCity = 'Город партнёра',
+  minAge = 'Возраст партнёра от',
+  maxAge = 'Возраст партнёра до',
 }
 
 @Component({
@@ -41,6 +40,15 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
   public optionsCat: IValueCat[];
   public breedOptions = this.constantService.breedOptions;
 
+  // TODO: пока хардкод, для вида — подбора партнёров как функции не существует
+  public mockCandidates = [
+    { id: 1, name: 'Барсик', photo: 'cat.png', breed: 'Мейн-кун', age: 3, city: 'Москва' },
+    { id: 2, name: 'Мурка', photo: 'cat2.png', breed: 'Британская короткошёрстная', age: 2, city: 'Санкт-Петербург' },
+    { id: 3, name: 'Рыжик', photo: 'awww.png', breed: 'Сфинкс', age: 4, city: 'Казань' },
+  ];
+  public selectedMockCandidateIds = new Set<number>();
+  public sentMockRequestIds = new Set<number>();
+
   private idService: string;
   private steps: IStep[];
   private subscriptions: Subscription[] = [];
@@ -49,9 +57,10 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     const rawValue = this.form.getRawValue();
     const previewValue = {
       ...rawValue,
-      1: { ...rawValue[1] }
+      0: { ...rawValue[0] }
     };
-    previewValue[1].partnerPedigreeRequired = previewValue[1].partnerPedigreeRequired ? 'Да' : 'Нет';
+    previewValue[0].hasPedigree = previewValue[0].hasPedigree ? 'Да' : 'Нет';
+    previewValue[0].photos = this.truncateFileName(previewValue[0].photos);
 
     return this.serviceInfo.prepareDataForPreview(previewValue, this.steps, FormMap);
   }
@@ -61,6 +70,7 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
     private serviceInfo: ServiceInfoService,
     private route: ActivatedRoute,
     private constantService: ConstantsService,
+    private catService: CatService,
   ) {
   }
 
@@ -75,10 +85,10 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
   }
 
   private getCatOption(): void {
-    this.constantService.getCatOptionsAll().pipe(
+    this.catService.getCatList().pipe(
       take(1)
-    ).subscribe((res: IValueCat[]) => {
-      this.optionsCat = res;
+    ).subscribe((res: ICat[]) => {
+      this.optionsCat = res.map(item => ({ id: item.id, text: item.name }));
 
       this.prepareService();
     });
@@ -111,16 +121,14 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
       0: this.fb.group({
         cat: [JSON.stringify(this.optionsCat[0]), [Validators.required]],
         city: ['', [Validators.required]],
-        color: ['', [Validators.required]],
-        pedigreeNumber: [''],
+        hasPedigree: [false],
         photos: [''], // TODO: подключить API — сейчас хранится только имя файла
       }),
       1: this.fb.group({
-        partnerBreed: [JSON.stringify(this.breedOptions[0]), [Validators.required]],
-        partnerAge: ['', [Validators.required]],
-        partnerCity: ['', [Validators.required]],
-        partnerPedigreeRequired: [false],
-        comment: [''],
+        targetBreed: [JSON.stringify(this.breedOptions[0]), [Validators.required]],
+        targetCity: ['', [Validators.required]],
+        minAge: ['', [Validators.required]],
+        maxAge: ['', [Validators.required]],
       }),
     });
 
@@ -147,6 +155,32 @@ export class BreedingPartnerComponent implements OnInit, OnDestroy {
 
   public getControl(step: number, id: string): FormControl {
     return this.form.get(`${step}.${id}`) as FormControl;
+  }
+
+  // Показываем короткое имя, чтобы длинное/странное имя файла не ломало вёрстку —
+  // сама форма при этом хранит полное имя без изменений
+  public getFileNameDisplay(step: number, id: string): string {
+    return this.truncateFileName(this.getControl(step, id).value) || ' ';
+  }
+
+  private truncateFileName(value: string): string {
+    if (!value) {
+      return '';
+    }
+    return value.length > 30 ? `${value.slice(0, 20)}…${value.slice(-6)}` : value;
+  }
+
+  public toggleMockCandidate(id: number): void {
+    if (this.selectedMockCandidateIds.has(id)) {
+      this.selectedMockCandidateIds.delete(id);
+    } else {
+      this.selectedMockCandidateIds.add(id);
+    }
+  }
+
+  public sendMockRequests(): void {
+    this.selectedMockCandidateIds.forEach(id => this.sentMockRequestIds.add(id));
+    this.selectedMockCandidateIds.clear();
   }
 
 }

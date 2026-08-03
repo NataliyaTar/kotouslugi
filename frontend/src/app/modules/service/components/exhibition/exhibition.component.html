@@ -10,7 +10,6 @@
             <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
-        <!-- TODO: подключить API — список выставок пока захардкожен -->
         <select formControlName="exhibition">
           @for (option of exhibitionOptions; track $index) {
             <option [value]="getItem('exhibition', $index)">{{option.text}}</option>
@@ -60,11 +59,11 @@
               <p class="error">Поле обязательно для заполнения</p>
             }
             @if (getControl(0, 'telephone').errors?.['pattern']) {
-              <p class="error">Введите 11 цифр</p>
+              <p class="error">Введите номер в формате +7 999 123-45-67 (или начиная с 8)</p>
             }
           }
         </div>
-        <input formControlName="telephone" placeholder="12345678901">
+        <input formControlName="telephone" placeholder="+7 999 123-45-67">
       </div>
       <div class="field">
         <div>
@@ -90,7 +89,7 @@
           <label for="exhibition-documents" class="file-label">Выбрать файлы</label>
           <input id="exhibition-documents" class="file-input" type="file" multiple
                  (change)="onFilesSelected($event, 'documents')">
-          <p class="file-name">{{getControl(1, 'documents').value || ' '}}</p>
+          <p class="file-name">{{getFileNameDisplay(1, 'documents')}}</p>
         </div>
       </div>
       <div class="field">
@@ -101,7 +100,7 @@
           <label for="exhibition-photos" class="file-label">Выбрать файлы</label>
           <input id="exhibition-photos" class="file-input" type="file" multiple accept="image/*"
                  (change)="onFilesSelected($event, 'photos')">
-          <p class="file-name">{{getControl(1, 'photos').value || ' '}}</p>
+          <p class="file-name">{{getFileNameDisplay(1, 'photos')}}</p>
         </div>
       </div>
       <div class="field">
@@ -117,6 +116,35 @@
 
     @if (active === 2) {
       <app-check-info [data]="getResult"></app-check-info>
+
+      <div class="review-block">
+        <h5>Уже были на выставке? Оставьте отзыв</h5>
+        @if (reviewSubmitted) {
+          <p>Спасибо за отзыв!</p>
+        } @else {
+          <div class="field">
+            <p class="label">Выставка</p>
+            <select [(ngModel)]="reviewExhibitionId" [ngModelOptions]="{standalone: true}">
+              @for (option of exhibitionOptions; track option.id) {
+                <option [ngValue]="option.id">{{option.text}}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <p class="label">Оценка</p>
+            <select [(ngModel)]="reviewRating" [ngModelOptions]="{standalone: true}">
+              @for (n of [1, 2, 3, 4, 5]; track n) {
+                <option [ngValue]="n">{{n}}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <p class="label">Комментарий</p>
+            <textarea [(ngModel)]="reviewComment" [ngModelOptions]="{standalone: true}"></textarea>
+          </div>
+          <button type="button" (click)="submitReview()">Оставить отзыв</button>
+        }
+      </div>
     }
   </div>
 }
