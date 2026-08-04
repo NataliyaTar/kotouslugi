@@ -160,41 +160,46 @@ public class PassportService {
 
     private void savePedigreeFromSteps(Long passportId, JsonNode steps) {
         for (JsonNode step : steps) {
-            if (!step.has("relativeCat") || step.get("relativeCat").isNull()) {
-                continue;
-            }
-            JsonNode relativeCatNode = step.get("relativeCat");
-            if (!relativeCatNode.isNumber() && (relativeCatNode.isTextual() && relativeCatNode.asText().isBlank())) {
-                continue;
-            }
-            if (!step.has("relationType") || step.get("relationType").isNull()) {
-                continue;
-            }
+            savePedigreeEntry(passportId, step);
 
-            Long relativeCatId = relativeCatNode.asLong();
-            String relationTypeStr = step.get("relationType").asText();
-            if (relationTypeStr.isBlank()) {
-                continue;
+            if (step.has("relatives") && step.get("relatives").isArray()) {
+                for (JsonNode relativeNode : step.get("relatives")) {
+                    savePedigreeEntry(passportId, relativeNode);
+                }
             }
-
-            AnimalPassport relativePassport = passportRepository.findByCatId(relativeCatId)
-                    .orElseGet(() -> {
-                        AnimalPassport created = AnimalPassport.builder()
-                                .catId(relativeCatId)
-                                .verified(false)
-                                .created(new Date())
-                                .build();
-                        return passportRepository.save(created);
-                    });
-
-            RelationType relationType = RelationType.valueOf(relationTypeStr);
-            PedigreeLink link = PedigreeLink.builder()
-                    .passportId(passportId)
-                    .relativePassportId(relativePassport.getId())
-                    .relationType(relationType)
-                    .build();
-            pedigreeLinkRepository.save(link);
         }
+    }
+
+    private void savePedigreeEntry(Long passportId, JsonNode node) {
+        if (node == null || !node.has("relativeCat") || node.get("relativeCat").isNull()) {
+            return;
+        }
+        Long relativeCatId = parseLongField(node.get("relativeCat"));
+        if (relativeCatId == null) {
+            return;
+        }
+        String relationTypeStr = parseEnumValue(node.get("relationType"));
+        if (relationTypeStr == null || relationTypeStr.isBlank()) {
+            return;
+        }
+
+        AnimalPassport relativePassport = passportRepository.findByCatId(relativeCatId)
+                .orElseGet(() -> {
+                    AnimalPassport created = AnimalPassport.builder()
+                            .catId(relativeCatId)
+                            .verified(false)
+                            .created(new Date())
+                            .build();
+                    return passportRepository.save(created);
+                });
+
+        RelationType relationType = RelationType.valueOf(relationTypeStr);
+        PedigreeLink link = PedigreeLink.builder()
+                .passportId(passportId)
+                .relativePassportId(relativePassport.getId())
+                .relationType(relationType)
+                .build();
+        pedigreeLinkRepository.save(link);
     }
 
     private void saveIllnessFromSteps(Long passportId, JsonNode steps) {
@@ -312,6 +317,57 @@ public class PassportService {
 
     private String getText(JsonNode node, String field) {
         return node.has(field) && !node.get(field).isNull() ? node.get(field).asText() : null;
+    }
+
+    private Long parseLongField(JsonNode valueNode) {
+        if (valueNode == null || valueNode.isNull()) {
+            return null;
+        }
+        if (valueNode.isNumber()) {
+            return valueNode.asLong();
+        }
+        String raw = valueNode.asText();
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(raw);
+        } catch (NumberFormatException ignored) {
+        }
+        try {
+            JsonNode parsed = objectMapper.readTree(raw);
+            if (parsed.has("id")) {
+                JsonNode idNode = parsed.get("id");
+                if (idNode.isNumber()) {
+                    return idNode.asLong();
+                }
+                String idText = idNode.asText();
+                return idText == null || idText.isBlank() ? null : Long.parseLong(idText);
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    private String parseEnumValue(JsonNode valueNode) {
+        if (valueNode == null || valueNode.isNull()) {
+            return null;
+        }
+        String raw = valueNode.asText();
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        if ("FATHER".equals(raw) || "MOTHER".equals(raw) || "CHILD".equals(raw) || "SIBLING".equals(raw)) {
+            return raw;
+        }
+        try {
+            JsonNode parsed = objectMapper.readTree(raw);
+            if (parsed.has("id")) {
+                return parsed.get("id").asText();
+            }
+        } catch (Exception ignored) {
+        }
+        return raw;
     }
 
     private Date parseDate(String value) {

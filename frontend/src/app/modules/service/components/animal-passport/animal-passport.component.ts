@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { IValueCat } from '@models/cat.model';
 import { ERelationMap, IPassportDetail } from '@models/passport.model';
 import { Subscription, take } from 'rxjs';
@@ -21,8 +21,7 @@ export enum FormMap {
   vaccinationDate = 'Дата прививки',
   veterinarian = 'Ветеринар',
   clinic = 'Клиника',
-  relativeCat = 'Родственник',
-  relationType = 'Тип родства',
+  relativesSummary = 'Родственные связи',
   diagnosis = 'Диагноз',
   treatment = 'Лечение',
   recordDate = 'Дата записи',
@@ -60,7 +59,16 @@ export class AnimalPassportComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   public get getResult() {
-    return this.serviceInfo.prepareDataForPreview(this.form.getRawValue(), this.steps, FormMap);
+    const raw = this.form.getRawValue();
+    const previewRaw = {
+      ...raw,
+      2: {
+        ...raw[2],
+        relativesSummary: this.getRelativesPreview()
+      }
+    };
+    delete previewRaw[2].relatives;
+    return this.serviceInfo.prepareDataForPreview(previewRaw, this.steps, FormMap);
   }
 
   constructor(
@@ -119,8 +127,7 @@ export class AnimalPassportComponent implements OnInit, OnDestroy {
         clinic: ['', [Validators.maxLength(128)]],
       }),
       2: this.fb.group({
-        relativeCat: [this.optionsCat.length > 1 ? JSON.stringify(this.optionsCat[1]) : ''],
-        relationType: [JSON.stringify(this.relationOptions[0])],
+        relatives: this.fb.array([this.createRelativeGroup()]),
       }),
       3: this.fb.group({
         diagnosis: [''],
@@ -165,6 +172,59 @@ export class AnimalPassportComponent implements OnInit, OnDestroy {
       return JSON.stringify(this.optionsCat[index]);
     }
     return JSON.stringify(this.relationOptions[index]);
+  }
+
+  public get relativesArray(): FormArray {
+    return this.form.get('2.relatives') as FormArray;
+  }
+
+  public addRelative(): void {
+    this.relativesArray.push(this.createRelativeGroup());
+  }
+
+  public removeRelative(index: number): void {
+    if (this.relativesArray.length === 1) {
+      this.relativesArray.at(0).patchValue({
+        relativeCat: '',
+        relationType: JSON.stringify(this.relationOptions[0])
+      });
+      return;
+    }
+    this.relativesArray.removeAt(index);
+  }
+
+  private createRelativeGroup(): UntypedFormGroup {
+    return this.fb.group({
+      relativeCat: [''],
+      relationType: [JSON.stringify(this.relationOptions[0])],
+    });
+  }
+
+  private getRelativesPreview(): string {
+    const values = this.relativesArray.getRawValue() as Array<{ relativeCat: string; relationType: string }>;
+    const lines = values
+      .map(item => {
+        if (!item?.relativeCat) {
+          return '';
+        }
+        const relative = this.parseJson<{ text?: string }>(item.relativeCat);
+        const relation = this.parseJson<{ text?: string }>(item.relationType);
+        if (!relative?.text) {
+          return '';
+        }
+        return `${relation?.text ?? 'Родство'}: ${relative.text}`;
+      })
+      .filter(Boolean);
+
+    return lines.length ? lines.join('; ') : '-';
+  }
+
+  private parseJson<T>(value: string): T | null {
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return null;
+    }
   }
 
   public getControl(step: number, id: string): FormControl {

@@ -80,29 +80,41 @@
     </div>
 
       <div class="field-wrapper" [hidden]="active !== 2" formGroupName="2">
-      <div class="field">
-        <div>
-          <p class="label">Родственник (необязательно)</p>
+        <div class="relatives-header">
+          <p class="label">Родственные связи (необязательно)</p>
+          <button type="button" class="add-relative-btn" (click)="addRelative()">+ Добавить родственника</button>
         </div>
-        <select formControlName="relativeCat">
-          <option value="">— Не указан —</option>
-          @for (option of optionsCat; track $index) {
-            <option [value]="getItem('cat', $index)">{{ option.text }}</option>
+
+        <div formArrayName="relatives">
+          @for (relative of relativesArray.controls; track $index) {
+            <div class="relative-row" [formGroupName]="$index">
+              <div class="field">
+                <div>
+                  <p class="label">Родственник</p>
+                </div>
+                <select formControlName="relativeCat">
+                  <option value="">— Не указан —</option>
+                  @for (option of optionsCat; track $index) {
+                    <option [value]="getItem('cat', $index)">{{ option.text }}</option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <div>
+                  <p class="label">Тип родства</p>
+                </div>
+                <select formControlName="relationType">
+                  @for (rel of relationOptions; track $index) {
+                    <option [value]="getItem('relation', $index)">{{ rel.text }}</option>
+                  }
+                </select>
+              </div>
+              <button type="button" class="remove-relative-btn" (click)="removeRelative($index)">Удалить</button>
+            </div>
           }
-        </select>
-      </div>
-      <div class="field">
-        <div>
-          <p class="label">Тип родства</p>
         </div>
-        <select formControlName="relationType">
-          @for (rel of relationOptions; track $index) {
-            <option [value]="getItem('relation', $index)">{{ rel.text }}</option>
-          }
-        </select>
+        <p class="hint">Связи помогают выявить риск инбридинга при разведении</p>
       </div>
-      <p class="hint">Связи помогают выявить риск инбридинга при разведении</p>
-    </div>
 
       <div class="field-wrapper" [hidden]="active !== 3" formGroupName="3">
       <div class="field">
