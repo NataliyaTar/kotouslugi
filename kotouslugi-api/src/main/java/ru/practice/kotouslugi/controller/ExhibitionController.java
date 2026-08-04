@@ -44,8 +44,14 @@ public class ExhibitionController {
   @PostMapping("/{id}/review")
   @Operation(summary = "Оставление отзыва")
   public String addReview(@PathVariable int id, @RequestBody Review review) {
+
     review.setExhibitionId(id);
     exhibitionService.saveReview(review);
     return "Ваш отзыв для выставки " + id + " сохранен!";
+  }
+  @PostMapping
+  @Operation(summary = "Создание новой выставки")
+  public Exhibition createExhibition(@RequestBody Exhibition exhibition) {
+    return exhibitionService.saveExhibition(exhibition);
   }
 }
