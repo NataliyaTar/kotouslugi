@@ -43,6 +43,7 @@ testem.log
 Thumbs.db
 .env
 .tools/
+/docs/
 
 # backend
 HELP.md
