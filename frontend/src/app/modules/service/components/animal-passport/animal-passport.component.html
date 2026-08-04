@@ -94,8 +94,8 @@
                 </div>
                 <select formControlName="relativeCat">
                   <option value="">— Не указан —</option>
-                  @for (option of optionsCat; track $index) {
-                    <option [value]="getItem('cat', $index)">{{ option.text }}</option>
+                  @for (option of getRelativeOptions(); track option.id) {
+                    <option [value]="toJson(option)">{{ option.text }}</option>
                   }
                 </select>
               </div>

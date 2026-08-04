@@ -156,6 +156,7 @@ export class AnimalPassportComponent implements OnInit, OnDestroy {
   }
 
   public onCatChange(): void {
+    this.clearSelfRelations();
     this.loadExistingPassport();
   }
 
@@ -172,6 +173,18 @@ export class AnimalPassportComponent implements OnInit, OnDestroy {
       return JSON.stringify(this.optionsCat[index]);
     }
     return JSON.stringify(this.relationOptions[index]);
+  }
+
+  public toJson(value: unknown): string {
+    return JSON.stringify(value);
+  }
+
+  public getRelativeOptions(): IValueCat[] {
+    const selectedCat = this.getSelectedCat();
+    if (!selectedCat) {
+      return this.optionsCat ?? [];
+    }
+    return (this.optionsCat ?? []).filter(option => option.id !== selectedCat.id);
   }
 
   public get relativesArray(): FormArray {
@@ -217,6 +230,20 @@ export class AnimalPassportComponent implements OnInit, OnDestroy {
       .filter(Boolean);
 
     return lines.length ? lines.join('; ') : '-';
+  }
+
+  private clearSelfRelations(): void {
+    const selectedCat = this.getSelectedCat();
+    if (!selectedCat) {
+      return;
+    }
+    this.relativesArray.controls.forEach(control => {
+      const relativeRaw = control.get('relativeCat')?.value as string;
+      const relative = this.parseJson<IValueCat>(relativeRaw);
+      if (relative?.id === selectedCat.id) {
+        control.patchValue({ relativeCat: '' });
+      }
+    });
   }
 
   private parseJson<T>(value: string): T | null {
