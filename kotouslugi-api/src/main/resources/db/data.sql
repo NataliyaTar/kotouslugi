@@ -1,53 +1,49 @@
--- ==========================================
--- ДАННЫЕ ДЛЯ ВЫСТАВОК
--- ==========================================
+INSERT INTO banner (id, title, text, bg, imgurl) VALUES (1, 'Открыта вакансия', 'Ищем в команду лучшего кота для разработки котоуслуг', 'linear-gradient(86deg, #FFFEDD 0%, #DDF7FF 100%)', 'work.png');
+INSERT INTO banner (id, title, text, bg, imgurl) VALUES (2, 'Хотите завести котёнка?', 'Услуга «Укотоение» поможет подобрать кото-приют и котёнка', 'linear-gradient(86deg, #EDF2FE 0%, #D7E7FF 100%)', 'hugs.png');
+INSERT INTO banner (id, title, text, bg, imgurl) VALUES (3, 'Готов покорить подиум?', 'Участвуй в официальной кошачьей выставке и покажи себя!', 'linear-gradient(86deg, #FFF9E6 0%, #FFEFD5 100%)', 'cinema.png');
 
-INSERT INTO exhibition (name, city, venue_address, event_date, event_end_date, felinological_system, organizer, entry_fee, application_deadline, description, contact_phone, contact_email) VALUES
-                                                                                                                                                                                              ('Золотая Лапа 2026', 'Москва', 'ВДНХ, павильон №1', '2026-09-20', '2026-09-21', 'WCF', 'Клуб Мурлык', 3500.00, '2026-09-01', 'Крупнейшая выставка кошек в России', '+7 (495) 123-45-67', 'info@goldenpaw.ru'),
-                                                                                                                                                                                              ('Кошачий Бал', 'Санкт-Петербург', 'Ленэкспо', '2026-10-15', '2026-10-15', 'FIFe', 'Фелинологический клуб СПб', 4000.00, '2026-09-20', 'Международная выставка', '+7 (812) 987-65-43', 'catball@spb.ru'),
-                                                                                                                                                                                              ('Мурлыка Экспо', 'Воронеж', 'ВГВЗ', '2026-11-10', '2026-11-10', 'TICA', 'Воронежский клуб', 2500.00, '2026-10-20', 'Региональная выставка', '+7 (473) 555-55-55', 'murlyka@vrn.ru');
+INSERT INTO category (id, name) VALUES (1, 'Семья и дети');
+INSERT INTO category (id, name) VALUES (2, 'Медицина');
+INSERT INTO category (id, name) VALUES (3, 'Отдых и развлечение');
 
-INSERT INTO exhibition_application (exhibition_id, cat_id, user_id, cat_nickname, cat_breed, cat_gender, cat_birth_date, cat_color, pedigree_number, participation_class, contact_phone, contact_email, status) VALUES
-                                                                                                                                                                                                                  (1, 1, 101, 'Барсик', 'Мейн-кун', 'КОТ', '2023-05-15', 'Черный мрамор', 'WCF-12345', 'ОТКРЫТЫЙ', '+7 (999) 111-22-33', 'user1@mail.ru', 'ОДОБРЕНО'),
-                                                                                                                                                                                                                  (1, 2, 102, 'Муся', 'Британская', 'КОШКА', '2024-01-20', 'Голубая', 'FIFe-67890', 'КОТЯТА', '+7 (999) 222-33-44', 'user2@mail.ru', 'НА_РАССМОТРЕНИИ'),
-                                                                                                                                                                                                                  (2, 3, 103, 'Симба', 'Бенгальская', 'КОТ', '2022-08-10', 'Золотой spotted', 'TICA-11111', 'ОТКРЫТЫЙ', '+7 (999) 333-44-55', 'user3@mail.ru', 'ОДОБРЕНО');
+INSERT INTO service (id, title, description, icon, mnemonic) VALUES (1, 'Регистрация брака', 'Вступайте в брак легко и быстро с котоуслугами', 'cupid.png', 'marriage');
+INSERT INTO service (id, title, description, icon, mnemonic) VALUES (2, 'Запись к ветеринару', 'Подходи ответственно к своему здоровью.', 'sick.webp', 'vet');
+INSERT INTO service (id, title, description, icon, mnemonic) VALUES (3, 'SPA-процедуры', 'Устали от бесконечной работы? Пора записаться на расслабление', 'relax.png', 'spa');
+INSERT INTO service (id, title, description, icon, mnemonic) VALUES (4, 'Участие в выставке', 'Покажите своего кота всему миру на официальной выставке', 'cinema.png', 'exhibition');
+INSERT INTO service (id, title, description, icon, mnemonic) VALUES (5, 'Подбор партнёра', 'Найдем идеальную пару среди зарегистрированных котиков', 'hugs.png', 'breeding');
+INSERT INTO service_category (category_id, service_id) VALUES (1, 1);
+INSERT INTO service_category (category_id, service_id) VALUES (2, 2);
+INSERT INTO service_category (category_id, service_id) VALUES (3, 3);
+INSERT INTO service_category (category_id, service_id) VALUES (4, 3);
+INSERT INTO service_category (category_id, service_id) VALUES (5, 1);
 
-INSERT INTO exhibition_document (application_id, document_type, file_name, file_path) VALUES
-                                                                                        (1, 'ВЕТПАСПОРТ', 'vetpassport_barsik.pdf', '/documents/1/vetpassport.pdf'),
-                                                                                        (1, 'РОДОСЛОВНАЯ', 'pedigree_barsik.pdf', '/documents/1/pedigree.pdf'),
-                                                                                        (2, 'ВЕТПАСПОРТ', 'vetpassport_musya.pdf', '/documents/2/vetpassport.pdf');
+INSERT INTO cat (id, name, age, breed, sex) VALUES (1, 'Борис', '3 года', 'Мейн-кун', 'М');
+INSERT INTO cat (id, name, age, breed, sex) VALUES (2, 'Мурка', '1 год', 'Сиамская', 'Ж');
 
-INSERT INTO exhibition_notification (application_id, user_id, notification_type, message) VALUES
-                                                                                            (1, 101, 'ПРИНЯТО', 'Ваша заявка на выставку Золотая Лапа 2026 принята'),
-                                                                                            (1, 101, 'ОДОБРЕНО', 'Поздравляем! Ваша заявка одобрена. Каталожный номер: A-125'),
-                                                                                            (2, 102, 'ПРИНЯТО', 'Ваша заявка на выставку Золотая Лапа 2026 принята');
 
-INSERT INTO exhibition_review (application_id, user_id, exhibition_id, organization_rating, expert_rating, comment_text) VALUES
-                                                                                                                           (1, 101, 1, 5, 5, 'Отличная выставка! Барсик получил титул CAC!'),
-                                                                                                                           (3, 103, 2, 4, 5, 'Хорошая выставка, профессиональные эксперты.');
+-- ВЫСТАВКИ
 
--- ==========================================
--- ДАННЫЕ ДЛЯ ПОДБОРА ПАРТНЕРА
--- ==========================================
+INSERT INTO exhibitions (id, name, date, city, system, organizer, cost, deadline)
+VALUES (1, 'Международная выставка «Кубок Пушистых»', '15.08.2026', 'Москва', 'WCF', 'Клуб Котофей', '2500 руб.', '10.08.2026');
 
-INSERT INTO breeding_profile (cat_id, user_id, nickname, breed, gender, city, birth_date, color, pedigree_number, has_pedigree, description, preferred_breed, preferred_gender, preferred_city, additional_requirements, status) VALUES
-                                                                                                                                                                                                                                   (1, 101, 'Барсик', 'Мейн-кун', 'КОТ', 'Москва', '2023-05-15', 'Черный мрамор', 'WCF-12345', TRUE, 'Крупный кот с отличной родословной.', 'Мейн-кун', 'КОШКА', 'Москва', 'Желательно наличие титулов', 'АКТИВНА'),
-                                                                                                                                                                                                                                   (2, 102, 'Муся', 'Британская', 'КОШКА', 'Санкт-Петербург', '2024-01-20', 'Голубая', 'FIFe-67890', TRUE, 'Молодая кошечка, первая вязка.', 'Британская', 'КОТ', 'Санкт-Петербург', 'Без предыдущих партнеров', 'АКТИВНА'),
-                                                                                                                                                                                                                                   (3, 103, 'Симба', 'Бенгальская', 'КОТ', 'Воронеж', '2022-08-10', 'Золотой spotted', 'TICA-11111', TRUE, 'Активный кот с чемпионскими титулами.', 'Бенгальская', 'КОШКА', NULL, 'Только для опытных заводчиков', 'АКТИВНА'),
-                                                                                                                                                                                                                                   (4, 104, 'Багира', 'Ориентальная', 'КОШКА', 'Казань', '2021-03-25', 'Черная', 'WCF-22222', TRUE, 'Опытная мама, уже есть потомство.', 'Ориентальная', 'КОТ', 'Москва', NULL, 'АКТИВНА'),
-                                                                                                                                                                                                                                   (5, 105, 'Тайсон', 'Шотландская', 'КОТ', 'Москва', '2023-11-05', 'Серебристый табби', NULL, FALSE, 'Красивый кот без родословной.', 'Шотландская', 'КОШКА', 'Москва', 'Родословная не обязательна', 'АКТИВНА'),
-                                                                                                                                                                                                                                   (6, 106, 'Луна', 'Сибирская', 'КОШКА', 'Екатеринбург', '2022-06-18', 'Невская маскарадная', 'WCF-33333', TRUE, 'Ищем партнера для получения породистых котят.', 'Сибирская', 'КОТ', NULL, 'Предпочтительно из питомника', 'АКТИВНА');
+INSERT INTO exhibitions (id, name, date, city, system, organizer, cost, deadline)
+VALUES (2, 'Всероссийский смотр «Усы и Лапы»', '20.09.2026', 'Санкт-Петербург', 'FIFe', 'ЛенКотоСоюз', '1800 руб.', '15.09.2026');
 
-INSERT INTO breeding_request (from_profile_id, to_profile_id, from_user_id, to_user_id, message, status) VALUES
-                                                                                                           (2, 1, 102, 101, 'Здравствуйте! Моя Муся заинтересовалась вашим Барсиком.', 'ПРИНЯТ'),
-                                                                                                           (4, 3, 104, 103, 'Ищем кота для Багиры. Ваш Симба нам подходит!', 'НА_РАССМОТРЕНИИ'),
-                                                                                                           (6, 5, 106, 105, 'Добрый день! Interested in breeding with Tyson.', 'ОТКЛОНЕН');
 
-INSERT INTO breeding_notification (request_id, user_id, notification_type, message) VALUES
-                                                                                      (1, 101, 'НОВЫЙ_ЗАПРОС', 'Пользователь Муся отправил запрос на подбор партнера'),
-                                                                                      (1, 102, 'ПРИНЯТ', 'Ваш запрос на подбор партнера принят!'),
-                                                                                      (2, 103, 'НОВЫЙ_ЗАПРОС', 'Пользователь Багира заинтересовалась вашим Симбой'),
-                                                                                      (3, 106, 'ОТКЛОНЕН', 'Ваш запрос на подбор партнера отклонен.');
+-- АНКЕТЫ ДЛЯ ВЯЗКИ
 
-INSERT INTO breeding_review (request_id, from_user_id, to_user_id, rating, comment_text) VALUES
-  (1, 102, 101, 5, 'Отличная вязка! Барсик очень дружелюбен с Мусей. Рекомендую!');
+INSERT INTO breeding_profiles (id, breed, gender, city, age, has_pedigree, target_breed, target_city, min_age, max_age, status)
+VALUES (1, 'Британская', 'FEMALE', 'Москва', 2, true, 'Британская', 'Москва', 1, 5, 'ACTIVE');
+
+INSERT INTO breeding_profiles (id, breed, gender, city, age, has_pedigree, target_breed, target_city, min_age, max_age, status)
+VALUES (2, 'Британская', 'MALE', 'Москва', 3, true, 'Британская', 'Москва', 1, 5, 'ACTIVE');
+
+ALTER TABLE breeding_profiles ALTER COLUMN id RESTART WITH 3;
+
+
+-- ЗАПРОСЫ НА ВЯЗКУ
+
+INSERT INTO breeding_requests (id, sender_profile_id, receiver_profile_id, status)
+VALUES (1, 2, 1, 'PENDING');
+
+ALTER TABLE breeding_requests ALTER COLUMN id RESTART WITH 2;
