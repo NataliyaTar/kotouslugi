@@ -12,6 +12,7 @@ INSERT INTO service (id, title, description, icon, mnemonic) VALUES (2, 'Зап�
 INSERT INTO service (id, title, description, icon, mnemonic) VALUES (3, 'SPA-процедуры', 'Устали от бесконечной работы? Пора записаться на расслабление', 'relax.png', 'spa');
 INSERT INTO service (id, title, description, icon, mnemonic) VALUES (4, 'Участие в выставке', 'Покажи себя во всей красе на официальной выставке', 'cool.png', 'exhibition');
 INSERT INTO service (id, title, description, icon, mnemonic) VALUES (5, 'Подбор партнёра для разведения', 'Найдём тебе идеальную пару среди зарегистрированных котиков', 'awww.png', 'breeding_partner');
+
 INSERT INTO service_category (category_id, service_id) VALUES (1, 1);
 INSERT INTO service_category (category_id, service_id) VALUES (2, 2);
 INSERT INTO service_category (category_id, service_id) VALUES (3, 3);
@@ -20,3 +21,15 @@ INSERT INTO service_category (category_id, service_id) VALUES (5, 1);
 
 INSERT INTO cat (id, name, age, breed, sex) VALUES (1, 'Борис', '3 года', 'Мейн-кун', 'М');
 INSERT INTO cat (id, name, age, breed, sex) VALUES (2, 'Мурка', '1 год', 'Сиамская', 'Ж');
+INSERT INTO cat (id, name, age, breed, sex) VALUES (3, 'Василий', '2 года', 'Британская короткошерстная', 'М');
+INSERT INTO cat (id, name, age, breed, sex) VALUES (4, 'Плюшка', '6 месяцев', 'Шотландская вислоухая', 'Ж');
+INSERT INTO cat (id, name, age, breed, sex) VALUES (5, 'Гарфилд', '5 лет', 'Рыжий персидский', 'М');
+
+INSERT INTO exhibitions (id, name, city, date, deadline, organizer, system, cost) VALUES (1, 'Гран-При Олимп 2026', 'Москва', '15.09.2026', '10.09.2026', 'Клуб Котофей', 'WCF', '2000 руб');
+INSERT INTO exhibitions (id, name, city, date, deadline, organizer, system, cost) VALUES (2, 'Золотой Коготь', 'Санкт-Петербург', '05.10.2026', '01.10.2026', 'Ассоциация Фелинологов', 'FIFE', '2500 руб');
+INSERT INTO exhibitions (id, name, city, date, deadline, organizer, system, cost) VALUES (3, 'Пушистая Сказка', 'Новосибирск', '22.11.2026', '15.11.2026', 'Клуб Сибирский Барс', 'WCF', '1500 руб');
+INSERT INTO exhibitions (id, name, city, date, deadline, organizer, system, cost) VALUES (4, 'Кото-Бум Екб', 'Екатеринбург', '12.12.2026', '05.12.2026', 'УралКэтс', 'TICA', '1800 руб');
+
+INSERT INTO reviews (exhibition_id, rating, comment) VALUES (1, 5, 'Великолепная организация, получили кубок!');
+INSERT INTO reviews (exhibition_id, rating, comment) VALUES (1, 4, 'Судьи строгие, но честные. Всё понравилось.');
+INSERT INTO reviews (exhibition_id, rating, comment) VALUES (2, 5, 'Лучшая выставка сезона, приедем еще раз!');
