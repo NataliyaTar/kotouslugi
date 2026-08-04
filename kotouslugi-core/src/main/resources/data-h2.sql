@@ -9,7 +9,7 @@ INSERT INTO banner (id, bg, title, text, imgurl)
 values (1,
         'linear-gradient(86deg, #EDF2FE 0%, #F0FFF2 100%)',
         'Случилось несчастье',
-        'Новая услуга на портале «Регистрация усопшего» поможет легко и быстро разобраться с документами',
+        'Новая услуга на портале «Поддержка в сложной ситуации» поможет быстро найти нужные сервисы',
         'ghost.png');
 INSERT INTO banner (id, bg, title, text, imgurl)
 values (2,

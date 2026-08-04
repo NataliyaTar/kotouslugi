@@ -54,10 +54,25 @@
 
 .relative-row {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: minmax(260px, 1fr) minmax(220px, 1fr) auto;
   gap: 12px;
   align-items: end;
   margin-bottom: 12px;
+  width: 100%;
+
+  .field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  select {
+    width: 100%;
+    min-width: 220px;
+  }
+}
+
+.relatives-list {
+  width: 100%;
 }
 
 .add-relative-btn,
@@ -75,11 +90,16 @@
   background: #fff;
   border-color: #E5E6EB;
   color: #4E5969;
+  align-self: end;
 }
 
 @media (max-width: 900px) {
   .relative-row {
     grid-template-columns: 1fr;
+
+    select {
+      min-width: 0;
+    }
   }
 
   .remove-relative-btn {

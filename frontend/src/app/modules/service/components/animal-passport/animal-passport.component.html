@@ -85,7 +85,7 @@
           <button type="button" class="add-relative-btn" (click)="addRelative()">+ Добавить родственника</button>
         </div>
 
-        <div formArrayName="relatives">
+        <div formArrayName="relatives" class="relatives-list">
           @for (relative of relativesArray.controls; track $index) {
             <div class="relative-row" [formGroupName]="$index">
               <div class="field">
@@ -113,7 +113,6 @@
             </div>
           }
         </div>
-        <p class="hint">Связи помогают выявить риск инбридинга при разведении</p>
       </div>
 
       <div class="field-wrapper" [hidden]="active !== 3" formGroupName="3">
