@@ -1,19 +1,71 @@
-# kotouslugi
+# Создать свою ветку для работы команды
+1. Выкачав репозиторий из gitHub мы попадаем на ветку master. Это "стартовая" ветка с подготовленным проектом
+2. Отводим свою ветку от master с названием по правилу `2024-summer-team-XXX`, к примеру `2024-summer-team-krutie-bobri`
 
-## Архитектура
+# Как запустить фронт
+Перед тем, как приступить к работе, необходимо установить на компьютер:
 
-| Слой | Технология | Порт | Контейнер |
-|------|-----------|------|-----------|
-| Фронт | Angular 17 + nginx | `36847` | `kotouslugi-frontend` |
-| Бэк | Spring Boot 3, Java 17 | `8080` | `kotouslugi-backend` |
-| БД | PostgreSQL 16 | `5432` | `kotouslugi-postgres` |
+node.js версии v18.19.1 и angular-cli - 17.3.1
 
-**Реализованные услуги:**
+1. В консоли перейти в папку [frontend](./frontend)
+2. Выполнить команду `npm i` - подтянутся модули
+3. Выполнить команду из [package](./frontend/package.json) `build` - соберется проект
+4. Выполнить команду из [package](./frontend/package.json) `start` - запустится проект
+
+Для первого запуска необходимо выполнить все пункты.
+Для последующих только пункт 4
+
+Работа происходит в директории [src](./frontend/src) в папках `app` и `assets`
+
+Файлы помеченные в начале комментарием "Файл не трогаем" должны работать у каждой команды одинаково и дорабатывать их не нужно.
+Удалять существующие файлы в папке `assets` нельзя! Добавлять свои - можно
+
+# Как запустить бэк
+Перед тем, как приступить к работе, необходимо установить на компьютер:
+Intelliji IDEA, openJDK 17 или выше.
+
+1. Открываем проект как Maven project.
+2. Качаем зависимости (Справа экрана вкладка Maven, вверху кнопка со стрелочкой вниз `Download sources and documentation`)
+3. Обновляем зависимости кнопкой (Reload All Maven Projects)
+4. Убеждаемся, что никаких ошибок не подсвечивается в папке проекта по дереву.
+5. Нажимаем кнопку `Run 'ApiApplication'`.
+6. Если все сделать правильно, увидите в логах сообщение вида `Started ApiApplication in N seconds`
+
+## Swagger
+http://localhost:8080/swagger-ui/index.html#/
+
+# Как запустить проект в Docker
+
+```bash
+docker compose up -d --build
+docker compose ps
+```
+
+Сервисы и адреса:
+- Фронт: `http://localhost:36847`
+- Бэк/API: `http://localhost:8080`
+- БД PostgreSQL: `localhost:5432` (user/pass: `kotouslugi`)
+
+Остановить проект:
+
+```bash
+docker compose down
+```
+
+Остановить проект и удалить volume БД:
+
+```bash
+docker compose down -v
+```
+
+# Что реализовано в проекте
+
 - Единый реестр паспортов животных (`animal_passport`)
 - Запись к грумеру (`grooming_booking`)
 - Отзыв о посещении грумера (`grooming_review`)
+- Экран уведомлений по грумингу (`/grooming-notifications`) с типами `SALON_RESULT` и `REMINDER`
 
-## Контроллеры API
+## API контроллеры
 
 | Endpoint | Контроллер | Назначение |
 |----------|-----------|------------|
@@ -22,29 +74,9 @@
 | `/api/banner/*` | `BannerController` | Баннеры на главной |
 | `/api/requisition/*` | `RequisitionController` | Заявки на услуги |
 | `/api/passport/*` | `PassportController` | Реестр паспортов |
-| `/api/grooming/*` | `GroomingController` | Запись к грумеру, слоты, отзывы |
+| `/api/grooming/*` | `GroomingController` | Запись к грумеру, слоты, отзывы, уведомления |
 
-**Swagger:** http://localhost:8080/swagger-ui/index.html
-
-## Запуск проекта (Docker)
-
-```bash
-docker compose up -d --build
-```
-
-| Что | Адрес |
-|-----|-------|
-| Сайт | http://localhost:36847 |
-| API | http://localhost:8080 |
-| БД | `localhost:5432`, user/pass: `kotouslugi` |
-
-```bash
-docker compose ps
-docker compose down
-docker compose down -v
-```
-
-## Подключение к БД
+# Подключение к БД (PostgreSQL в Docker)
 
 ```bash
 docker exec -it kotouslugi-postgres psql -U kotouslugi -d kotouslugi
@@ -57,38 +89,31 @@ docker exec -it kotouslugi-postgres psql -U kotouslugi -d kotouslugi
 - User: `kotouslugi`
 - Password: `kotouslugi`
 
-## Тестовые данные
+# Полезные ссылки по фронту
 
-### Коты
-- Феликс (`id=1`)
-- Муся (`id=2`)
-- Барсик (`id=3`)
-- Лада (`id=4`)
+## Angular
+https://angdev.ru/
 
-### Груминг-салоны
-- `Лапки-Ножницы` (`id=0`)
-- `Котополис Grooming` (`id=1`)
-- `Пушистый стиль` (`id=2`)
+## TypeScript
+https://scriptdev.ru/book/why-typescript/
 
-### Грумеры
-- `Котова Анна Сергеевна` (`salonId=0`)
-- `Мяукин Петр Игоревич` (`salonId=0`)
-- `Барсикова Елена Викторовна` (`salonId=1`)
-- `Лапина Дарья Олеговна` (`salonId=1`)
+## Реактивное программирование
+RxJS: https://rxjs.dev/guide/overview и https://angdev.ru/rxjs/about/
 
-### Пример записи к грумеру
-- Кот: `Феликс`
-- Салон: `Лапки-Ножницы`
-- Пакет: `Полный уход`
-- Дата: `2026-07-10`
-- Время: `11:00`
-- Контакт: `79001234567`
-- Грумер: `Котова Анна Сергеевна`
+Angular reactive forms: https://angdev.ru/archive/angular9/angular-reactive-forms/
 
-### Пример отзыва
-- Оценка: `5`
-- Комментарий: `Очень аккуратная стрижка, кот спокоен и доволен`
+## Стили
+Sass (scss): https://sass-lang.com/documentation/syntax/#scss и https://sass-scss.ru/guide/
 
-### Поиск в реестре паспортов
-- по номеру паспорта (например `1`)
-- по номеру чипа (например `985112000123456`)
+## A11y
+https://developer.mozilla.org/ru/docs/Web/Accessibility и
+https://habr.com/ru/articles/762186/
+
+## Иконки
+https://fonts.google.com/icons?selected=Material+Icons+Outlined:drive_file_rename_outline:&icon.category=file&icon.size=24&icon.color=%234D83FA&icon.set=Material+Icons&icon.platform=web
+
+## Кот Пушин
+https://www.google.com/search?q=pusheen+cat+transparent&newwindow=1&sca_esv=3697c3e79dce3da7&hl=ru&udm=2&biw=1920&bih=959&sxsrf=ADLYWIJmCD69k7UtygUFPOPjAfBbNJvZRQ%3A1718395931489&ei=G6RsZqnNHdLHwPAP1oWEMA&oq=pusheen+cat+tra&gs_lp=Egxnd3Mtd2l6LXNlcnAiD3B1c2hlZW4gY2F0IHRyYSoCCAEyBBAAGB4yBBAAGB4yBhAAGAgYHjIGEAAYCBgeMgYQABgIGB4yBhAAGAgYHjIGEAAYCBgeMgYQABgIGB4yBhAAGAgYHjIEEAAYHkjTFVCGAlieB3ABeACQAQCYAUagAYcCqgEBNLgBA8gBAPgBAZgCBaACkQLCAgQQIxgnwgIKEAAYgAQYQxiKBcICBRAAGIAEwgIHEAAYgAQYE8ICCBAAGBMYCBgemAMAiAYBkgcBNaAH0ho&sclient=gws-wiz-serp
+
+## Удалить фон у картинок
+https://removal.ai
