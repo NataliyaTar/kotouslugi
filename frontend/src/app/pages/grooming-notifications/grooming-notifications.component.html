@@ -1,0 +1,56 @@
+<div class="container notifications-page">
+  <div class="page-header">
+    <h3>Уведомления по грумингу</h3>
+    <a routerLink="/grooming-requests" class="back-link">К заявкам</a>
+  </div>
+
+  @if (loading) {
+    <p class="hint">Загружаем котиков...</p>
+  } @else {
+    <div class="field">
+      <div><p class="label">Котик</p></div>
+      <select [(ngModel)]="selectedCat" (change)="loadNotifications()">
+        @for (option of optionsCat; track option.id) {
+          <option [value]="toJson(option)">{{ option.text }}</option>
+        }
+      </select>
+    </div>
+
+    @if (notificationsLoading) {
+      <p class="hint">Загружаем уведомления...</p>
+    } @else if (notifications.length) {
+      <div class="notifications-list">
+        @for (item of notifications; track item.id) {
+          <article class="notification-card shadow-block">
+            <div class="notification-row">
+              <p class="notification-title">Уведомление №{{ item.id }}</p>
+              <span class="status-badge" [class]="getStatusClass(item.status)">
+                {{ getStatusLabel(item.status) }}
+              </span>
+            </div>
+
+            <p class="notification-meta">
+              {{ getTypeLabel(item.type) }} • Запись №{{ item.appointmentId }}
+              @if (item.visitDate && item.visitTime) {
+                • Визит: {{ item.visitDate }} {{ item.visitTime }}
+              }
+            </p>
+            <p class="notification-message">{{ item.message }}</p>
+            <p class="notification-dates">
+              Запланировано: {{ item.scheduledAt | date:'dd.MM.yyyy HH:mm' }}
+              @if (item.sentAt) {
+                • Отправлено: {{ item.sentAt | date:'dd.MM.yyyy HH:mm' }}
+              }
+            </p>
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="hint">Для выбранного котика уведомлений пока нет.</p>
+    }
+
+    @if (loadError) {
+      <p class="load-error">{{ loadError }}</p>
+    }
+  }
+</div>

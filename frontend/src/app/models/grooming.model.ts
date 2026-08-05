@@ -34,3 +34,16 @@ export interface IGroomingAppointment {
   status: 'PENDING' | 'SALON_CONFIRMED' | 'SALON_REJECTED' | 'CANCELLED';
   salonResponse: string;
 }
+
+export interface IGroomingNotification {
+  id: number;
+  appointmentId: number;
+  type: 'SALON_RESULT' | 'REMINDER';
+  status: 'PENDING' | 'SENT';
+  message: string;
+  scheduledAt: string;
+  sentAt: string | null;
+  visitDate: string | null;
+  visitTime: string | null;
+  appointmentStatus: IGroomingAppointment['status'] | null;
+}

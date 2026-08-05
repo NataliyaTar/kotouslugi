@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IGroomer, IGroomingAppointment, IGroomingSalon, IGroomingSlot } from '@models/grooming.model';
+import { IGroomer, IGroomingAppointment, IGroomingNotification, IGroomingSalon, IGroomingSlot } from '@models/grooming.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +25,10 @@ export class GroomingService {
 
   public getAppointments(catId: number): Observable<IGroomingAppointment[]> {
     return this.http.get<IGroomingAppointment[]>(`${this.groomingApi}appointments?catId=${catId}`);
+  }
+
+  public getNotifications(catId: number): Observable<IGroomingNotification[]> {
+    return this.http.get<IGroomingNotification[]>(`${this.groomingApi}notifications?catId=${catId}`);
   }
 
   public submitReview(appointmentId: number, rating: number, comment: string): Observable<any> {

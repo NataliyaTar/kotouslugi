@@ -16,6 +16,7 @@ import ru.practice.kotouslugi.model.Groomer;
 import ru.practice.kotouslugi.model.GroomingAppointment;
 import ru.practice.kotouslugi.model.GroomingReview;
 import ru.practice.kotouslugi.model.GroomingSalon;
+import ru.practice.kotouslugi.model.dto.GroomingNotificationDto;
 import ru.practice.kotouslugi.model.dto.GroomingReviewRequest;
 import ru.practice.kotouslugi.model.dto.GroomingSlotDto;
 import ru.practice.kotouslugi.service.GroomingService;
@@ -75,6 +76,17 @@ public class GroomingController extends BaseController {
     public ResponseEntity<List<GroomingAppointment>> listAppointments(
             @Parameter(name = "catId", required = false) @RequestParam(required = false) Long catId) {
         return wrapper((s) -> groomingService.listAppointments(catId));
+    }
+
+    @GetMapping(value = "/notifications", produces = "application/json")
+    @ResponseBody
+    @Operation(summary = "Список уведомлений по грумингу", tags = {"Груминг"}, responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка")}
+    )
+    public ResponseEntity<List<GroomingNotificationDto>> listNotifications(
+            @Parameter(name = "catId", required = false) @RequestParam(required = false) Long catId) {
+        return wrapper((s) -> groomingService.listNotifications(catId));
     }
 
     @PostMapping(value = "/review", produces = "application/json")

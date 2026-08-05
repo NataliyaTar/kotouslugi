@@ -1,6 +1,6 @@
-.requests-page {
+.notifications-page {
   margin-top: 32px;
-  max-width: 900px;
+  max-width: 980px;
 }
 
 .page-header {
@@ -11,12 +11,6 @@
   margin-bottom: 16px;
 }
 
-.header-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 .back-link {
   color: #0D4CD3;
   text-decoration: none;
@@ -25,39 +19,45 @@
   padding: 8px 12px;
 }
 
-.requests-list {
+.notifications-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-top: 14px;
 }
 
-.request-card {
+.notification-card {
   border-radius: 8px;
   padding: 14px;
 }
 
-.request-row {
+.notification-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
 }
 
-.request-title {
+.notification-title {
   margin: 0;
   font-weight: 600;
 }
 
-.request-meta {
+.notification-meta {
   margin: 8px 0;
   color: #4B525C;
   font-size: 14px;
 }
 
-.request-response {
-  margin: 0 0 10px;
+.notification-message {
+  margin: 0;
   font-size: 14px;
+}
+
+.notification-dates {
+  margin: 8px 0 0;
+  color: #6B7785;
+  font-size: 13px;
 }
 
 .status-badge {
@@ -71,48 +71,10 @@
     background: rgba(46, 125, 50, 0.14);
   }
 
-  &.status-error {
-    color: #B71C1C;
-    background: rgba(244, 67, 54, 0.14);
-  }
-
   &.status-pending {
     color: #E65100;
     background: rgba(255, 152, 0, 0.16);
   }
-
-  &.status-cancelled {
-    color: #616161;
-    background: rgba(117, 117, 117, 0.14);
-  }
-}
-
-.review-open-btn {
-  border: 1px solid #B6CBF7;
-  color: #0D4CD3;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-.review-form {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid #E5EAF5;
-}
-
-.review-field {
-  margin-bottom: 10px;
-}
-
-.review-btn {
-  border: none;
-  border-radius: 8px;
-  background: #0D4CD3;
-  color: #fff;
-  padding: 10px 14px;
-  cursor: pointer;
 }
 
 .hint {
@@ -120,13 +82,7 @@
   color: #86909C;
 }
 
-.review-success {
-  margin-top: 12px;
-  color: #2E7D32;
-  font-weight: 500;
-}
-
-.review-error {
+.load-error {
   margin-top: 12px;
   color: #C62828;
   font-weight: 500;

@@ -17,6 +17,7 @@ import ru.practice.kotouslugi.model.GroomingReview;
 import ru.practice.kotouslugi.model.GroomingSalon;
 import ru.practice.kotouslugi.model.Requisition;
 import ru.practice.kotouslugi.model.dto.GroomingReviewRequest;
+import ru.practice.kotouslugi.model.dto.GroomingNotificationDto;
 import ru.practice.kotouslugi.model.dto.GroomingSlotDto;
 import ru.practice.kotouslugi.model.enums.GroomingAppointmentStatus;
 import ru.practice.kotouslugi.model.enums.GroomingNotificationStatus;
@@ -26,12 +27,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class GroomingService {
@@ -113,6 +118,44 @@ public class GroomingService {
             return result;
         }
         return reviewRepository.findBySalonId(salonId);
+    }
+
+    public List<GroomingNotificationDto> listNotifications(Long catId) {
+        List<GroomingAppointment> appointments = listAppointments(catId);
+        if (appointments.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, GroomingAppointment> appointmentById = new HashMap<>();
+        for (GroomingAppointment appointment : appointments) {
+            appointmentById.put(appointment.getId(), appointment);
+        }
+
+        List<Long> appointmentIds = appointments.stream()
+                .map(GroomingAppointment::getId)
+                .collect(Collectors.toList());
+        List<GroomingNotification> notifications = notificationRepository.findByAppointmentIdIn(appointmentIds);
+        notifications.sort(
+                Comparator.comparing(GroomingNotification::getScheduledAt, Comparator.nullsLast(Comparator.reverseOrder()))
+                        .thenComparing(GroomingNotification::getId, Comparator.nullsLast(Comparator.reverseOrder()))
+        );
+
+        List<GroomingNotificationDto> result = new ArrayList<>();
+        for (GroomingNotification notification : notifications) {
+            GroomingAppointment appointment = appointmentById.get(notification.getAppointmentId());
+            result.add(GroomingNotificationDto.builder()
+                    .id(notification.getId())
+                    .appointmentId(notification.getAppointmentId())
+                    .type(notification.getType())
+                    .status(notification.getStatus())
+                    .message(notification.getMessage())
+                    .scheduledAt(notification.getScheduledAt())
+                    .sentAt(notification.getSentAt())
+                    .visitDate(appointment != null ? appointment.getVisitDate() : null)
+                    .visitTime(appointment != null ? appointment.getVisitTime() : null)
+                    .appointmentStatus(appointment != null ? appointment.getStatus() : null)
+                    .build());
+        }
+        return result;
     }
 
     public GroomingReview submitReview(GroomingReviewRequest request) {

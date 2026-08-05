@@ -35,6 +35,12 @@ export const routes: Routes = [
       .then(mod => mod.GroomingRequestsComponent)
   },
   {
+    path: 'grooming-notifications',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/grooming-notifications/grooming-notifications.component')
+      .then(mod => mod.GroomingNotificationsComponent)
+  },
+  {
     path: 'passport-registry-search',
     pathMatch: 'full',
     loadComponent: () => import('./pages/passport-registry-search/passport-registry-search.component')

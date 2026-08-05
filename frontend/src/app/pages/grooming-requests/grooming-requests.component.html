@@ -1,7 +1,10 @@
 <div class="container requests-page">
   <div class="page-header">
     <h3>Поданные заявки к грумеру</h3>
-    <a routerLink="/service/grooming_booking" class="back-link">Назад к записи</a>
+    <div class="header-actions">
+      <a routerLink="/grooming-notifications" [queryParams]="{ catId: getSelectedCatId() }" class="back-link">Уведомления</a>
+      <a routerLink="/service/grooming_booking" class="back-link">Назад к записи</a>
+    </div>
   </div>
 
   @if (loading) {

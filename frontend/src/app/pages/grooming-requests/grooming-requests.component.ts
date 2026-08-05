@@ -140,6 +140,10 @@ export class GroomingRequestsComponent implements OnInit {
     return JSON.stringify(value);
   }
 
+  public getSelectedCatId(): number | null {
+    return this.getSelectedCat()?.id ?? null;
+  }
+
   private getSelectedCat(): IValueCat | null {
     try {
       return JSON.parse(this.selectedCat);

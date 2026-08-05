@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface GroomingNotificationRepository extends CrudRepository<GroomingNotification, Long> {
     List<GroomingNotification> findByAppointmentId(Long appointmentId);
+    List<GroomingNotification> findByAppointmentIdIn(List<Long> appointmentIds);
 }
