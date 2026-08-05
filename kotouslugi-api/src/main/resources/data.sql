@@ -20,3 +20,8 @@ INSERT INTO service_category (category_id, service_id) VALUES (5, 1);
 
 INSERT INTO cat (id, name, age, breed, sex) VALUES (1, 'Борис', '3 года', 'Мейн-кун', 'М');
 INSERT INTO cat (id, name, age, breed, sex) VALUES (2, 'Мурка', '1 год', 'Сиамская', 'Ж');
+
+INSERT INTO exhibitions (name, date, city, system, organizer, cost, deadline)
+VALUES ('Международная выставка «Кубок Пушистых»', '15.08.2026', 'Москва', 'WCF', 'Клуб Котофей', '2500 руб.', '10.08.2026');
+INSERT INTO exhibitions (name, date, city, system, organizer, cost, deadline)
+VALUES ('Всероссийский смотр «Усы и Лапы»', '20.09.2026', 'Санкт-Петербург', 'FIFe', 'ЛенКотоСоюз', '1800 руб.', '15.09.2026');

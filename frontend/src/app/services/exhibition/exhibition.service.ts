@@ -18,8 +18,8 @@ export class ExhibitionService {
     return this.http.get<IExhibition[]>(this.baseUrl);
   }
 
-  public submitReview(exhibitionId: number, review: IExhibitionReview): Observable<IExhibitionReview> {
-    return this.http.post<IExhibitionReview>(`${this.baseUrl}/${exhibitionId}/review`, review);
+  public submitReview(exhibitionId: number, review: IExhibitionReview): Observable<string> {
+    return this.http.post(`${this.baseUrl}/${exhibitionId}/review`, review, { responseType: 'text' });
   }
 
 }
