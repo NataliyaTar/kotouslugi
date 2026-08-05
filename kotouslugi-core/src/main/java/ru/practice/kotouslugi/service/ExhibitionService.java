@@ -26,4 +26,7 @@ public class ExhibitionService {
   public Review saveReview(Review review) {
     return reviewRepository.save(review);
   }
+  public Exhibition saveExhibition(Exhibition exhibition) {
+    return exhibitionRepository.save(exhibition);
+  }
 }
