@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, UntypedFormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { Subscription, take } from 'rxjs';
 import { ServiceInfoService } from '@services/servise-info/service-info.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,7 +7,7 @@ import { CheckInfoComponent } from '@components/check-info/check-info.component'
 import { ConstantsService } from '@services/constants/constants.service';
 import { IStep } from '@models/step.model';
 import { ThrobberComponent } from '@components/throbber/throbber.component';
-import { IValueCat } from '@models/cat.model';
+import { IValueCat, ICat } from '@models/cat.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
@@ -34,6 +34,17 @@ interface IVaccination {
   veterinarian: string;
 }
 
+function vaccinationDatesValidator(group: UntypedFormGroup): ValidationErrors | null {
+  const date = group.get('date')?.value;
+  const nextDate = group.get('nextDate')?.value;
+  if (date && nextDate) {
+    if (new Date(nextDate) < new Date(date)) {
+      return { nextDateBeforeDate: true };
+    }
+  }
+  return null;
+}
+
 @Component({
   selector: 'app-vet-passport',
   standalone: true,
@@ -54,11 +65,13 @@ export class VetPassportComponent implements OnInit, OnDestroy {
   public active: number = 0;
 
   public optionsPet: IValueCat[] = [];
+  public catsData: ICat[] = [];
   public avatarFile: IUploadedFile | null = null;
 
   public vaccinations: IVaccination[] = [];
   public reminders: any[] = [];
   public qrCodeUrl: string | null = null;
+  public today = new Date().toISOString().split('T')[0];
 
   public showVaccinationForm = false;
   public vaccinationForm!: UntypedFormGroup;
@@ -73,14 +86,7 @@ export class VetPassportComponent implements OnInit, OnDestroy {
   private steps: IStep[] = [];
   private subscriptions: Subscription[] = [];
 
-  // Моковые данные питомцев (заменить на реальный API запрос в будущем)
-  private get mockPetsData(): Record<string, any> {
-    return {
-      '1': { petName: 'Барсик', breed: 'Мейн-кун', age: 3, gender: JSON.stringify(this.genderOptions[0]) },
-      '2': { petName: 'Мурка', breed: 'Сиамская', age: 2, gender: JSON.stringify(this.genderOptions[1]) },
-      '3': { petName: 'Рыжик', breed: 'Британская', age: 5, gender: JSON.stringify(this.genderOptions[0]) },
-    };
-  }
+
 
       public get getResult(): any[][] {
         const rawValue = this.form.getRawValue();
@@ -109,7 +115,6 @@ export class VetPassportComponent implements OnInit, OnDestroy {
             step1Data.push({ name: 'Пол', value: 'Не указан' });
           }
         }
-        step1Data.push({ name: 'Фото', value: this.avatarFile ? this.avatarFile.name : 'Не загружено' });
         formattedData.push(step1Data);
 
         // ШАГ 2: Чипирование (берём напрямую из rawValue[1])
@@ -171,13 +176,14 @@ export class VetPassportComponent implements OnInit, OnDestroy {
       name: ['', [Validators.required]],
       date: ['', [Validators.required]],
       nextDate: ['', [Validators.required]],
-      veterinarian: ['', [Validators.required]]
-    });
+      veterinarian: ['', [Validators.required, Validators.pattern(/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/)]]
+    }, { validators: vaccinationDatesValidator });
   }
 
   private getPetOptions(): void {
-    this.constantService.getCatOptionsAll().pipe(take(1)).subscribe((res: IValueCat[]) => {
-      this.optionsPet = res;
+    this.constantService.getCatOptionsFull().pipe(take(1)).subscribe((cats: ICat[]) => {
+      this.catsData = cats;
+      this.optionsPet = cats.map(cat => ({ id: cat.id, text: cat.name }));
       this.prepareService();
     });
   }
@@ -212,9 +218,9 @@ export class VetPassportComponent implements OnInit, OnDestroy {
           gender: [defaultGender, [Validators.required]],
         }),
         1: this.fb.group({
-          chipNumber: ['', [Validators.pattern(/^\d{15}$/)]],
-          chipDate: [''],
-          chipClinic: [''],
+          chipNumber: ['', [Validators.required, Validators.pattern(/^\d{15}$/)]],
+          chipDate: ['', [Validators.required]],
+          chipClinic: ['', [Validators.required]],
         }),
         2: this.fb.group({
           notes: ['']
@@ -222,11 +228,6 @@ export class VetPassportComponent implements OnInit, OnDestroy {
         3: this.fb.group({
           // Пустая группа для 4-го шага (проверка и QR-код)
         })
-      });
-
-      //  Подписка на изменения номера чипа для динамической валидации
-      this.getControl(1, 'chipNumber').valueChanges.subscribe((value: string) => {
-        this.updateChipValidators(value);
       });
 
       this.serviceInfo.servicesForms$.next({
@@ -256,13 +257,18 @@ export class VetPassportComponent implements OnInit, OnDestroy {
       chipClinicControl.updateValueAndValidity();
     }
 
-  // ✅ ИСПРАВЛЕННЫЙ ОБРАБОТЧИК ВЫБОРА ПИТОМЦА
+  // Выбор зарегестрированного питомца
   public onPetSelected(event: Event): void {
     const select = event.target as HTMLSelectElement;
     const value = select.value;
 
     if (!value) {
-      // Очищаем поля, если выбрано "Не выбран"
+      // «Не выбран» — разблокируем поля и очищаем их
+      this.getControl(0, 'petName').enable();
+      this.getControl(0, 'breed').enable();
+      this.getControl(0, 'age').enable();
+      this.getControl(0, 'gender').enable();
+
       this.form.get('0.petName')?.setValue('');
       this.form.get('0.breed')?.setValue('');
       this.form.get('0.age')?.setValue('');
@@ -271,29 +277,43 @@ export class VetPassportComponent implements OnInit, OnDestroy {
     }
 
     try {
-      // Парсим JSON значение из option
-      const petData = JSON.parse(value);
-      const petId = String(petData.id);
+      const petOption = JSON.parse(value);
+      const cat = this.catsData.find(c => c.id === petOption.id);
 
-      // Ищем данные в моках
-      const mockData = this.mockPetsData[petId];
+      if (cat) {
+        // Подставляем данные из реестра
+        this.form.get('0.petName')?.setValue(cat.name);
+        this.form.get('0.breed')?.setValue(this.getBreedText(cat.breed));
+        this.form.get('0.age')?.setValue(Number(cat.age));
+        this.form.get('0.gender')?.setValue(JSON.stringify(this.getGenderObject(cat.sex)));
 
-      if (mockData) {
-        // Если данные есть, подставляем всё
-        this.form.get('0.petName')?.setValue(mockData.petName);
-        this.form.get('0.breed')?.setValue(mockData.breed);
-        this.form.get('0.age')?.setValue(mockData.age);
-        this.form.get('0.gender')?.setValue(mockData.gender);
-      } else {
-        // Если моковых данных нет, хотя бы подставим имя из выпадающего списка, чтобы они совпадали!
-        this.form.get('0.petName')?.setValue(petData.text || '');
-        this.form.get('0.breed')?.setValue('');
-        this.form.get('0.age')?.setValue('');
-        this.form.get('0.gender')?.setValue(JSON.stringify(this.genderOptions[0]));
+        // Блокируем поля — данные зарегистрированного питомца менять нельзя
+        this.getControl(0, 'petName').disable();
+        this.getControl(0, 'breed').disable();
+        this.getControl(0, 'age').disable();
+        this.getControl(0, 'gender').disable();
       }
     } catch (e) {
-      console.error('Ошибка парсинга данных питомца', e);
+      console.error('Ошибка при выборе питомца', e);
     }
+  }
+
+  private getBreedText(breedKey: string): string {
+    const map: Record<string, string> = {
+      'siamese': 'Сиамская',
+      'british_shorthair': 'Британская короткошёрстная',
+      'maine_coon': 'Мейн-кун',
+      'persian': 'Персидская',
+      'sphinx': 'Сфинкс',
+      'scottish_fold': 'Шотландская вислоухая',
+      'russian_blue': 'Русская голубая',
+      'munchkin': 'Манчкин'
+    };
+    return map[breedKey] || breedKey;
+  }
+
+  private getGenderObject(sex: string): { id: string; text: string } {
+    return this.genderOptions.find(g => g.id === sex) || this.genderOptions[0];
   }
 
   public getControl(step: number, id: string): FormControl {
@@ -351,6 +371,23 @@ export class VetPassportComponent implements OnInit, OnDestroy {
       }
     }
     input.value = '';
+  }
+  public onChipInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digitsOnly = input.value.replace(/\D/g, '');
+    if (input.value !== digitsOnly) {
+      input.value = digitsOnly;
+      this.getControl(1, 'chipNumber').setValue(digitsOnly);
+    }
+  }
+
+  public onVeterinarianInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const lettersOnly = input.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s\-]/g, '');
+    if (input.value !== lettersOnly) {
+      input.value = lettersOnly;
+      this.vaccinationForm.get('veterinarian')?.setValue(lettersOnly);
+    }
   }
 
   public removePhoto(): void {

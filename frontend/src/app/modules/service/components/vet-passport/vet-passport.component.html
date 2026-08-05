@@ -117,7 +117,9 @@
         }
         }
       </div>
-      <input formControlName="chipNumber" placeholder="Например: 123456789012345" maxlength="15">
+      <input formControlName="chipNumber" placeholder="Например: 123456789012345"
+             maxlength="15" inputmode="numeric" pattern="[0-9]*"
+             (input)="onChipInput($event)">
       <p class="hint">Номер чипа состоит из 15 цифр</p>
     </div>
 
@@ -130,8 +132,8 @@
         }
         }
       </div>
-      <input formControlName="chipDate" type="date">
-      <p class="hint">Обязательно, если указан номер чипа</p>
+      <input formControlName="chipDate" type="date" [max]="today">
+      <p class="hint">Обязательное поле</p>
     </div>
 
     <div class="field">
@@ -144,7 +146,7 @@
         }
       </div>
       <input formControlName="chipClinic" placeholder="Название ветеринарной клиники">
-      <p class="hint">Обязательно, если указан номер чипа</p>
+      <p class="hint">Обязательное поля</p>
     </div>
 
     <div class="info-box">
@@ -193,7 +195,8 @@
           <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
-        <input formControlName="date" type="date">
+        <input formControlName="date" type="date"
+               [class.input-error]="vaccinationForm.hasError('nextDateBeforeDate')">
       </div>
 
       <div class="field">
@@ -202,8 +205,12 @@
           @if (getVaccinationControl('nextDate').errors?.['required'] && getVaccinationControl('nextDate').touched) {
           <p class="error">Поле обязательно для заполнения</p>
           }
+          @if (vaccinationForm.hasError('nextDateBeforeDate')) {
+          <p class="error">Следующая вакцинация не может быть раньше текущей</p>
+          }
         </div>
-        <input formControlName="nextDate" type="date">
+        <input formControlName="nextDate" type="date"
+               [class.input-error]="vaccinationForm.hasError('nextDateBeforeDate')">
       </div>
 
       <div class="field">
@@ -213,7 +220,7 @@
           <p class="error">Поле обязательно для заполнения</p>
           }
         </div>
-        <input formControlName="veterinarian" placeholder="ФИО ветеринара">
+        <input formControlName="veterinarian" placeholder="ФИО ветеринара" (input)="onVeterinarianInput($event)">
       </div>
 
       <div class="form-actions">
@@ -222,7 +229,6 @@
       </div>
     </div>
     }
-
     <!-- Список добавленных вакцинаций -->
     @if (vaccinations.length > 0) {
     <div class="vaccination-list">
@@ -287,7 +293,15 @@
       <h2 class="step-title">Проверка данных</h2>
     </div>
 
-    <app-check-info [data]="getResult"></app-check-info>
+    <div style="position: relative;">
+      <app-check-info [data]="getResult"></app-check-info>
+
+      <!-- Фото питомца справа внутри первой карточки -->
+      @if (avatarFile?.url) {
+      <img [src]="avatarFile.url" alt="Фото питомца"
+           style="position: absolute; top: 25px; right: 25px; width: 150px; height: 150px; object-fit: cover; border-radius: 12px; border: 1px solid #ddd;">
+      }
+    </div>
 
     <!-- Список вакцинаций для проверки -->
     @if (vaccinations.length > 0) {
