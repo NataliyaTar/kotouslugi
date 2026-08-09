@@ -1,0 +1,102 @@
+@if (loading) {
+  <app-throbber></app-throbber>
+} @else {
+  <div class="fields-wrapper" [formGroup]="form">
+    <div class="field-wrapper" [hidden]="active !== 0" formGroupName="0">
+      <div class="field">
+        <div>
+          <p class="label">Выберите кота</p>
+          @if (getControl(0, 'cat').errors?.['required'] && getControl(0, 'cat').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="cat" (invalid)="getControl(0, 'cat').invalid">
+          @for (option of optionsCat; track $index) {
+            <option [value]="getItem('cat', $index)">{{option.text}}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Телефон для связи</p>
+          @if (getControl(0, 'telephone').errors && getControl(0, 'telephone').touched) {
+            @if (getControl(0, 'telephone').errors?.['required']) {
+              <p class="error">Поле обязательно для заполнения</p>
+            }
+            @if (getControl(0, 'telephone').errors?.['pattern']) {
+              <p class="error">Введите 11 цифр</p>
+            }
+          }
+        </div>
+        <input formControlName="telephone" placeholder="12345678901"
+               (invalid)="getControl(0, 'telephone').invalid">
+      </div>
+      <div class="field">
+        <div>
+          <p class="label">Email для связи</p>
+          @if (getControl(0, 'email').errors?.['pattern'] && getControl(0, 'email').touched) {
+            <p class="error">Введите 11 цифр</p>
+          }
+        </div>
+        <input formControlName="email" type="email" placeholder="abc@dfg.ru"
+               (invalid)="getControl(0, 'email').invalid">
+      </div>
+    </div>
+
+    <div class="field-wrapper" [hidden]="active !== 1" formGroupName="1">
+
+      <div class="field">
+        <div>
+          <p class="label">Выберите место</p>
+          @if (getControl(1, 'place').errors?.['required'] && getControl(1, 'place').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+          <select formControlName="place" (invalid)="getControl(1, 'place').invalid">
+            @for (option of placeOptions; track $index) {
+              <option [value]="getItem('place', $index)">{{option.name}}</option>
+            }
+          </select>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Выберите мероприятие</p>
+          @if (getControl(1, 'event').errors?.['required'] && getControl(1, 'event').touched) {
+            <p class="error">Поле обязательно для заполнения</p>
+          }
+        </div>
+        <select formControlName="event" (invalid)="getControl(1, 'place').invalid">
+          @for (option of eventOptions; track $index) {
+            <option [value]="getItem('event', $index)">{{option.name}}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Выберите время посещения</p>
+        </div>
+        <select formControlName="visitDatetime" (invalid)="getControl(1, 'visitDatetime').invalid">
+          @for (option of availableSlotsOptions; track $index) {
+            <option [value]="getItem('visitDatetime', $index)">{{ formatDate(option) }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <div>
+          <p class="label">Стоимость услуги</p>
+        </div>
+        <p class="price">
+          {{ price }}
+        </p>
+      </div>
+    </div>
+
+
+    @if (active === 2) {
+      <app-check-info [data]="getResult"></app-check-info>
+    }
+  </div>
+}
